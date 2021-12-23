@@ -45,7 +45,6 @@ public class IdentityCreatedHandler implements IdentityHandler {
         com.rbkmoney.fistful.identity.Identity changeCreated = change.getCreated();
         identity.setPartyId(changeCreated.getParty());
         identity.setPartyContractId(changeCreated.getContract());
-        identity.setIdentityClassId(changeCreated.getCls());
         identity.setIdentityProviderId(changeCreated.getProvider());
         identity.setExternalId(changeCreated.getExternalId());
         if (changeCreated.isSetMetadata()) {
