@@ -31,6 +31,8 @@
         <local.pg.port>5432</local.pg.port>
         <fistful-proto.version>1.128-d331fce</fistful-proto.version>
         <sink-common-lib.version>0.0.8</sink-common-lib.version>
+        <shared-resources.version>1.4.0</shared-resources.version>
+        <dockerfile.base.service.tag>c0612d6052ac049496b72a23a04acb142035f249</dockerfile.base.service.tag>
     </properties>
 
     <dependencies>
