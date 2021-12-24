@@ -15,7 +15,7 @@ jobs:
       - name: Checkout GitHub Action Repo
         uses: actions/checkout@v2
         with:
-          repository: alfaind/action-jdk-build
+          repository: valitydev/action-jdk-build
           ref: v1.0.17
           path: .github/actions/action-jdk-build
 
