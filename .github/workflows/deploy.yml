@@ -20,14 +20,14 @@ jobs:
       - name: Checkout GitHub Action JDK Build Repo
         uses: actions/checkout@v2
         with:
-          repository: alfaind/action-jdk-build
+          repository: valitydev/action-jdk-build
           ref: v1.0.17
           path: .github/actions/action-jdk-build
 
       - name: Checkout GitHub Action Deploy Docker Repo
         uses: actions/checkout@v2
         with:
-          repository: alfaind/action-deploy-docker
+          repository: valitydev/action-deploy-docker
           ref: v1.0.13
           path: .github/actions/action-deploy-docker
 
