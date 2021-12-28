@@ -55,10 +55,6 @@ public class PaymentInstitutionHandler
         paymentInstitution.setSystemAccountSetJson(JsonUtil.thriftBaseToJsonString(data.getSystemAccountSet()));
         paymentInstitution
                 .setDefaultContractTemplateJson(JsonUtil.thriftBaseToJsonString(data.getDefaultContractTemplate()));
-        if (data.isSetDefaultWalletContractTemplate()) {
-            paymentInstitution.setDefaultWalletContractTemplateJson(
-                    JsonUtil.thriftBaseToJsonString(data.getDefaultWalletContractTemplate()));
-        }
         if (data.isSetProviders()) {
             paymentInstitution.setProvidersJson(JsonUtil.thriftBaseToJsonString(data.getProviders()));
         }

@@ -29,6 +29,7 @@
         <db.schema>nw</db.schema>
         <local.pg.url>jdbc:postgresql://localhost:5432/newway</local.pg.url>
         <local.pg.port>5432</local.pg.port>
+        <damsel.version>1.534-625100e</damsel.version>
         <fistful-proto.version>1.123-519551d</fistful-proto.version>
         <sink-common-lib.version>0.0.8</sink-common-lib.version>
         <shared-resources.version>1.4.0</shared-resources.version>
@@ -146,6 +147,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
+            <version>${damsel.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
