@@ -3,13 +3,13 @@ package com.rbkmoney.newway.handler.dominant;
 import com.rbkmoney.damsel.domain_config.Commit;
 import com.rbkmoney.damsel.domain_config.RepositorySrv;
 import com.rbkmoney.newway.service.DominantService;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -36,26 +36,31 @@ public class DominantPoller {
     }
 
     @Scheduled(fixedDelayString = "${dmt.polling.delay}")
+    @SchedulerLock(name = "TaskScheduler_dominant_polling_process")
     public void process() {
         if (pollingEnabled) {
             Map<Long, Commit> pullRange;
             final AtomicLong versionId = new AtomicLong();
             try {
                 pullRange = dominantClient.pullRange(after, maxQuerySize);
-                pullRange.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).forEach(e -> {
-                    try {
-                        versionId.set(e.getKey());
-                        dominantService.processCommit(versionId.get(), e);
-                        after = versionId.get();
-                    } catch (RuntimeException ex) {
-                        throw new RuntimeException(
-                                String.format("Unexpected error when polling dominant, versionId=%d", versionId.get()),
-                                ex);
-                    }
-                });
+                pullRange.entrySet().stream()
+                        .sorted(Map.Entry.comparingByKey())
+                        .forEach(e -> handleDominantData(versionId, e));
             } catch (TException e) {
                 log.warn("Error to polling dominant, after={}", after, e);
             }
+        }
+    }
+
+    private void handleDominantData(AtomicLong versionId, Map.Entry<Long, Commit> e) {
+        try {
+            versionId.set(e.getKey());
+            dominantService.processCommit(versionId.get(), e);
+            after = versionId.get();
+        } catch (RuntimeException ex) {
+            throw new RuntimeException(
+                    String.format("Unexpected error when polling dominant, versionId=%d", versionId.get()),
+                    ex);
         }
     }
 }
