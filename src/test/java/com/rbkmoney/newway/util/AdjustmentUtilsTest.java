@@ -1,7 +1,6 @@
 package com.rbkmoney.newway.util;
 
 import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.newway.TestData;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public final class AdjustmentUtilsTest {
         assertEquals(13, newAmountDest);
         assertEquals(-19, CashFlowUtil.computeMerchantAmount(newCashFlow));
 
-        InvoicePaymentAdjustment adjustment = TestData.createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
+        InvoicePaymentAdjustment adjustment = createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
         assertEquals(-34, AdjustmentUtils.calculateMerchantAmountDiff(adjustment));
     }
 
@@ -49,7 +48,7 @@ public final class AdjustmentUtilsTest {
         assertEquals(13, newAmountDest);
         assertEquals(-19, CashFlowUtil.computeProviderAmount(newCashFlow));
 
-        InvoicePaymentAdjustment adjustment = TestData.createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
+        InvoicePaymentAdjustment adjustment = createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
         assertEquals(-34, AdjustmentUtils.calculateProviderAmountDiff(adjustment));
     }
 
@@ -69,7 +68,7 @@ public final class AdjustmentUtilsTest {
         assertEquals(13, newAmountDest);
         assertEquals(-19, CashFlowUtil.computeSystemAmount(newCashFlow));
 
-        InvoicePaymentAdjustment adjustment = TestData.createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
+        InvoicePaymentAdjustment adjustment = createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
         assertEquals(-34, AdjustmentUtils.calculateSystemAmountDiff(adjustment));
     }
 
@@ -91,7 +90,7 @@ public final class AdjustmentUtilsTest {
         assertEquals(13, newAmountDest);
         assertEquals(-19, CashFlowUtil.computeExternalIncomeAmount(newCashFlow));
 
-        InvoicePaymentAdjustment adjustment = TestData.createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
+        InvoicePaymentAdjustment adjustment = createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
         assertEquals(-34, AdjustmentUtils.calculateExternalIncomeAmountDiff(adjustment));
     }
 
@@ -113,7 +112,7 @@ public final class AdjustmentUtilsTest {
         assertEquals(13, newAmountDest);
         assertEquals(-19, CashFlowUtil.computeExternalOutcomeAmount(newCashFlow));
 
-        InvoicePaymentAdjustment adjustment = TestData.createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
+        InvoicePaymentAdjustment adjustment = createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
         assertEquals(-34, AdjustmentUtils.calculateExternalOutcomeAmountDiff(adjustment));
     }
 
