@@ -1,8 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.FinalCashFlowAccount;
-import com.rbkmoney.damsel.domain.FinalCashFlowPosting;
-import com.rbkmoney.damsel.domain.MerchantCashFlowAccount;
+import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.newway.domain.enums.AdjustmentCashFlowType;
 import com.rbkmoney.newway.domain.enums.CashFlowAccount;
@@ -12,20 +10,70 @@ import com.rbkmoney.newway.domain.tables.pojos.CashFlow;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CashFlowUtil {
 
     public static Long computeMerchantAmount(List<FinalCashFlowPosting> finalCashFlow) {
-        long amountSource = computeAmount(finalCashFlow, FinalCashFlowPosting::getSource);
-        long amountDest = computeAmount(finalCashFlow, FinalCashFlowPosting::getDestination);
+        long amountSource = computeMerchantAmount(finalCashFlow, FinalCashFlowPosting::getSource);
+        long amountDest = computeMerchantAmount(finalCashFlow, FinalCashFlowPosting::getDestination);
         return amountDest - amountSource;
     }
 
+    public static long computeMerchantAmount(List<FinalCashFlowPosting> finalCashFlow,
+                                              Function<FinalCashFlowPosting, FinalCashFlowAccount> func) {
+        return computeAmount(finalCashFlow, f -> isMerchantSettlement(func.apply(f).getAccountType()));
+    }
+
+    public static Long computeProviderAmount(List<FinalCashFlowPosting> finalCashFlow) {
+        long amountSource = computeProviderAmount(finalCashFlow, FinalCashFlowPosting::getSource);
+        long amountDest = computeProviderAmount(finalCashFlow, FinalCashFlowPosting::getDestination);
+        return amountDest - amountSource;
+    }
+
+    public static long computeProviderAmount(List<FinalCashFlowPosting> finalCashFlow,
+                                              Function<FinalCashFlowPosting, FinalCashFlowAccount> func) {
+        return computeAmount(finalCashFlow, f -> isProviderSettlement(func.apply(f).getAccountType()));
+    }
+
+    public static Long computeSystemAmount(List<FinalCashFlowPosting> finalCashFlow) {
+        long amountSource = computeSystemAmount(finalCashFlow, FinalCashFlowPosting::getSource);
+        long amountDest = computeSystemAmount(finalCashFlow, FinalCashFlowPosting::getDestination);
+        return amountDest - amountSource;
+    }
+
+    public static long computeSystemAmount(List<FinalCashFlowPosting> finalCashFlow,
+                                            Function<FinalCashFlowPosting, FinalCashFlowAccount> func) {
+        return computeAmount(finalCashFlow, f -> isSystemSettlement(func.apply(f).getAccountType()));
+    }
+
+    public static Long computeExternalIncomeAmount(List<FinalCashFlowPosting> finalCashFlow) {
+        long amountSource = computeExternalIncomeAmount(finalCashFlow, FinalCashFlowPosting::getSource);
+        long amountDest = computeExternalIncomeAmount(finalCashFlow, FinalCashFlowPosting::getDestination);
+        return amountDest - amountSource;
+    }
+
+    public static long computeExternalIncomeAmount(List<FinalCashFlowPosting> finalCashFlow,
+                                                    Function<FinalCashFlowPosting, FinalCashFlowAccount> func) {
+        return computeAmount(finalCashFlow, f -> isExternalIncome(func.apply(f).getAccountType()));
+    }
+
+    public static Long computeExternalOutcomeAmount(List<FinalCashFlowPosting> finalCashFlow) {
+        long amountSource = computeExternalOutcomeAmount(finalCashFlow, FinalCashFlowPosting::getSource);
+        long amountDest = computeExternalOutcomeAmount(finalCashFlow, FinalCashFlowPosting::getDestination);
+        return amountDest - amountSource;
+    }
+
+    public static long computeExternalOutcomeAmount(List<FinalCashFlowPosting> finalCashFlow,
+                                                     Function<FinalCashFlowPosting, FinalCashFlowAccount> func) {
+        return computeAmount(finalCashFlow, f -> isExternalOutcome(func.apply(f).getAccountType()));
+    }
+
     private static long computeAmount(List<FinalCashFlowPosting> finalCashFlow,
-                                      Function<FinalCashFlowPosting, FinalCashFlowAccount> func) {
+                                      Predicate<FinalCashFlowPosting> filter) {
         return finalCashFlow.stream()
-                .filter(f -> isMerchantSettlement(func.apply(f).getAccountType()))
+                .filter(filter)
                 .mapToLong(cashFlow -> cashFlow.getVolume().getAmount())
                 .sum();
     }
@@ -33,6 +81,26 @@ public class CashFlowUtil {
     private static boolean isMerchantSettlement(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetMerchant()
                 && cashFlowAccount.getMerchant() == MerchantCashFlowAccount.settlement;
+    }
+
+    private static boolean isProviderSettlement(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+        return cashFlowAccount.isSetProvider()
+                && cashFlowAccount.getProvider() == ProviderCashFlowAccount.settlement;
+    }
+
+    private static boolean isSystemSettlement(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+        return cashFlowAccount.isSetSystem()
+                && cashFlowAccount.getSystem() == SystemCashFlowAccount.settlement;
+    }
+
+    private static boolean isExternalIncome(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+        return cashFlowAccount.isSetExternal()
+                && cashFlowAccount.getExternal() == ExternalCashFlowAccount.income;
+    }
+
+    private static boolean isExternalOutcome(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+        return cashFlowAccount.isSetExternal()
+                && cashFlowAccount.getExternal() == ExternalCashFlowAccount.outcome;
     }
 
     private static CashFlowAccount getCashFlowAccountType(FinalCashFlowAccount cfa) {

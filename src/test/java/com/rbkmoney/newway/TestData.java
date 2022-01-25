@@ -9,9 +9,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestData {
@@ -223,6 +221,74 @@ public class TestData {
         tradeBlocObject.setData(tradeBloc);
         tradeBlocObject.setRef(new TradeBlocRef().setId(randomString()));
         return tradeBlocObject;
+    }
+
+    public static InvoicePaymentAdjustment createTestInvoicePaymentAdjustment() {
+        return createTestInvoicePaymentAdjustment(new ArrayList<>(), new ArrayList<>());
+    }
+
+    public static InvoicePaymentAdjustment createTestInvoicePaymentAdjustment(List<FinalCashFlowPosting> oldCashFlow,
+                                                                              List<FinalCashFlowPosting> newCashFlow) {
+        InvoicePaymentAdjustment adjustment = new InvoicePaymentAdjustment();
+        adjustment.setId("Adj1");
+        adjustment.setState(InvoicePaymentAdjustmentState.cash_flow(
+                new InvoicePaymentAdjustmentCashFlowState()
+                        .setScenario(new InvoicePaymentAdjustmentCashFlow().setDomainRevision(1))
+        ));
+        adjustment.setCreatedAt(Instant.now().toString());
+        adjustment.setDomainRevision(1L);
+        adjustment.setReason("Test");
+        adjustment.setNewCashFlow(newCashFlow);
+        adjustment.setOldCashFlowInverse(oldCashFlow);
+        adjustment.setPartyRevision(1L);
+        adjustment.setStatus(InvoicePaymentAdjustmentStatus.captured(new InvoicePaymentAdjustmentCaptured()));
+        return adjustment;
+    }
+
+    private static List<FinalCashFlowPosting> createTestFinalCashFlowPostings() {
+        List<FinalCashFlowPosting> postings = new ArrayList<>();
+        postings.add(
+                new FinalCashFlowPosting(
+                        new FinalCashFlowAccount(CashFlowAccount.provider(ProviderCashFlowAccount.settlement), 1),
+                        new FinalCashFlowAccount(CashFlowAccount.merchant(MerchantCashFlowAccount.guarantee), 2),
+                        new Cash(5, new CurrencyRef("RUB")))
+        );
+        return postings;
+    }
+
+    private static FinalCashFlowPosting createTestFinalCashFlowPosting() {
+        return new FinalCashFlowPosting(
+                new FinalCashFlowAccount(CashFlowAccount.provider(ProviderCashFlowAccount.settlement), 1),
+                new FinalCashFlowAccount(CashFlowAccount.merchant(MerchantCashFlowAccount.guarantee), 2),
+                new Cash(5, new CurrencyRef("RUB")));
+    }
+
+    public static FinalCashFlowAccount createMerchantAccount() {
+        return new FinalCashFlowAccount(CashFlowAccount.merchant(MerchantCashFlowAccount.settlement), 2);
+    }
+
+    public static FinalCashFlowAccount createProviderAccount() {
+        return new FinalCashFlowAccount(CashFlowAccount.provider(ProviderCashFlowAccount.settlement), 2);
+    }
+
+    public static FinalCashFlowAccount createSystemAccount() {
+        return new FinalCashFlowAccount(CashFlowAccount.system(SystemCashFlowAccount.settlement), 1);
+    }
+
+    public static FinalCashFlowAccount createSubagentAccount() {
+        return new FinalCashFlowAccount(CashFlowAccount.system(SystemCashFlowAccount.subagent), 1);
+    }
+
+    public static FinalCashFlowAccount createExternalIncomeAccount() {
+        return new FinalCashFlowAccount(CashFlowAccount.external(ExternalCashFlowAccount.income), 1);
+    }
+
+    public static FinalCashFlowAccount createExternalOutcomeAccount() {
+        return new FinalCashFlowAccount(CashFlowAccount.external(ExternalCashFlowAccount.outcome), 1);
+    }
+
+    public static Cash createTestCash(long amount) {
+        return new Cash(amount, new CurrencyRef("RUB"));
     }
 
 }
