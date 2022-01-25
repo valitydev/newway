@@ -30,8 +30,6 @@ public final class AdjustmentUtilsTest {
         assertEquals(-19, CashFlowUtil.computeMerchantAmount(newCashFlow));
 
         InvoicePaymentAdjustment adjustment = TestData.createTestInvoicePaymentAdjustment(oldCashFlow, newCashFlow);
-        adjustment.setOldCashFlowInverse(oldCashFlow);
-        adjustment.setNewCashFlow(newCashFlow);
         assertEquals(-34, AdjustmentUtils.calculateMerchantAmountDiff(adjustment));
     }
 

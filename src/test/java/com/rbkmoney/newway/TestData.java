@@ -223,10 +223,6 @@ public class TestData {
         return tradeBlocObject;
     }
 
-    public static InvoicePaymentAdjustment createTestInvoicePaymentAdjustment() {
-        return createTestInvoicePaymentAdjustment(new ArrayList<>(), new ArrayList<>());
-    }
-
     public static InvoicePaymentAdjustment createTestInvoicePaymentAdjustment(List<FinalCashFlowPosting> oldCashFlow,
                                                                               List<FinalCashFlowPosting> newCashFlow) {
         InvoicePaymentAdjustment adjustment = new InvoicePaymentAdjustment();
@@ -243,24 +239,6 @@ public class TestData {
         adjustment.setPartyRevision(1L);
         adjustment.setStatus(InvoicePaymentAdjustmentStatus.captured(new InvoicePaymentAdjustmentCaptured()));
         return adjustment;
-    }
-
-    private static List<FinalCashFlowPosting> createTestFinalCashFlowPostings() {
-        List<FinalCashFlowPosting> postings = new ArrayList<>();
-        postings.add(
-                new FinalCashFlowPosting(
-                        new FinalCashFlowAccount(CashFlowAccount.provider(ProviderCashFlowAccount.settlement), 1),
-                        new FinalCashFlowAccount(CashFlowAccount.merchant(MerchantCashFlowAccount.guarantee), 2),
-                        new Cash(5, new CurrencyRef("RUB")))
-        );
-        return postings;
-    }
-
-    private static FinalCashFlowPosting createTestFinalCashFlowPosting() {
-        return new FinalCashFlowPosting(
-                new FinalCashFlowAccount(CashFlowAccount.provider(ProviderCashFlowAccount.settlement), 1),
-                new FinalCashFlowAccount(CashFlowAccount.merchant(MerchantCashFlowAccount.guarantee), 2),
-                new Cash(5, new CurrencyRef("RUB")));
     }
 
     public static FinalCashFlowAccount createMerchantAccount() {
