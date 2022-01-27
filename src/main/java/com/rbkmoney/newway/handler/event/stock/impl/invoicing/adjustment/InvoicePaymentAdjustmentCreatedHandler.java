@@ -24,6 +24,7 @@ import com.rbkmoney.newway.domain.tables.pojos.CashFlow;
 import com.rbkmoney.newway.domain.tables.pojos.Payment;
 import com.rbkmoney.newway.factory.MachineEventCopyFactory;
 import com.rbkmoney.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
+import com.rbkmoney.newway.util.AdjustmentUtils;
 import com.rbkmoney.newway.util.CashFlowUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -100,10 +101,13 @@ public class InvoicePaymentAdjustmentCreatedHandler implements InvoicingHandler 
             }
         }
 
-        Long oldAmount = CashFlowUtil.computeMerchantAmount(invoicePaymentAdjustment.getOldCashFlowInverse());
-        Long newAmount = CashFlowUtil.computeMerchantAmount(invoicePaymentAdjustment.getNewCashFlow());
-        long amount = newAmount + oldAmount;
-        adjustment.setAmount(amount);
+        adjustment.setAmount(AdjustmentUtils.calculateMerchantAmountDiff(invoicePaymentAdjustment));
+        adjustment.setProviderAmountDiff(AdjustmentUtils.calculateProviderAmountDiff(invoicePaymentAdjustment));
+        adjustment.setSystemAmountDiff(AdjustmentUtils.calculateSystemAmountDiff(invoicePaymentAdjustment));
+        adjustment.setExternalIncomeAmountDiff(
+                AdjustmentUtils.calculateExternalIncomeAmountDiff(invoicePaymentAdjustment));
+        adjustment.setExternalOutcomeAmountDiff(
+                AdjustmentUtils.calculateExternalOutcomeAmountDiff(invoicePaymentAdjustment));
 
         adjustmentDao.save(adjustment).ifPresentOrElse(
                 id -> {
