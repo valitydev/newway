@@ -6,9 +6,6 @@ on:
       - 'master'
       - 'main'
 
-env:
-  REGISTRY: ghcr.io
-
 jobs:
   deploy:
     uses: valitydev/base-workflow/.github/workflows/maven-service-deploy.yml@v1
