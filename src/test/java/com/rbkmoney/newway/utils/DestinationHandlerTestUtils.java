@@ -34,23 +34,23 @@ public class DestinationHandlerTestUtils {
                 .setChange(Change.created(destination));
     }
 
-    public static dev.vality.fistful.base.DigitalWallet createFistfulDigitalWallet() {
-        dev.vality.fistful.base.DigitalWallet digitalWallet = new dev.vality.fistful.base.DigitalWallet();
+    public static DigitalWallet createFistfulDigitalWallet() {
+        DigitalWallet digitalWallet = new DigitalWallet();
         digitalWallet.setId(DIGITAL_WALLET_ID);
         digitalWallet.setPaymentService(new PaymentServiceRef("webmoney"));
         return digitalWallet;
     }
 
-    public static dev.vality.fistful.base.CryptoWallet createFistfulCryptoWallet() {
-        dev.vality.fistful.base.CryptoWallet cryptoWallet = new dev.vality.fistful.base.CryptoWallet();
+    public static CryptoWallet createFistfulCryptoWallet() {
+        CryptoWallet cryptoWallet = new CryptoWallet();
         cryptoWallet.setId(CRYPTO_WALLET_ID);
         cryptoWallet.setData(CryptoData.bitcoin(new CryptoDataBitcoin()));
         cryptoWallet.setCurrency(CryptoCurrency.bitcoin);
         return cryptoWallet;
     }
 
-    public static dev.vality.fistful.base.BankCard createFistfulBankCard() {
-        dev.vality.fistful.base.BankCard bankCard = new dev.vality.fistful.base.BankCard();
+    public static BankCard createFistfulBankCard() {
+        BankCard bankCard = new BankCard();
         bankCard.setToken(CARD_TOKEN_PROVIDER);
         bankCard.setBin(CARD_BIN);
         bankCard.setMaskedPan(CARD_MASKED_PAN);
