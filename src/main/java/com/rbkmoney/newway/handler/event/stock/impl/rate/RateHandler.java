@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.event.stock.impl.rate;
 
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.handler.event.stock.Handler;
 import com.rbkmoney.xrates.rate.Change;
 

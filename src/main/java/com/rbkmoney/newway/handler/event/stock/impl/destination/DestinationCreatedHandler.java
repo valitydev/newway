@@ -1,16 +1,16 @@
 package com.rbkmoney.newway.handler.event.stock.impl.destination;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rbkmoney.fistful.base.*;
-import com.rbkmoney.fistful.destination.Change;
-import com.rbkmoney.fistful.destination.TimestampedChange;
+import dev.vality.fistful.base.*;
+import dev.vality.fistful.destination.Change;
+import dev.vality.fistful.destination.TimestampedChange;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.destination.iface.DestinationDao;
 import com.rbkmoney.newway.domain.enums.DestinationResourceType;
 import com.rbkmoney.newway.domain.enums.DestinationStatus;
@@ -91,8 +91,8 @@ public class DestinationCreatedHandler implements DestinationHandler {
             ResourceDigitalWallet resourceDigitalWallet = resource.getDigitalWallet();
             DigitalWallet digitalWallet = resourceDigitalWallet.getDigitalWallet();
             destination.setResourceDigitalWalletId(digitalWallet.getId());
-            if (digitalWallet.isSetData()) {
-                destination.setResourceDigitalWalletData(digitalWallet.getData().getSetField().getFieldName());
+            if (digitalWallet.isSetPaymentService()) {
+                destination.setResourceDigitalWalletData(digitalWallet.getPaymentService().getId());
             }
         }
 

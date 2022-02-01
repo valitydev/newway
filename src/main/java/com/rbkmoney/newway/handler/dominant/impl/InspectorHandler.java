@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.InspectorObject;
+import dev.vality.damsel.domain.InspectorObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.InspectorDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Inspector;
@@ -42,7 +42,7 @@ public class InspectorHandler extends AbstractDominantHandler<InspectorObject, I
         Inspector inspector = new Inspector();
         inspector.setVersionId(versionId);
         inspector.setInspectorRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Inspector data = inspectorObject.getData();
+        dev.vality.damsel.domain.Inspector data = inspectorObject.getData();
         inspector.setName(data.getName());
         inspector.setDescription(data.getDescription());
         inspector.setProxyRefId(data.getProxy().getRef().getId());

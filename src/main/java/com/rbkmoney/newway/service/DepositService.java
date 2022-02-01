@@ -1,10 +1,10 @@
 package com.rbkmoney.newway.service;
 
 
-import com.rbkmoney.fistful.deposit.TimestampedChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.fistful.deposit.TimestampedChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.handler.event.stock.impl.deposit.DepositHandler;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

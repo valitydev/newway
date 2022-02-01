@@ -1,8 +1,8 @@
 package com.rbkmoney.newway.service;
 
 import com.rbkmoney.newway.handler.event.stock.impl.payout.PayoutHandler;
-import com.rbkmoney.payout.manager.Event;
-import com.rbkmoney.payout.manager.PayoutChange;
+import dev.vality.payout.manager.Event;
+import dev.vality.payout.manager.PayoutChange;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

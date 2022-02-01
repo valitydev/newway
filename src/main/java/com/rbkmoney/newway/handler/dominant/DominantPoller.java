@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant;
 
-import com.rbkmoney.damsel.domain_config.Commit;
-import com.rbkmoney.damsel.domain_config.RepositorySrv;
+import dev.vality.damsel.domain_config.Commit;
+import dev.vality.damsel.domain_config.RepositorySrv;
 import com.rbkmoney.newway.service.DominantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

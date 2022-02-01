@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.dao.party.impl;
 
-import com.rbkmoney.dao.impl.AbstractGenericDao;
-import com.rbkmoney.mapper.RecordRowMapper;
+import dev.vality.dao.impl.AbstractGenericDao;
+import dev.vality.mapper.RecordRowMapper;
 import com.rbkmoney.newway.dao.party.iface.ContractDao;
 import com.rbkmoney.newway.domain.tables.pojos.Contract;
 import com.rbkmoney.newway.domain.tables.records.ContractRecord;

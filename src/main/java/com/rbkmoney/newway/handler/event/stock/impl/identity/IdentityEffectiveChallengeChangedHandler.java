@@ -1,12 +1,12 @@
 package com.rbkmoney.newway.handler.event.stock.impl.identity;
 
-import com.rbkmoney.fistful.identity.Change;
-import com.rbkmoney.fistful.identity.TimestampedChange;
+import dev.vality.fistful.identity.Change;
+import dev.vality.fistful.identity.TimestampedChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.identity.iface.IdentityDao;
 import com.rbkmoney.newway.domain.tables.pojos.Identity;
 import com.rbkmoney.newway.factory.MachineEventCopyFactory;

@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.ProviderObject;
+import dev.vality.damsel.domain.ProviderObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.ProviderDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Provider;
@@ -45,7 +45,7 @@ public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Pro
         Provider provider = new Provider();
         provider.setVersionId(versionId);
         provider.setProviderRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Provider data = providerObject.getData();
+        dev.vality.damsel.domain.Provider data = providerObject.getData();
         provider.setName(data.getName());
         provider.setDescription(data.getDescription());
         provider.setProxyRefId(data.getProxy().getRef().getId());

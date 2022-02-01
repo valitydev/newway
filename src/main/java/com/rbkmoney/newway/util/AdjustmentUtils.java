@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.FinalCashFlowPosting;
-import com.rbkmoney.damsel.domain.InvoicePaymentAdjustment;
+import dev.vality.damsel.domain.FinalCashFlowPosting;
+import dev.vality.damsel.domain.InvoicePaymentAdjustment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

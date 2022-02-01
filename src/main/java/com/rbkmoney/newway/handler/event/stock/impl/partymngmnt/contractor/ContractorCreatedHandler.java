@@ -1,10 +1,10 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.contractor;
 
-import com.rbkmoney.damsel.domain.PartyContractor;
-import com.rbkmoney.damsel.payment_processing.ClaimEffect;
-import com.rbkmoney.damsel.payment_processing.ContractorEffectUnit;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.domain.PartyContractor;
+import dev.vality.damsel.payment_processing.ClaimEffect;
+import dev.vality.damsel.payment_processing.ContractorEffectUnit;
+import dev.vality.damsel.payment_processing.PartyChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.party.iface.ContractorDao;
 import com.rbkmoney.newway.dao.party.iface.PartyDao;
 import com.rbkmoney.newway.domain.tables.pojos.Contractor;
@@ -48,7 +48,7 @@ public class ContractorCreatedHandler extends AbstractClaimChangedHandler {
                              ClaimEffect claimEffect, Integer claimEffectId) {
         ContractorEffectUnit contractorEffect = claimEffect.getContractorEffect();
         PartyContractor partyContractor = contractorEffect.getEffect().getCreated();
-        com.rbkmoney.damsel.domain.Contractor contractorCreated = partyContractor.getContractor();
+        dev.vality.damsel.domain.Contractor contractorCreated = partyContractor.getContractor();
         String contractorId = contractorEffect.getId();
         String partyId = event.getSourceId();
         log.info("Start contractor created handling, eventId={}, partyId={}, contractorId={}",

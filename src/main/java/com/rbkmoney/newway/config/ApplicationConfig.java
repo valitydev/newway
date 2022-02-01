@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.config;
 
-import com.rbkmoney.damsel.domain_config.RepositorySrv;
-import com.rbkmoney.damsel.payment_processing.RecurrentPaymentToolEventSinkSrv;
+import dev.vality.damsel.domain_config.RepositorySrv;
+import dev.vality.damsel.payment_processing.RecurrentPaymentToolEventSinkSrv;
 import com.rbkmoney.newway.domain.Nw;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.jooq.Schema;

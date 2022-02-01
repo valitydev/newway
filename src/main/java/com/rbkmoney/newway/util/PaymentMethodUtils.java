@@ -1,8 +1,8 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.mamsel.PaymentSystemUtil;
-import com.rbkmoney.mamsel.TokenProviderUtil;
+import dev.vality.damsel.domain.*;
+import dev.vality.mamsel.PaymentSystemUtil;
+import dev.vality.mamsel.TokenProviderUtil;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -15,22 +15,22 @@ public class PaymentMethodUtils {
     public static Optional<String> getPaymentMethodRefIdByBankCard(
             Supplier<Optional<PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetBankCard)
-                .map(com.rbkmoney.damsel.domain.PaymentMethod::getBankCard)
+                .filter(dev.vality.damsel.domain.PaymentMethod::isSetBankCard)
+                .map(dev.vality.damsel.domain.PaymentMethod::getBankCard)
                 .flatMap(bankCard -> PaymentSystemUtil.getPaymentSystemNameIfPresent(
                         bankCard.getPaymentSystem(),
                         bankCard.getPaymentSystemDeprecated()))
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetBankCardDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getBankCardDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetBankCardDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getBankCardDeprecated)
                         .map(Enum::name))
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetEmptyCvvBankCardDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getEmptyCvvBankCardDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetEmptyCvvBankCardDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getEmptyCvvBankCardDeprecated)
                         .map(legacyBankCardPaymentSystem -> EMPTY_CVV + legacyBankCardPaymentSystem.name()))
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetTokenizedBankCardDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getTokenizedBankCardDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetTokenizedBankCardDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getTokenizedBankCardDeprecated)
                         .flatMap(PaymentMethodUtils::getTokenizedBankCardId));
     }
 
@@ -50,50 +50,50 @@ public class PaymentMethodUtils {
     }
 
     public static Optional<String> getPaymentMethodRefIdByPaymentTerminal(
-            Supplier<Optional<com.rbkmoney.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetPaymentTerminal)
-                .map(com.rbkmoney.damsel.domain.PaymentMethod::getPaymentTerminal)
+                .filter(dev.vality.damsel.domain.PaymentMethod::isSetPaymentTerminal)
+                .map(dev.vality.damsel.domain.PaymentMethod::getPaymentTerminal)
                 .map(PaymentServiceRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetPaymentTerminalDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getPaymentTerminalDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetPaymentTerminalDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getPaymentTerminalDeprecated)
                         .map(Enum::name));
     }
 
     public static Optional<String> getPaymentMethodRefIdByDigitalWallet(
-            Supplier<Optional<com.rbkmoney.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetDigitalWallet)
-                .map(com.rbkmoney.damsel.domain.PaymentMethod::getDigitalWallet)
+                .filter(dev.vality.damsel.domain.PaymentMethod::isSetDigitalWallet)
+                .map(dev.vality.damsel.domain.PaymentMethod::getDigitalWallet)
                 .map(PaymentServiceRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetDigitalWalletDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getDigitalWalletDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetDigitalWalletDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getDigitalWalletDeprecated)
                         .map(Enum::name));
     }
 
     public static Optional<String> getPaymentMethodRefIdByCryptoCurrency(
-            Supplier<Optional<com.rbkmoney.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetCryptoCurrency)
-                .map(com.rbkmoney.damsel.domain.PaymentMethod::getCryptoCurrency)
+                .filter(dev.vality.damsel.domain.PaymentMethod::isSetCryptoCurrency)
+                .map(dev.vality.damsel.domain.PaymentMethod::getCryptoCurrency)
                 .map(CryptoCurrencyRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetCryptoCurrencyDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getCryptoCurrencyDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetCryptoCurrencyDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getCryptoCurrencyDeprecated)
                         .map(Enum::name));
     }
 
     public static Optional<String> getPaymentMethodRefIdByMobile(
-            Supplier<Optional<com.rbkmoney.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetMobile)
-                .map(com.rbkmoney.damsel.domain.PaymentMethod::getMobile)
+                .filter(dev.vality.damsel.domain.PaymentMethod::isSetMobile)
+                .map(dev.vality.damsel.domain.PaymentMethod::getMobile)
                 .map(MobileOperatorRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(com.rbkmoney.damsel.domain.PaymentMethod::isSetMobileDeprecated)
-                        .map(com.rbkmoney.damsel.domain.PaymentMethod::getMobileDeprecated)
+                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetMobileDeprecated)
+                        .map(dev.vality.damsel.domain.PaymentMethod::getMobileDeprecated)
                         .map(Enum::name));
     }
 }

@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.serde;
 
-import com.rbkmoney.kafka.common.serialization.AbstractThriftDeserializer;
-import com.rbkmoney.payout.manager.Event;
+import dev.vality.kafka.common.serialization.AbstractThriftDeserializer;
+import dev.vality.payout.manager.Event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.thrift.TDeserializer;

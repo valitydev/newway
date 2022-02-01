@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.dao.rate.impl;
 
-import com.rbkmoney.dao.impl.AbstractGenericDao;
+import dev.vality.dao.impl.AbstractGenericDao;
 import com.rbkmoney.newway.dao.rate.iface.RateDao;
 import com.rbkmoney.newway.domain.tables.pojos.Rate;
 import com.rbkmoney.newway.domain.tables.records.RateRecord;

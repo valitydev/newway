@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.factory;
 
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 
 public interface MachineEventCopyFactory<T, K> {
 

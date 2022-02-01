@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.event.stock.impl.withdrawal.session;
 
-import com.rbkmoney.mapper.RecordRowMapper;
+import dev.vality.mapper.RecordRowMapper;
 import com.rbkmoney.newway.domain.tables.pojos.Destination;
 import com.rbkmoney.newway.domain.tables.pojos.WithdrawalSession;
 import com.rbkmoney.newway.kafka.AbstractKafkaTest;
@@ -33,9 +33,9 @@ public class WithdrawalSessionCreatedBankCardHandlerTest extends AbstractKafkaTe
 
     @Test
     public void bankCardTest() {
-        com.rbkmoney.fistful.base.Resource resource = new com.rbkmoney.fistful.base.Resource();
+        dev.vality.fistful.base.Resource resource = new dev.vality.fistful.base.Resource();
         resource.setBankCard(WithdrawalSessionCreatedHandlerUtils.createDestinationResourceBankCard());
-        com.rbkmoney.fistful.withdrawal_session.Session session = createSession(resource);
+        dev.vality.fistful.withdrawal_session.Session session = createSession(resource);
 
         withdrawalSessionCreatedHandler.handle(
                 WithdrawalSessionCreatedHandlerUtils.createCreated(session),

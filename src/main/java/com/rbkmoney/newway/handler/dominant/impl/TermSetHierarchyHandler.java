@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.TermSetHierarchyObject;
+import dev.vality.damsel.domain.TermSetHierarchyObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.TermSetHierarchyDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.TermSetHierarchy;
@@ -46,7 +46,7 @@ public class TermSetHierarchyHandler
         TermSetHierarchy termSetHierarchy = new TermSetHierarchy();
         termSetHierarchy.setVersionId(versionId);
         termSetHierarchy.setTermSetHierarchyRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.TermSetHierarchy data = termSetHierarchyObject.getData();
+        dev.vality.damsel.domain.TermSetHierarchy data = termSetHierarchyObject.getData();
         termSetHierarchy.setName(data.getName());
         termSetHierarchy.setDescription(data.getDescription());
         if (data.isSetParentTerms()) {

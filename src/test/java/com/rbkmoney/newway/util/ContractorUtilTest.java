@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.Contractor;
+import dev.vality.damsel.domain.Contractor;
 import com.rbkmoney.newway.TestData;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,8 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.InternationalLegalEntity;
-import com.rbkmoney.damsel.domain.RussianLegalEntity;
-import com.rbkmoney.damsel.domain.RussianPrivateEntity;
+import dev.vality.damsel.domain.InternationalLegalEntity;
+import dev.vality.damsel.domain.RussianLegalEntity;
+import dev.vality.damsel.domain.RussianPrivateEntity;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.newway.domain.enums.ContractorType;
@@ -12,7 +12,7 @@ import com.rbkmoney.newway.domain.tables.pojos.Contractor;
 
 public class ContractorUtil {
     public static Contractor convertContractor(long sequenceId, String eventCreatedAt, String partyId,
-                                               com.rbkmoney.damsel.domain.Contractor contractorSource,
+                                               dev.vality.damsel.domain.Contractor contractorSource,
                                                String contractorId, Integer changeId, Integer claimEffectId) {
         Contractor contractor = new Contractor();
         contractor.setSequenceId((int) sequenceId);

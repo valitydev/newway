@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.WithdrawalProviderObject;
+import dev.vality.damsel.domain.WithdrawalProviderObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.WithdrawalProviderDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.WithdrawalProvider;

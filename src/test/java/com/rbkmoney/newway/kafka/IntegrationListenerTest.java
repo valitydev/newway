@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.kafka;
 
-import com.rbkmoney.mapper.RecordRowMapper;
+import dev.vality.mapper.RecordRowMapper;
 import com.rbkmoney.newway.dao.AbstractAppDaoTests;
 import com.rbkmoney.newway.domain.tables.*;
 import com.rbkmoney.newway.domain.tables.pojos.Destination;

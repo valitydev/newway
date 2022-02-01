@@ -1,17 +1,17 @@
 package com.rbkmoney.newway.handler.event.stock.impl.withdrawal.session;
 
-import com.rbkmoney.fistful.base.*;
-import com.rbkmoney.fistful.withdrawal_session.Change;
-import com.rbkmoney.fistful.withdrawal_session.Session;
-import com.rbkmoney.fistful.withdrawal_session.TimestampedChange;
-import com.rbkmoney.fistful.withdrawal_session.Withdrawal;
+import dev.vality.fistful.base.*;
+import dev.vality.fistful.withdrawal_session.Change;
+import dev.vality.fistful.withdrawal_session.Session;
+import dev.vality.fistful.withdrawal_session.TimestampedChange;
+import dev.vality.fistful.withdrawal_session.Withdrawal;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.mamsel.PaymentSystemUtil;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.mamsel.PaymentSystemUtil;
 import com.rbkmoney.newway.dao.withdrawal.session.iface.WithdrawalSessionDao;
 import com.rbkmoney.newway.domain.enums.BankCardPaymentSystem;
 import com.rbkmoney.newway.domain.enums.DestinationResourceType;
@@ -87,8 +87,8 @@ public class WithdrawalSessionCreatedHandler implements WithdrawalSessionHandler
             ResourceDigitalWallet resourceDigitalWallet = resource.getDigitalWallet();
             DigitalWallet digitalWallet = resourceDigitalWallet.getDigitalWallet();
             withdrawalSession.setResourceDigitalWalletId(digitalWallet.getId());
-            if (digitalWallet.isSetData()) {
-                withdrawalSession.setResourceDigitalWalletData(digitalWallet.getData().getSetField().getFieldName());
+            if (digitalWallet.isSetPaymentService()) {
+                withdrawalSession.setResourceDigitalWalletData(digitalWallet.getPaymentService().getId());
             }
         }
 

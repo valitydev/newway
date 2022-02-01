@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.factory;
 
 import com.rbkmoney.geck.common.util.TypeUtil;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.domain.tables.pojos.Adjustment;
 import org.springframework.stereotype.Component;
 

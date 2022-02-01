@@ -1,19 +1,19 @@
 package com.rbkmoney.newway.listener;
 
-import com.rbkmoney.damsel.payment_processing.Event;
-import com.rbkmoney.damsel.payment_processing.EventPayload;
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
-import com.rbkmoney.damsel.payment_processing.InvoiceCreated;
+import dev.vality.damsel.payment_processing.Event;
+import dev.vality.damsel.payment_processing.EventPayload;
+import dev.vality.damsel.payment_processing.InvoiceChange;
+import dev.vality.damsel.payment_processing.InvoiceCreated;
 import com.rbkmoney.geck.common.util.TypeUtil;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.SinkEvent;
 import com.rbkmoney.newway.exception.ParseException;
 import com.rbkmoney.newway.mapper.invoice.InvoiceCreatedMapper;
 import com.rbkmoney.newway.service.InvoiceBatchService;
 import com.rbkmoney.newway.service.InvoicingService;
 import com.rbkmoney.newway.service.PaymentBatchService;
 import com.rbkmoney.newway.utils.MockUtils;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.Before;
 import org.junit.Test;

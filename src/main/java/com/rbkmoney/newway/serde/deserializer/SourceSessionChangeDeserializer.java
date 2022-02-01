@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.serde.deserializer;
 
-import com.rbkmoney.fistful.source.TimestampedChange;
-import com.rbkmoney.sink.common.serialization.impl.AbstractThriftBinaryDeserializer;
+import dev.vality.fistful.source.TimestampedChange;
+import dev.vality.sink.common.serialization.impl.AbstractThriftBinaryDeserializer;
 import org.springframework.stereotype.Service;
 
 @Service

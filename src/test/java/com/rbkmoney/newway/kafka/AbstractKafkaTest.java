@@ -1,9 +1,9 @@
 package com.rbkmoney.newway.kafka;
 
 import com.rbkmoney.easyway.*;
-import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.kafka.common.serialization.ThriftSerializer;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.SinkEvent;
 import com.rbkmoney.newway.NewwayApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.*;
@@ -107,7 +107,7 @@ public abstract class AbstractKafkaTest extends AbstractTestUtils {
 
     protected MachineEvent createMessage() {
         MachineEvent message = new MachineEvent();
-        com.rbkmoney.machinegun.msgpack.Value data = new com.rbkmoney.machinegun.msgpack.Value();
+        dev.vality.machinegun.msgpack.Value data = new dev.vality.machinegun.msgpack.Value();
         data.setBin(new byte[0]);
         message.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
         message.setEventId(1L);

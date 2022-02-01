@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.serde.deserializer;
 
-import com.rbkmoney.fistful.withdrawal_session.TimestampedChange;
-import com.rbkmoney.sink.common.serialization.impl.AbstractThriftBinaryDeserializer;
+import dev.vality.fistful.withdrawal_session.TimestampedChange;
+import dev.vality.sink.common.serialization.impl.AbstractThriftBinaryDeserializer;
 import org.springframework.stereotype.Service;
 
 @Service

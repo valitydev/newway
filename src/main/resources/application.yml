@@ -49,7 +49,7 @@ retry-policy:
   maxAttempts: -1
 
 kafka:
-  bootstrap-servers: kenny-kafka1.bst1.rbkmoney.net:9092
+  bootstrap-servers: localhost:9092
   client-id: newway
   ssl:
     enabled: false

@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.factory.claim.effect;
 
 import com.rbkmoney.geck.common.util.TypeUtil;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.domain.tables.pojos.Contract;
 import org.springframework.stereotype.Component;
 

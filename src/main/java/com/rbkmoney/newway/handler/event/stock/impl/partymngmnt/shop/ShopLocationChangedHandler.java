@@ -1,10 +1,10 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.shop;
 
-import com.rbkmoney.damsel.domain.ShopLocation;
-import com.rbkmoney.damsel.payment_processing.ClaimEffect;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
-import com.rbkmoney.damsel.payment_processing.ShopEffectUnit;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.domain.ShopLocation;
+import dev.vality.damsel.payment_processing.ClaimEffect;
+import dev.vality.damsel.payment_processing.PartyChange;
+import dev.vality.damsel.payment_processing.ShopEffectUnit;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.party.iface.ShopDao;
 import com.rbkmoney.newway.domain.tables.pojos.Shop;
 import com.rbkmoney.newway.factory.claim.effect.ClaimEffectCopyFactory;

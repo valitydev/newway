@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.newway.dao.dominant.impl.ProviderDaoImpl;
 import org.junit.Before;
 import org.junit.Test;

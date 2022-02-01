@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.identity;
 
-import com.rbkmoney.fistful.identity.ChallengeChange;
-import com.rbkmoney.fistful.identity.ChallengeChangePayload;
-import com.rbkmoney.fistful.identity.Change;
-import com.rbkmoney.fistful.identity.TimestampedChange;
+import dev.vality.fistful.identity.ChallengeChange;
+import dev.vality.fistful.identity.ChallengeChangePayload;
+import dev.vality.fistful.identity.Change;
+import dev.vality.fistful.identity.TimestampedChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.identity.iface.ChallengeDao;
 import com.rbkmoney.newway.domain.enums.ChallengeStatus;
 import com.rbkmoney.newway.domain.tables.pojos.Challenge;
@@ -48,7 +48,7 @@ public class IdentityChallengeCreatedHandler implements IdentityHandler {
 
         challenge.setChallengeId(challengeChange.getId());
         ChallengeChangePayload challengePayload = challengeChange.getPayload();
-        com.rbkmoney.fistful.identity.Challenge challengePayloadCreated = challengePayload.getCreated();
+        dev.vality.fistful.identity.Challenge challengePayloadCreated = challengePayload.getCreated();
         challenge.setChallengeClassId(challengePayloadCreated.getCls());
         if (challengePayloadCreated.isSetProofs()) {
             challenge.setProofsJson(JsonUtil.objectToJsonString(

@@ -2,9 +2,9 @@ package com.rbkmoney.newway.utils;
 
 import com.rbkmoney.easyway.AbstractTestUtils;
 import com.rbkmoney.geck.serializer.Geck;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
-import com.rbkmoney.machinegun.msgpack.Value;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.SinkEvent;
+import dev.vality.machinegun.msgpack.Value;
 import com.rbkmoney.xrates.base.TimestampInterval;
 import com.rbkmoney.xrates.rate.*;
 

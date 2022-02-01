@@ -1,12 +1,12 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.damsel.payment_processing.*;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.msgpack.Value;
+import dev.vality.damsel.domain.*;
+import dev.vality.damsel.payment_processing.*;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
 import com.rbkmoney.newway.dao.AbstractAppDaoTests;
 import com.rbkmoney.newway.domain.enums.PaymentToolType;
-import com.rbkmoney.sink.common.serialization.impl.ThriftBinarySerializer;
+import dev.vality.sink.common.serialization.impl.ThriftBinarySerializer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -110,7 +110,7 @@ public class RecurrentPaymentToolServiceTest extends AbstractAppDaoTests {
                                                                         .setIssuerCountry(CountryCode.ABH)
                                                                         .setBankName("bank_name")
                                                                         .setMetadata(Map.of("kek",
-                                                                                com.rbkmoney.damsel.msgpack.Value
+                                                                                dev.vality.damsel.msgpack.Value
                                                                                         .b(true)))))
                                                                 .setPaymentSessionId("kek_session_id")
                                                                 .setClientInfo(new ClientInfo()

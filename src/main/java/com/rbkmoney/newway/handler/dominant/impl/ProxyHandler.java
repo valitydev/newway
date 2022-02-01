@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.ProxyDefinition;
-import com.rbkmoney.damsel.domain.ProxyObject;
+import dev.vality.damsel.domain.ProxyDefinition;
+import dev.vality.damsel.domain.ProxyObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.ProxyDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Proxy;

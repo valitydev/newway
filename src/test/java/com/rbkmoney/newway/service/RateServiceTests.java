@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.machinegun.eventsink.SinkEvent;
 import com.rbkmoney.newway.dao.AbstractAppDaoTests;
 import com.rbkmoney.newway.domain.tables.pojos.Rate;
 import com.rbkmoney.newway.utils.RateSinkEventTestUtils;

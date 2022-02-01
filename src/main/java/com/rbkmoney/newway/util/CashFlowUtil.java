@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.newway.domain.enums.AdjustmentCashFlowType;
 import com.rbkmoney.newway.domain.enums.CashFlowAccount;
@@ -78,27 +78,27 @@ public class CashFlowUtil {
                 .sum();
     }
 
-    private static boolean isMerchantSettlement(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+    private static boolean isMerchantSettlement(dev.vality.damsel.domain.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetMerchant()
                 && cashFlowAccount.getMerchant() == MerchantCashFlowAccount.settlement;
     }
 
-    private static boolean isProviderSettlement(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+    private static boolean isProviderSettlement(dev.vality.damsel.domain.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetProvider()
                 && cashFlowAccount.getProvider() == ProviderCashFlowAccount.settlement;
     }
 
-    private static boolean isSystemSettlement(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+    private static boolean isSystemSettlement(dev.vality.damsel.domain.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetSystem()
                 && cashFlowAccount.getSystem() == SystemCashFlowAccount.settlement;
     }
 
-    private static boolean isExternalIncome(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+    private static boolean isExternalIncome(dev.vality.damsel.domain.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetExternal()
                 && cashFlowAccount.getExternal() == ExternalCashFlowAccount.income;
     }
 
-    private static boolean isExternalOutcome(com.rbkmoney.damsel.domain.CashFlowAccount cashFlowAccount) {
+    private static boolean isExternalOutcome(dev.vality.damsel.domain.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetExternal()
                 && cashFlowAccount.getExternal() == ExternalCashFlowAccount.outcome;
     }

@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.event.stock.impl.destination;
 
-import com.rbkmoney.mapper.RecordRowMapper;
+import dev.vality.mapper.RecordRowMapper;
 import com.rbkmoney.newway.dao.AbstractAppDaoTests;
 import com.rbkmoney.newway.domain.tables.pojos.Destination;
 import com.rbkmoney.newway.utils.DestinationHandlerTestUtils;
@@ -31,9 +31,9 @@ public class DestinationCreatedCryptoWalletHandlerTest extends AbstractAppDaoTes
 
     @Test
     public void destinationCreatedHandlerTest() {
-        com.rbkmoney.fistful.base.Resource fistfulResource = new com.rbkmoney.fistful.base.Resource();
+        dev.vality.fistful.base.Resource fistfulResource = new dev.vality.fistful.base.Resource();
         fistfulResource.setCryptoWallet(DestinationHandlerTestUtils.createResourceCryptoWallet());
-        com.rbkmoney.fistful.destination.Destination fistfulDestination
+        dev.vality.fistful.destination.Destination fistfulDestination
                 = DestinationHandlerTestUtils.createFistfulDestination(fistfulResource);
 
         destinationCreatedHandler.handle(

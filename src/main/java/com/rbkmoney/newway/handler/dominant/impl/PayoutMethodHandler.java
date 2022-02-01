@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.PayoutMethodDefinition;
-import com.rbkmoney.damsel.domain.PayoutMethodObject;
+import dev.vality.damsel.domain.PayoutMethodDefinition;
+import dev.vality.damsel.domain.PayoutMethodObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.PayoutMethodDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.PayoutMethod;

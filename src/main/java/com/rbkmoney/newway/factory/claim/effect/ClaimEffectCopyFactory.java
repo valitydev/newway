@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.factory.claim.effect;
 
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 
 public interface ClaimEffectCopyFactory<T, K> {
 

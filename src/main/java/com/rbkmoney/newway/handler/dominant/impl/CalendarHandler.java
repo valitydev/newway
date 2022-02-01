@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rbkmoney.damsel.domain.CalendarObject;
+import dev.vality.damsel.domain.CalendarObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.CalendarDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Calendar;
@@ -47,7 +47,7 @@ public class CalendarHandler extends AbstractDominantHandler<CalendarObject, Cal
         Calendar calendar = new Calendar();
         calendar.setVersionId(versionId);
         calendar.setCalendarRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Calendar data = calendarObject.getData();
+        dev.vality.damsel.domain.Calendar data = calendarObject.getData();
         calendar.setName(data.getName());
         calendar.setDescription(data.getDescription());
         calendar.setTimezone(data.getTimezone());

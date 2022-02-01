@@ -1,9 +1,9 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.contract;
 
-import com.rbkmoney.damsel.payment_processing.ClaimEffect;
-import com.rbkmoney.damsel.payment_processing.ContractEffectUnit;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.payment_processing.ClaimEffect;
+import dev.vality.damsel.payment_processing.ContractEffectUnit;
+import dev.vality.damsel.payment_processing.PartyChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.party.iface.ContractDao;
 import com.rbkmoney.newway.domain.tables.pojos.Contract;
 import com.rbkmoney.newway.factory.claim.effect.ClaimEffectCopyFactory;

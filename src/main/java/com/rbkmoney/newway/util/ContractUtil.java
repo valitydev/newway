@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.newway.domain.enums.PayoutToolInfo;
 import com.rbkmoney.newway.domain.enums.RepresentativeDocument;
@@ -18,7 +18,7 @@ public class ContractUtil {
                 .collect(Collectors.toList());
     }
 
-    public static ContractAdjustment convertContractAdjustment(com.rbkmoney.damsel.domain.ContractAdjustment ca,
+    public static ContractAdjustment convertContractAdjustment(dev.vality.damsel.domain.ContractAdjustment ca,
                                                                long cntrctId) {
         ContractAdjustment adjustment = new ContractAdjustment();
         adjustment.setCntrctId(cntrctId);
@@ -43,7 +43,7 @@ public class ContractUtil {
                                              String payoutToolId,
                                              LocalDateTime createdAt,
                                              String currCode,
-                                             com.rbkmoney.damsel.domain.PayoutToolInfo payoutToolInfo) {
+                                             dev.vality.damsel.domain.PayoutToolInfo payoutToolInfo) {
         PayoutTool payoutTool = new PayoutTool();
         payoutTool.setCntrctId(cntrctId);
         payoutTool.setPayoutToolId(payoutToolId);
@@ -53,13 +53,13 @@ public class ContractUtil {
         return payoutTool;
     }
 
-    public static PayoutTool convertPayoutTool(com.rbkmoney.damsel.domain.PayoutTool pt, long cntrctId) {
+    public static PayoutTool convertPayoutTool(dev.vality.damsel.domain.PayoutTool pt, long cntrctId) {
         return buildPayoutTool(cntrctId, pt.getId(), TypeUtil.stringToLocalDateTime(pt.getCreatedAt()),
                 pt.getCurrency().getSymbolicCode(), pt.getPayoutToolInfo());
     }
 
     public static void setPayoutToolInfo(PayoutTool payoutTool,
-                                         com.rbkmoney.damsel.domain.PayoutToolInfo payoutToolInfoSource) {
+                                         dev.vality.damsel.domain.PayoutToolInfo payoutToolInfoSource) {
         PayoutToolInfo payoutToolInfo =
                 TypeUtil.toEnumField(payoutToolInfoSource.getSetField().getFieldName(), PayoutToolInfo.class);
         if (payoutToolInfo == null) {
@@ -131,7 +131,7 @@ public class ContractUtil {
         contract.setReportActScheduleId(serviceAcceptanceActPreferences.getSchedule().getId());
         contract.setReportActSignerPosition(serviceAcceptanceActPreferences.getSigner().getPosition());
         contract.setReportActSignerFullName(serviceAcceptanceActPreferences.getSigner().getFullName());
-        com.rbkmoney.damsel.domain.RepresentativeDocument representativeDocument =
+        dev.vality.damsel.domain.RepresentativeDocument representativeDocument =
                 serviceAcceptanceActPreferences.getSigner().getDocument();
         RepresentativeDocument reportActSignerDocument =
                 TypeUtil.toEnumField(representativeDocument.getSetField().getFieldName(), RepresentativeDocument.class);

@@ -1,10 +1,10 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.damsel.payment_processing.PartyChange;
-import com.rbkmoney.damsel.payment_processing.PartyEventData;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.payment_processing.PartyChange;
+import dev.vality.damsel.payment_processing.PartyEventData;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.PartyManagementHandler;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

@@ -1,15 +1,15 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.damsel.payment_processing.EventPayload;
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.payment_processing.EventPayload;
+import dev.vality.damsel.payment_processing.InvoiceChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.handler.event.stock.LocalStorage;
 import com.rbkmoney.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import com.rbkmoney.newway.mapper.AbstractInvoicingMapper;
 import com.rbkmoney.newway.model.InvoiceWrapper;
 import com.rbkmoney.newway.model.InvoicingKey;
 import com.rbkmoney.newway.model.PaymentWrapper;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

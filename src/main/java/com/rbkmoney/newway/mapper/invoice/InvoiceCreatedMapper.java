@@ -1,15 +1,15 @@
 package com.rbkmoney.newway.mapper.invoice;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rbkmoney.damsel.domain.Invoice;
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
+import dev.vality.damsel.domain.Invoice;
+import dev.vality.damsel.payment_processing.InvoiceChange;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.domain.enums.InvoiceStatus;
 import com.rbkmoney.newway.domain.tables.pojos.InvoiceCart;
 import com.rbkmoney.newway.exception.DaoException;

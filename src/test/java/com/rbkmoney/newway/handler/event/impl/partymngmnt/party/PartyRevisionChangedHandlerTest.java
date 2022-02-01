@@ -1,12 +1,12 @@
 package com.rbkmoney.newway.handler.event.impl.partymngmnt.party;
 
-import com.rbkmoney.damsel.payment_processing.*;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.payment_processing.*;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.AbstractAppDaoTests;
 import com.rbkmoney.newway.dao.party.iface.*;
 import com.rbkmoney.newway.domain.tables.pojos.*;
 import com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.party.PartyRevisionChangedHandler;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;

@@ -1,9 +1,9 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.SinkEvent;
 import com.rbkmoney.newway.handler.event.stock.impl.rate.RateHandler;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import com.rbkmoney.xrates.rate.Change;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

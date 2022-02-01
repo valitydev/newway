@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.PaymentInstitutionObject;
+import dev.vality.damsel.domain.PaymentInstitutionObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.PaymentInstitutionDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.PaymentInstitution;
@@ -46,7 +46,7 @@ public class PaymentInstitutionHandler
         PaymentInstitution paymentInstitution = new PaymentInstitution();
         paymentInstitution.setVersionId(versionId);
         paymentInstitution.setPaymentInstitutionRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.PaymentInstitution data = paymentInstitutionObject.getData();
+        dev.vality.damsel.domain.PaymentInstitution data = paymentInstitutionObject.getData();
         paymentInstitution.setName(data.getName());
         paymentInstitution.setDescription(data.getDescription());
         if (data.isSetCalendar()) {

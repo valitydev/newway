@@ -1,9 +1,9 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.damsel.payment_processing.EventPayload;
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
+import dev.vality.damsel.payment_processing.EventPayload;
+import dev.vality.damsel.payment_processing.InvoiceChange;
 import com.rbkmoney.geck.common.util.TypeUtil;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.TestData;
 import com.rbkmoney.newway.dao.invoicing.iface.CashFlowDao;
 import com.rbkmoney.newway.dao.invoicing.iface.ChargebackDao;
@@ -16,7 +16,7 @@ import com.rbkmoney.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import com.rbkmoney.newway.handler.event.stock.impl.invoicing.chargeback.*;
 import com.rbkmoney.newway.mapper.AbstractInvoicingMapper;
 import com.rbkmoney.newway.model.InvoiceWrapper;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import org.junit.Before;
 import org.junit.Test;

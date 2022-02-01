@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.party;
 
-import com.rbkmoney.damsel.domain.Suspension;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
+import dev.vality.damsel.domain.Suspension;
+import dev.vality.damsel.payment_processing.PartyChange;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.party.iface.PartyDao;
 import com.rbkmoney.newway.domain.tables.pojos.Party;
 import com.rbkmoney.newway.factory.MachineEventCopyFactory;

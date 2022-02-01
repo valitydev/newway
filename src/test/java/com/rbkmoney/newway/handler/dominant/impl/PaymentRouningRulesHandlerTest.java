@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.newway.dao.dominant.impl.PaymentRoutingRulesDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.PaymentRoutingRule;
 import org.junit.Before;

@@ -1,17 +1,17 @@
 package com.rbkmoney.newway;
 
-import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.damsel.payment_processing.*;
+import dev.vality.damsel.domain.*;
+import dev.vality.damsel.payment_processing.*;
 import com.rbkmoney.geck.common.util.TypeUtil;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.msgpack.Value;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
 import com.rbkmoney.newway.dao.AbstractAppDaoTests;
 import com.rbkmoney.newway.dao.invoicing.iface.PaymentDao;
 import com.rbkmoney.newway.domain.enums.PaymentStatus;
 import com.rbkmoney.newway.domain.tables.pojos.Payment;
 import com.rbkmoney.newway.service.InvoicingService;
 import com.rbkmoney.newway.utils.MockUtils;
-import com.rbkmoney.sink.common.serialization.impl.PaymentEventPayloadSerializer;
+import dev.vality.sink.common.serialization.impl.PaymentEventPayloadSerializer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

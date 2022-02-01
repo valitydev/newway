@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.listener;
 
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.machinegun.eventsink.SinkEvent;
 import com.rbkmoney.newway.service.RateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

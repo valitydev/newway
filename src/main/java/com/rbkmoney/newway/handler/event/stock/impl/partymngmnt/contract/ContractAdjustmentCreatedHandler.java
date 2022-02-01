@@ -1,9 +1,9 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.contract;
 
-import com.rbkmoney.damsel.payment_processing.ClaimEffect;
-import com.rbkmoney.damsel.payment_processing.ContractEffectUnit;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.payment_processing.ClaimEffect;
+import dev.vality.damsel.payment_processing.ContractEffectUnit;
+import dev.vality.damsel.payment_processing.PartyChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.party.iface.ContractAdjustmentDao;
 import com.rbkmoney.newway.dao.party.iface.ContractDao;
 import com.rbkmoney.newway.dao.party.iface.PayoutToolDao;
@@ -49,7 +49,7 @@ public class ContractAdjustmentCreatedHandler extends AbstractClaimChangedHandle
     private void handleEvent(MachineEvent event, Integer changeId, long sequenceId, ClaimEffect claimEffect,
                              Integer claimEffectId) {
         ContractEffectUnit contractEffectUnit = claimEffect.getContractEffect();
-        com.rbkmoney.damsel.domain.ContractAdjustment adjustmentCreated =
+        dev.vality.damsel.domain.ContractAdjustment adjustmentCreated =
                 contractEffectUnit.getEffect().getAdjustmentCreated();
         String contractId = contractEffectUnit.getContractId();
         String partyId = event.getSourceId();
@@ -74,7 +74,7 @@ public class ContractAdjustmentCreatedHandler extends AbstractClaimChangedHandle
         );
     }
 
-    private void updateContractReference(com.rbkmoney.damsel.domain.ContractAdjustment adjustmentCreated,
+    private void updateContractReference(dev.vality.damsel.domain.ContractAdjustment adjustmentCreated,
                                          Long contractSourceId, Long cntrctId) {
         List<ContractAdjustment> adjustments = new ArrayList<>(contractAdjustmentDao.getByCntrctId(contractSourceId));
         adjustments.forEach(a -> {

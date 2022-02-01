@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

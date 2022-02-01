@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.utils;
 
-import com.rbkmoney.damsel.base.Content;
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.base.Content;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.geck.common.util.TypeUtil;
 
 import java.nio.ByteBuffer;

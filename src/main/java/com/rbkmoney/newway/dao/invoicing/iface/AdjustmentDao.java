@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.dao.invoicing.iface;
 
-import com.rbkmoney.dao.GenericDao;
+import dev.vality.dao.GenericDao;
 import com.rbkmoney.newway.domain.tables.pojos.Adjustment;
 import com.rbkmoney.newway.exception.DaoException;
 
