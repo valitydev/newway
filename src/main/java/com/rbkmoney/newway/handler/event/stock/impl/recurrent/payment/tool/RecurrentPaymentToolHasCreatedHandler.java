@@ -1,19 +1,19 @@
 package com.rbkmoney.newway.handler.event.stock.impl.recurrent.payment.tool;
 
-import com.rbkmoney.damsel.domain.BankCard;
-import com.rbkmoney.damsel.domain.DigitalWallet;
-import com.rbkmoney.damsel.domain.DisposablePaymentResource;
-import com.rbkmoney.damsel.domain.PaymentTool;
-import com.rbkmoney.damsel.payment_processing.RecurrentPaymentToolChange;
-import com.rbkmoney.damsel.payment_processing.RecurrentPaymentToolHasCreated;
+import dev.vality.damsel.domain.BankCard;
+import dev.vality.damsel.domain.DigitalWallet;
+import dev.vality.damsel.domain.DisposablePaymentResource;
+import dev.vality.damsel.domain.PaymentTool;
+import dev.vality.damsel.payment_processing.RecurrentPaymentToolChange;
+import dev.vality.damsel.payment_processing.RecurrentPaymentToolHasCreated;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.mamsel.*;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.mamsel.*;
 import com.rbkmoney.newway.dao.recurrent.payment.tool.iface.RecurrentPaymentToolDao;
 import com.rbkmoney.newway.domain.enums.MobileOperatorType;
 import com.rbkmoney.newway.domain.enums.PaymentToolType;

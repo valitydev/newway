@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.source;
 
-import com.rbkmoney.fistful.source.Change;
-import com.rbkmoney.fistful.source.Internal;
-import com.rbkmoney.fistful.source.Resource;
-import com.rbkmoney.fistful.source.TimestampedChange;
+import dev.vality.fistful.source.Change;
+import dev.vality.fistful.source.Internal;
+import dev.vality.fistful.source.Resource;
+import dev.vality.fistful.source.TimestampedChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.source.iface.SourceDao;
 import com.rbkmoney.newway.domain.enums.SourceStatus;
 import com.rbkmoney.newway.domain.tables.pojos.Source;

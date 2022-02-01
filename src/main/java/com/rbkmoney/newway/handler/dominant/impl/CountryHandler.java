@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.CountryObject;
-import com.rbkmoney.damsel.domain.TradeBlocRef;
+import dev.vality.damsel.domain.CountryObject;
+import dev.vality.damsel.domain.TradeBlocRef;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.CountryDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Country;
@@ -40,7 +40,7 @@ public class CountryHandler extends AbstractDominantHandler<CountryObject, Count
         Country country = new Country();
         country.setVersionId(versionId);
         country.setCountryRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Country data = object.getData();
+        dev.vality.damsel.domain.Country data = object.getData();
         country.setName(data.getName());
         String[] tradeBlocs = data.getTradeBlocs().stream()
                 .map(TradeBlocRef::getId)

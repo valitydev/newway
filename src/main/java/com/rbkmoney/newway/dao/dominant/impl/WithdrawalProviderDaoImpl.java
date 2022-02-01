@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.dao.dominant.impl;
 
-import com.rbkmoney.dao.impl.AbstractGenericDao;
+import dev.vality.dao.impl.AbstractGenericDao;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.domain.tables.pojos.WithdrawalProvider;
 import com.rbkmoney.newway.domain.tables.records.WithdrawalProviderRecord;

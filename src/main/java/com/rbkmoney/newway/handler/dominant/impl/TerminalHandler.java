@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.TerminalObject;
+import dev.vality.damsel.domain.TerminalObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.TerminalDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Terminal;
@@ -42,7 +42,7 @@ public class TerminalHandler extends AbstractDominantHandler<TerminalObject, Ter
         Terminal terminal = new Terminal();
         terminal.setVersionId(versionId);
         terminal.setTerminalRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Terminal data = terminalObject.getData();
+        dev.vality.damsel.domain.Terminal data = terminalObject.getData();
         terminal.setName(data.getName());
         terminal.setDescription(data.getDescription());
         if (data.isSetOptions()) {

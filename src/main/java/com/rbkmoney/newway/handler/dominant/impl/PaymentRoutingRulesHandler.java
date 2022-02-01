@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.RoutingRulesObject;
-import com.rbkmoney.damsel.domain.RoutingRuleset;
+import dev.vality.damsel.domain.RoutingRulesObject;
+import dev.vality.damsel.domain.RoutingRuleset;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.domain.tables.pojos.PaymentRoutingRule;
 import com.rbkmoney.newway.handler.dominant.AbstractDominantHandler;

@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.PaymentMethodDaoImpl;
 import com.rbkmoney.newway.domain.enums.PaymentMethodType;
@@ -51,8 +51,8 @@ public class PaymentMethodHandler extends AbstractDominantHandler<PaymentMethodO
         return getPaymentType(getTargetObject()) + SEPARATOR + paymentMethodRefId.get();
     }
 
-    private Supplier<Optional<com.rbkmoney.damsel.domain.PaymentMethod>> wrapPaymentMethod(
-            @NotNull com.rbkmoney.damsel.domain.PaymentMethod paymentMethod) {
+    private Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> wrapPaymentMethod(
+            @NotNull dev.vality.damsel.domain.PaymentMethod paymentMethod) {
         return () -> Optional.of(paymentMethod);
     }
 

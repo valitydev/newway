@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.CurrencyObject;
+import dev.vality.damsel.domain.CurrencyObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.CurrencyDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Currency;
@@ -41,7 +41,7 @@ public class CurrencyHandler extends AbstractDominantHandler<CurrencyObject, Cur
         Currency currency = new Currency();
         currency.setVersionId(versionId);
         currency.setCurrencyRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Currency data = currencyObject.getData();
+        dev.vality.damsel.domain.Currency data = currencyObject.getData();
         currency.setName(data.getName());
         currency.setSymbolicCode(data.getSymbolicCode());
         currency.setNumericCode(data.getNumericCode());

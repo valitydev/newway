@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.serde;
 
-import com.rbkmoney.kafka.common.serialization.AbstractThriftDeserializer;
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.kafka.common.serialization.AbstractThriftDeserializer;
+import dev.vality.machinegun.eventsink.SinkEvent;
 
 public class SinkEventDeserializer extends AbstractThriftDeserializer<SinkEvent> {
 

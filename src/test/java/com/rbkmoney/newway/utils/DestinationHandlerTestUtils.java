@@ -1,23 +1,12 @@
 package com.rbkmoney.newway.utils;
 
-import com.rbkmoney.fistful.base.CryptoCurrency;
-import com.rbkmoney.fistful.base.CryptoData;
-import com.rbkmoney.fistful.base.CryptoDataBitcoin;
-import com.rbkmoney.fistful.base.DigitalData;
-import com.rbkmoney.fistful.base.DigitalDataWebmoney;
-import com.rbkmoney.fistful.base.Resource;
-import com.rbkmoney.fistful.base.ResourceBankCard;
-import com.rbkmoney.fistful.base.ResourceCryptoWallet;
-import com.rbkmoney.fistful.base.ResourceDigitalWallet;
-import com.rbkmoney.fistful.destination.Authorized;
-import com.rbkmoney.fistful.destination.Change;
-import com.rbkmoney.fistful.destination.Destination;
-import com.rbkmoney.fistful.destination.Status;
-import com.rbkmoney.fistful.destination.StatusChange;
-import com.rbkmoney.fistful.destination.TimestampedChange;
-import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.msgpack.Value;
+import dev.vality.fistful.base.*;
+import dev.vality.fistful.destination.Change;
+import dev.vality.fistful.destination.Destination;
+import dev.vality.fistful.destination.TimestampedChange;
+import dev.vality.kafka.common.serialization.ThriftSerializer;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
 
 public class DestinationHandlerTestUtils {
 
@@ -45,23 +34,23 @@ public class DestinationHandlerTestUtils {
                 .setChange(Change.created(destination));
     }
 
-    public static com.rbkmoney.fistful.base.DigitalWallet createFistfulDigitalWallet() {
-        com.rbkmoney.fistful.base.DigitalWallet digitalWallet = new com.rbkmoney.fistful.base.DigitalWallet();
+    public static DigitalWallet createFistfulDigitalWallet() {
+        DigitalWallet digitalWallet = new DigitalWallet();
         digitalWallet.setId(DIGITAL_WALLET_ID);
-        digitalWallet.setData(DigitalData.webmoney(new DigitalDataWebmoney()));
+        digitalWallet.setPaymentService(new PaymentServiceRef("webmoney"));
         return digitalWallet;
     }
 
-    public static com.rbkmoney.fistful.base.CryptoWallet createFistfulCryptoWallet() {
-        com.rbkmoney.fistful.base.CryptoWallet cryptoWallet = new com.rbkmoney.fistful.base.CryptoWallet();
+    public static CryptoWallet createFistfulCryptoWallet() {
+        CryptoWallet cryptoWallet = new CryptoWallet();
         cryptoWallet.setId(CRYPTO_WALLET_ID);
         cryptoWallet.setData(CryptoData.bitcoin(new CryptoDataBitcoin()));
         cryptoWallet.setCurrency(CryptoCurrency.bitcoin);
         return cryptoWallet;
     }
 
-    public static com.rbkmoney.fistful.base.BankCard createFistfulBankCard() {
-        com.rbkmoney.fistful.base.BankCard bankCard = new com.rbkmoney.fistful.base.BankCard();
+    public static BankCard createFistfulBankCard() {
+        BankCard bankCard = new BankCard();
         bankCard.setToken(CARD_TOKEN_PROVIDER);
         bankCard.setBin(CARD_BIN);
         bankCard.setMaskedPan(CARD_MASKED_PAN);

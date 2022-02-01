@@ -1,8 +1,8 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.fistful.cashflow.FinalCashFlowAccount;
-import com.rbkmoney.fistful.cashflow.FinalCashFlowPosting;
-import com.rbkmoney.fistful.cashflow.MerchantCashFlowAccount;
+import dev.vality.fistful.cashflow.FinalCashFlowAccount;
+import dev.vality.fistful.cashflow.FinalCashFlowPosting;
+import dev.vality.fistful.cashflow.MerchantCashFlowAccount;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.newway.domain.enums.CashFlowAccount;
 import com.rbkmoney.newway.domain.enums.FistfulCashFlowChangeType;
@@ -51,7 +51,7 @@ public class FistfulCashFlowUtil {
         }
     }
 
-    public static long getFistfulFee(List<com.rbkmoney.fistful.cashflow.FinalCashFlowPosting> postings) {
+    public static long getFistfulFee(List<dev.vality.fistful.cashflow.FinalCashFlowPosting> postings) {
         return getFistfulAmount(
                 postings,
                 posting -> posting.getSource().getAccountType().isSetWallet()
@@ -59,7 +59,7 @@ public class FistfulCashFlowUtil {
         );
     }
 
-    public static long getFistfulProviderFee(List<com.rbkmoney.fistful.cashflow.FinalCashFlowPosting> postings) {
+    public static long getFistfulProviderFee(List<dev.vality.fistful.cashflow.FinalCashFlowPosting> postings) {
         return getFistfulAmount(
                 postings,
                 posting -> posting.getSource().getAccountType().isSetSystem()
@@ -68,7 +68,7 @@ public class FistfulCashFlowUtil {
     }
 
     public static long getFistfulAmount(
-            List<com.rbkmoney.fistful.cashflow.FinalCashFlowPosting> postings,
+            List<dev.vality.fistful.cashflow.FinalCashFlowPosting> postings,
             Predicate<FinalCashFlowPosting> filter
     ) {
         return postings.stream()
@@ -91,7 +91,7 @@ public class FistfulCashFlowUtil {
                 .sum();
     }
 
-    private static boolean isMerchantSettlement(com.rbkmoney.fistful.cashflow.CashFlowAccount cashFlowAccount) {
+    private static boolean isMerchantSettlement(dev.vality.fistful.cashflow.CashFlowAccount cashFlowAccount) {
         return cashFlowAccount.isSetMerchant()
                 && cashFlowAccount.getMerchant() == MerchantCashFlowAccount.settlement;
     }

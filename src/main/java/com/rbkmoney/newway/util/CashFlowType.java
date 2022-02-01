@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 
 import java.util.Arrays;
 import java.util.Collections;

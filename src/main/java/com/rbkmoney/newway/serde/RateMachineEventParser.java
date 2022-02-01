@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.serde;
 
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
-import com.rbkmoney.sink.common.serialization.BinaryDeserializer;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.serialization.BinaryDeserializer;
 import com.rbkmoney.xrates.rate.Change;
 import org.springframework.stereotype.Component;
 

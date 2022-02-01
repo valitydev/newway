@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.deposit.revert;
 
-import com.rbkmoney.fistful.base.Cash;
-import com.rbkmoney.fistful.deposit.Change;
-import com.rbkmoney.fistful.deposit.TimestampedChange;
+import dev.vality.fistful.base.Cash;
+import dev.vality.fistful.deposit.Change;
+import dev.vality.fistful.deposit.TimestampedChange;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.deposit.revert.iface.DepositRevertDao;
 import com.rbkmoney.newway.domain.enums.DepositRevertStatus;
 import com.rbkmoney.newway.domain.tables.pojos.DepositRevert;

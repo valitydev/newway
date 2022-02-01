@@ -13,7 +13,7 @@
     <parent>
         <groupId>dev.vality</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.8</version>
     </parent>
 
     <properties>
@@ -29,7 +29,7 @@
         <db.schema>nw</db.schema>
         <local.pg.url>jdbc:postgresql://localhost:5432/newway</local.pg.url>
         <local.pg.port>5432</local.pg.port>
-        <fistful-proto.version>1.128-d331fce</fistful-proto.version>
+        <fistful-proto.version>1.133-c484877</fistful-proto.version>
         <sink-common-lib.version>0.0.8</sink-common-lib.version>
         <shedlock-provider-jdbc-template.version>4.31.0</shedlock-provider-jdbc-template.version>
     </properties>
@@ -120,13 +120,13 @@
 
         <!--RBK libs-->
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>db-common-lib</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>payout-manager-proto</artifactId>
-            <version>1.21-bdd9888</version>
+            <version>1.25-cfe2120</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -134,18 +134,18 @@
             <version>1.2.12</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>kafka-common-lib</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>sink-common-lib</artifactId>
-            <version>${sink-common-lib.version}</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>machinegun-proto</artifactId>
-            <version>1.19-f77367a</version>
+            <version>1.21-e4784ab</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -153,11 +153,11 @@
             <version>1.2.12</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>fistful-proto</artifactId>
             <version>${fistful-proto.version}</version>
         </dependency>
@@ -167,25 +167,17 @@
             <version>1.16-66906cd</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>shared-resources</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney.geck</groupId>
+            <groupId>dev.vality.geck</groupId>
             <artifactId>serializer</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
-            <artifactId>custom-actuator-endpoints</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.rbkmoney</groupId>
-            <artifactId>custom-metrics-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>dev.vality</groupId>
             <artifactId>mamsel</artifactId>
-            <version>0.1.2</version>
+            <version>0.2.1</version>
         </dependency>
 
         <!-- Test -->
@@ -370,7 +362,7 @@
                 </dependencies>
                 <configuration>
                     <resourceBundles>
-                        <resourceBundle>com.rbkmoney:shared-resources:${shared-resources.version}</resourceBundle>
+                        <resourceBundle>dev.vality:shared-resources:${shared-resources.version}</resourceBundle>
                     </resourceBundles>
                     <attachToMain>false</attachToMain>
                     <attachToTest>false</attachToTest>

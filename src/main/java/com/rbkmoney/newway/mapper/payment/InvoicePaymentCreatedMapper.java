@@ -1,16 +1,16 @@
 package com.rbkmoney.newway.mapper.payment;
 
-import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
-import com.rbkmoney.damsel.payment_processing.InvoicePaymentStarted;
+import dev.vality.damsel.domain.*;
+import dev.vality.damsel.payment_processing.InvoiceChange;
+import dev.vality.damsel.payment_processing.InvoicePaymentStarted;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.mamsel.*;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.mamsel.*;
 import com.rbkmoney.newway.domain.enums.*;
 import com.rbkmoney.newway.domain.tables.pojos.CashFlow;
 import com.rbkmoney.newway.domain.tables.pojos.Invoice;

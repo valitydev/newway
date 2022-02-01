@@ -1,21 +1,14 @@
 package com.rbkmoney.newway.utils;
 
-import com.rbkmoney.fistful.base.CryptoCurrency;
-import com.rbkmoney.fistful.base.CryptoData;
-import com.rbkmoney.fistful.base.CryptoDataBitcoin;
-import com.rbkmoney.fistful.base.DigitalData;
-import com.rbkmoney.fistful.base.DigitalDataWebmoney;
-import com.rbkmoney.fistful.base.Resource;
-import com.rbkmoney.fistful.base.ResourceBankCard;
-import com.rbkmoney.fistful.base.ResourceCryptoWallet;
-import com.rbkmoney.fistful.base.ResourceDigitalWallet;
-import com.rbkmoney.fistful.withdrawal_session.Change;
-import com.rbkmoney.fistful.withdrawal_session.Route;
-import com.rbkmoney.fistful.withdrawal_session.TimestampedChange;
-import com.rbkmoney.fistful.withdrawal_session.Withdrawal;
-import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.msgpack.Value;
+import dev.vality.fistful.base.*;
+import dev.vality.fistful.withdrawal_session.Change;
+import dev.vality.fistful.withdrawal_session.Route;
+import dev.vality.fistful.withdrawal_session.Session;
+import dev.vality.fistful.withdrawal_session.TimestampedChange;
+import dev.vality.fistful.withdrawal_session.Withdrawal;
+import dev.vality.kafka.common.serialization.ThriftSerializer;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
 
 public class WithdrawalSessionCreatedHandlerUtils {
 
@@ -33,7 +26,7 @@ public class WithdrawalSessionCreatedHandlerUtils {
     public static final String CARD_TOKEN_PROVIDER = "cardToken";
 
     public static MachineEvent createCreatedMachineEvent(String id,
-                                                         com.rbkmoney.fistful.withdrawal_session.Session session) {
+                                                         Session session) {
         return new MachineEvent()
                 .setEventId(2L)
                 .setSourceId(id)
@@ -42,29 +35,29 @@ public class WithdrawalSessionCreatedHandlerUtils {
                 .setData(Value.bin(new ThriftSerializer<>().serialize("", createCreated(session))));
     }
 
-    public static TimestampedChange createCreated(com.rbkmoney.fistful.withdrawal_session.Session session) {
+    public static TimestampedChange createCreated(Session session) {
         return new TimestampedChange()
                 .setOccuredAt("2021-05-31T06:12:27Z")
                 .setChange(Change.created(session));
     }
 
-    public static com.rbkmoney.fistful.base.DigitalWallet createFistfulDigitalWallet() {
-        com.rbkmoney.fistful.base.DigitalWallet digitalWallet = new com.rbkmoney.fistful.base.DigitalWallet();
+    public static DigitalWallet createFistfulDigitalWallet() {
+        DigitalWallet digitalWallet = new DigitalWallet();
         digitalWallet.setId(DIGITAL_WALLET_ID);
-        digitalWallet.setData(DigitalData.webmoney(new DigitalDataWebmoney()));
+        digitalWallet.setPaymentService(new PaymentServiceRef("webmoney"));
         return digitalWallet;
     }
 
-    public static com.rbkmoney.fistful.base.CryptoWallet createFistfulCryptoWallet() {
-        com.rbkmoney.fistful.base.CryptoWallet cryptoWallet = new com.rbkmoney.fistful.base.CryptoWallet();
+    public static CryptoWallet createFistfulCryptoWallet() {
+        CryptoWallet cryptoWallet = new CryptoWallet();
         cryptoWallet.setId(CRYPTO_WALLET_ID);
         cryptoWallet.setData(CryptoData.bitcoin(new CryptoDataBitcoin()));
         cryptoWallet.setCurrency(CryptoCurrency.bitcoin);
         return cryptoWallet;
     }
 
-    public static com.rbkmoney.fistful.base.BankCard createFistfulBankCard() {
-        com.rbkmoney.fistful.base.BankCard bankCard = new com.rbkmoney.fistful.base.BankCard();
+    public static BankCard createFistfulBankCard() {
+        BankCard bankCard = new BankCard();
         bankCard.setToken(CARD_TOKEN_PROVIDER);
         bankCard.setBin(CARD_BIN);
         bankCard.setMaskedPan(CARD_MASKED_PAN);
@@ -89,16 +82,16 @@ public class WithdrawalSessionCreatedHandlerUtils {
         return resourceBankCard;
     }
 
-    public static com.rbkmoney.fistful.withdrawal_session.Session createSession(Resource resource) {
+    public static Session createSession(Resource resource) {
         Withdrawal withdrawal = new Withdrawal();
         withdrawal.setId(WITHDRAWAL_ID);
         withdrawal.setDestinationResource(resource);
 
-        com.rbkmoney.fistful.base.Cash cash = new com.rbkmoney.fistful.base.Cash();
+        Cash cash = new Cash();
         cash.setAmount(11L);
-        cash.setCurrency(new com.rbkmoney.fistful.base.CurrencyRef("RUB"));
+        cash.setCurrency(new CurrencyRef("RUB"));
         withdrawal.setCash(cash);
-        com.rbkmoney.fistful.withdrawal_session.Session session = new com.rbkmoney.fistful.withdrawal_session.Session();
+        Session session = new Session();
         session.setId(SESSION_ID);
         session.setWithdrawal(withdrawal);
         session.setRoute(createRoute());

@@ -1,11 +1,11 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.contract;
 
-import com.rbkmoney.damsel.payment_processing.ClaimEffect;
-import com.rbkmoney.damsel.payment_processing.ContractEffectUnit;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
+import dev.vality.damsel.payment_processing.ClaimEffect;
+import dev.vality.damsel.payment_processing.ContractEffectUnit;
+import dev.vality.damsel.payment_processing.PartyChange;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.party.iface.*;
 import com.rbkmoney.newway.domain.enums.ContractStatus;
 import com.rbkmoney.newway.domain.tables.pojos.Contract;
@@ -65,7 +65,7 @@ public class ContractCreatedHandler extends AbstractClaimChangedHandler {
 
         contract.setContractId(contractId);
         contract.setPartyId(partyId);
-        com.rbkmoney.damsel.domain.Contract contractCreated = contractEffectUnit.getEffect().getCreated();
+        dev.vality.damsel.domain.Contract contractCreated = contractEffectUnit.getEffect().getCreated();
         if (contractCreated.isSetPaymentInstitution()) {
             contract.setPaymentInstitutionId(contractCreated.getPaymentInstitution().getId());
         }
@@ -102,7 +102,7 @@ public class ContractCreatedHandler extends AbstractClaimChangedHandler {
         );
     }
 
-    private String initContractorId(com.rbkmoney.damsel.domain.Contract contractCreated) {
+    private String initContractorId(dev.vality.damsel.domain.Contract contractCreated) {
         String contractorId = "";
         if (contractCreated.isSetContractorId()) {
             contractorId = contractCreated.getContractorId();
@@ -113,7 +113,7 @@ public class ContractCreatedHandler extends AbstractClaimChangedHandler {
     }
 
     private void updateContractReference(MachineEvent event, Integer changeId, long sequenceId,
-                                         com.rbkmoney.damsel.domain.Contract contractCreated,
+                                         dev.vality.damsel.domain.Contract contractCreated,
                                          String contractId, String partyId, String contractorId, Long cntrctId,
                                          Integer claimEffectId) {
         if (contractCreated.isSetContractor()) {

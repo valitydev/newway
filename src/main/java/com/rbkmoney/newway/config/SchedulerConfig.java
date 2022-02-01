@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.config;
 
-import com.rbkmoney.damsel.domain_config.RepositorySrv;
+import dev.vality.damsel.domain_config.RepositorySrv;
 import com.rbkmoney.newway.handler.dominant.DominantPoller;
 import com.rbkmoney.newway.service.DominantService;
 import net.javacrumbs.shedlock.core.LockProvider;

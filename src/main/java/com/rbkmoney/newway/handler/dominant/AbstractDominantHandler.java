@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.dominant;
 
-import com.rbkmoney.damsel.domain.DomainObject;
-import com.rbkmoney.damsel.domain_config.Operation;
+import dev.vality.damsel.domain.DomainObject;
+import dev.vality.damsel.domain_config.Operation;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

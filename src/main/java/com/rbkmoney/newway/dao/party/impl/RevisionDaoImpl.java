@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.dao.party.impl;
 
-import com.rbkmoney.dao.impl.AbstractGenericDao;
+import dev.vality.dao.impl.AbstractGenericDao;
 import com.rbkmoney.newway.dao.party.iface.RevisionDao;
 import com.rbkmoney.newway.exception.DaoException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

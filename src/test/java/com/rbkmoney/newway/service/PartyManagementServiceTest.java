@@ -1,16 +1,16 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.damsel.domain.PartyContactInfo;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
-import com.rbkmoney.damsel.payment_processing.PartyCreated;
-import com.rbkmoney.damsel.payment_processing.PartyEventData;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
-import com.rbkmoney.machinegun.msgpack.Value;
+import dev.vality.damsel.domain.PartyContactInfo;
+import dev.vality.damsel.payment_processing.PartyChange;
+import dev.vality.damsel.payment_processing.PartyCreated;
+import dev.vality.damsel.payment_processing.PartyEventData;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
 import com.rbkmoney.newway.config.SerializationConfig;
 import com.rbkmoney.newway.dao.party.iface.PartyDao;
 import com.rbkmoney.newway.factory.PartyMachineEventCopyFactoryImpl;
 import com.rbkmoney.newway.handler.event.stock.impl.partymngmnt.party.PartyCreatedHandler;
-import com.rbkmoney.sink.common.serialization.impl.PartyEventDataSerializer;
+import dev.vality.sink.common.serialization.impl.PartyEventDataSerializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,13 +1,13 @@
 package com.rbkmoney.newway.handler.event.stock.impl.identity;
 
-import com.rbkmoney.fistful.identity.*;
+import dev.vality.fistful.identity.*;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.identity.iface.ChallengeDao;
 import com.rbkmoney.newway.domain.enums.ChallengeResolution;
 import com.rbkmoney.newway.domain.tables.pojos.Challenge;

@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.mapper;
 
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.damsel.payment_processing.InvoiceChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 
 public abstract class AbstractInvoicingMapper<M> implements Mapper<InvoiceChange, MachineEvent, M> {
 }

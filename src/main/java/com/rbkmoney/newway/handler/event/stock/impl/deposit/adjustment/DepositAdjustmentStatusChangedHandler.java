@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.deposit.adjustment;
 
-import com.rbkmoney.fistful.deposit.Change;
-import com.rbkmoney.fistful.deposit.TimestampedChange;
-import com.rbkmoney.fistful.deposit.adjustment.Status;
+import dev.vality.fistful.deposit.Change;
+import dev.vality.fistful.deposit.TimestampedChange;
+import dev.vality.fistful.deposit.adjustment.Status;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.deposit.adjustment.iface.DepositAdjustmentDao;
 import com.rbkmoney.newway.dao.withdrawal.iface.FistfulCashFlowDao;
 import com.rbkmoney.newway.domain.enums.DepositAdjustmentStatus;

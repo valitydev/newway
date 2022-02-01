@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.util;
 
-import com.rbkmoney.damsel.domain.ShopAccount;
+import dev.vality.damsel.domain.ShopAccount;
 
 public class ShopUtil {
 

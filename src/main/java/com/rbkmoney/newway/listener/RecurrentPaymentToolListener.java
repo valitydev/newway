@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.listener;
 
-import com.rbkmoney.kafka.common.util.LogUtil;
-import com.rbkmoney.machinegun.eventsink.SinkEvent;
+import dev.vality.kafka.common.util.LogUtil;
+import dev.vality.machinegun.eventsink.SinkEvent;
 import com.rbkmoney.newway.service.RecurrentPaymentToolService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

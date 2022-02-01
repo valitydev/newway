@@ -1,16 +1,16 @@
 package com.rbkmoney.newway.mapper.payment;
 
-import com.rbkmoney.damsel.domain.AdditionalTransactionInfo;
-import com.rbkmoney.damsel.domain.TransactionInfo;
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
-import com.rbkmoney.damsel.payment_processing.InvoicePaymentChange;
-import com.rbkmoney.damsel.payment_processing.InvoicePaymentSessionChange;
-import com.rbkmoney.damsel.payment_processing.SessionChangePayload;
+import dev.vality.damsel.domain.AdditionalTransactionInfo;
+import dev.vality.damsel.domain.TransactionInfo;
+import dev.vality.damsel.payment_processing.InvoiceChange;
+import dev.vality.damsel.payment_processing.InvoicePaymentChange;
+import dev.vality.damsel.payment_processing.InvoicePaymentSessionChange;
+import dev.vality.damsel.payment_processing.SessionChangePayload;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.domain.tables.pojos.Payment;
 import com.rbkmoney.newway.handler.event.stock.LocalStorage;
 import com.rbkmoney.newway.model.PaymentWrapper;

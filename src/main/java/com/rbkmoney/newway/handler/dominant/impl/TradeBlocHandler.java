@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.TradeBlocObject;
+import dev.vality.damsel.domain.TradeBlocObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.TradeBlocDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.TradeBloc;
@@ -39,7 +39,7 @@ public class TradeBlocHandler extends AbstractDominantHandler<TradeBlocObject, T
         TradeBloc tradeBloc = new TradeBloc();
         tradeBloc.setVersionId(versionId);
         tradeBloc.setTradeBlocRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.TradeBloc data = object.getData();
+        dev.vality.damsel.domain.TradeBloc data = object.getData();
         tradeBloc.setName(data.getName());
         tradeBloc.setDescription(data.getDescription());
         tradeBloc.setCurrent(current);

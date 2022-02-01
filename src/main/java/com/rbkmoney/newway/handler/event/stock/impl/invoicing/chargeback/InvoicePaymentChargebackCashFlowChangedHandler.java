@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.invoicing.chargeback;
 
-import com.rbkmoney.damsel.payment_processing.InvoiceChange;
-import com.rbkmoney.damsel.payment_processing.InvoicePaymentChange;
-import com.rbkmoney.damsel.payment_processing.InvoicePaymentChargebackCashFlowChanged;
-import com.rbkmoney.damsel.payment_processing.InvoicePaymentChargebackChange;
+import dev.vality.damsel.payment_processing.InvoiceChange;
+import dev.vality.damsel.payment_processing.InvoicePaymentChange;
+import dev.vality.damsel.payment_processing.InvoicePaymentChargebackCashFlowChanged;
+import dev.vality.damsel.payment_processing.InvoicePaymentChargebackChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.invoicing.iface.CashFlowDao;
 import com.rbkmoney.newway.dao.invoicing.iface.ChargebackDao;
 import com.rbkmoney.newway.domain.enums.PaymentChangeType;

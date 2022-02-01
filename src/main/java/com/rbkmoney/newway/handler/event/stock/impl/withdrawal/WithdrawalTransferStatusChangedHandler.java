@@ -1,14 +1,14 @@
 package com.rbkmoney.newway.handler.event.stock.impl.withdrawal;
 
-import com.rbkmoney.fistful.transfer.Status;
-import com.rbkmoney.fistful.withdrawal.Change;
-import com.rbkmoney.fistful.withdrawal.TimestampedChange;
+import dev.vality.fistful.transfer.Status;
+import dev.vality.fistful.withdrawal.Change;
+import dev.vality.fistful.withdrawal.TimestampedChange;
 import com.rbkmoney.geck.common.util.TBaseUtil;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.withdrawal.iface.FistfulCashFlowDao;
 import com.rbkmoney.newway.dao.withdrawal.iface.WithdrawalDao;
 import com.rbkmoney.newway.domain.enums.FistfulCashFlowChangeType;

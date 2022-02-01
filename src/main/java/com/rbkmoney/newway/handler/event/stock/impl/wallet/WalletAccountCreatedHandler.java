@@ -1,13 +1,13 @@
 package com.rbkmoney.newway.handler.event.stock.impl.wallet;
 
-import com.rbkmoney.fistful.account.Account;
-import com.rbkmoney.fistful.wallet.Change;
-import com.rbkmoney.fistful.wallet.TimestampedChange;
+import dev.vality.fistful.account.Account;
+import dev.vality.fistful.wallet.Change;
+import dev.vality.fistful.wallet.TimestampedChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.identity.iface.IdentityDao;
 import com.rbkmoney.newway.dao.wallet.iface.WalletDao;
 import com.rbkmoney.newway.domain.tables.pojos.Identity;

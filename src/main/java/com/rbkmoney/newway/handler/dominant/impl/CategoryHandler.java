@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.CategoryObject;
+import dev.vality.damsel.domain.CategoryObject;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.CategoryDaoImpl;
 import com.rbkmoney.newway.domain.tables.pojos.Category;
@@ -41,7 +41,7 @@ public class CategoryHandler extends AbstractDominantHandler<CategoryObject, Cat
         Category category = new Category();
         category.setVersionId(versionId);
         category.setCategoryRefId(getTargetObjectRefId());
-        com.rbkmoney.damsel.domain.Category data = categoryObject.getData();
+        dev.vality.damsel.domain.Category data = categoryObject.getData();
         category.setName(data.getName());
         category.setDescription(data.getDescription());
         if (data.isSetType()) {

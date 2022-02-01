@@ -1,12 +1,12 @@
 package com.rbkmoney.newway.handler.event.stock.impl.recurrent.payment.tool;
 
-import com.rbkmoney.damsel.domain.TransactionInfo;
-import com.rbkmoney.damsel.payment_processing.RecurrentPaymentToolChange;
+import dev.vality.damsel.domain.TransactionInfo;
+import dev.vality.damsel.payment_processing.RecurrentPaymentToolChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.recurrent.payment.tool.iface.RecurrentPaymentToolDao;
 import com.rbkmoney.newway.domain.tables.pojos.RecurrentPaymentTool;
 import com.rbkmoney.newway.factory.MachineEventCopyFactory;

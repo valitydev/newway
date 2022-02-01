@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.handler.event.stock.impl.partymngmnt;
 
-import com.rbkmoney.damsel.payment_processing.ClaimStatus;
-import com.rbkmoney.damsel.payment_processing.PartyChange;
+import dev.vality.damsel.payment_processing.ClaimStatus;
+import dev.vality.damsel.payment_processing.PartyChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;

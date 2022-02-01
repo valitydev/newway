@@ -1,8 +1,8 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.CountryObject;
-import com.rbkmoney.damsel.domain.DomainObject;
-import com.rbkmoney.damsel.domain.TradeBlocRef;
+import dev.vality.damsel.domain.CountryObject;
+import dev.vality.damsel.domain.DomainObject;
+import dev.vality.damsel.domain.TradeBlocRef;
 import com.rbkmoney.newway.TestData;
 import com.rbkmoney.newway.dao.dominant.iface.DomainObjectDao;
 import com.rbkmoney.newway.dao.dominant.impl.CountryDaoImpl;

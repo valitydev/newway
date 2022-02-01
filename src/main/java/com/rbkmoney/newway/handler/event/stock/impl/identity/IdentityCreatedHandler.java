@@ -1,13 +1,13 @@
 package com.rbkmoney.newway.handler.event.stock.impl.identity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.rbkmoney.fistful.identity.Change;
-import com.rbkmoney.fistful.identity.TimestampedChange;
+import dev.vality.fistful.identity.Change;
+import dev.vality.fistful.identity.TimestampedChange;
 import com.rbkmoney.geck.filter.Filter;
 import com.rbkmoney.geck.filter.PathConditionFilter;
 import com.rbkmoney.geck.filter.condition.IsNullCondition;
 import com.rbkmoney.geck.filter.rule.PathConditionRule;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.dao.identity.iface.IdentityDao;
 import com.rbkmoney.newway.domain.tables.pojos.Identity;
 import com.rbkmoney.newway.factory.MachineEventCopyFactory;
@@ -42,7 +42,7 @@ public class IdentityCreatedHandler implements IdentityHandler {
                 identityMachineEventCopyFactory.create(event, sequenceId, identityId, timestampedChange.getOccuredAt());
 
         Change change = timestampedChange.getChange();
-        com.rbkmoney.fistful.identity.Identity changeCreated = change.getCreated();
+        dev.vality.fistful.identity.Identity changeCreated = change.getCreated();
         identity.setPartyId(changeCreated.getParty());
         identity.setPartyContractId(changeCreated.getContract());
         identity.setIdentityProviderId(changeCreated.getProvider());

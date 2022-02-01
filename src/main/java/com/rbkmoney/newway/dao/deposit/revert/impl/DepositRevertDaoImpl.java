@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.dao.deposit.revert.impl;
 
-import com.rbkmoney.dao.impl.AbstractGenericDao;
-import com.rbkmoney.mapper.RecordRowMapper;
+import dev.vality.dao.impl.AbstractGenericDao;
+import dev.vality.mapper.RecordRowMapper;
 import com.rbkmoney.newway.dao.deposit.revert.iface.DepositRevertDao;
 import com.rbkmoney.newway.domain.tables.pojos.DepositRevert;
 import com.rbkmoney.newway.domain.tables.records.DepositRevertRecord;

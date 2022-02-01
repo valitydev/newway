@@ -1,7 +1,7 @@
 package com.rbkmoney.newway.dao.invoicing.impl;
 
-import com.rbkmoney.dao.impl.AbstractGenericDao;
-import com.rbkmoney.mapper.RecordRowMapper;
+import dev.vality.dao.impl.AbstractGenericDao;
+import dev.vality.mapper.RecordRowMapper;
 import com.rbkmoney.newway.dao.invoicing.iface.PaymentDao;
 import com.rbkmoney.newway.domain.tables.pojos.Payment;
 import com.rbkmoney.newway.exception.DaoException;

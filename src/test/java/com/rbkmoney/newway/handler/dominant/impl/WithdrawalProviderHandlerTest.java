@@ -1,6 +1,6 @@
 package com.rbkmoney.newway.handler.dominant.impl;
 
-import com.rbkmoney.damsel.domain.*;
+import dev.vality.damsel.domain.*;
 import com.rbkmoney.newway.dao.dominant.impl.WithdrawalProviderDaoImpl;
 import org.junit.Test;
 import org.mockito.Mock;

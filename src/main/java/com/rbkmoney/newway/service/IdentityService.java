@@ -1,9 +1,9 @@
 package com.rbkmoney.newway.service;
 
-import com.rbkmoney.fistful.identity.TimestampedChange;
-import com.rbkmoney.machinegun.eventsink.MachineEvent;
+import dev.vality.fistful.identity.TimestampedChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import com.rbkmoney.newway.handler.event.stock.impl.identity.IdentityHandler;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

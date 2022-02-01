@@ -1,16 +1,16 @@
 package com.rbkmoney.newway.config;
 
-import com.rbkmoney.damsel.payment_processing.EventPayload;
-import com.rbkmoney.damsel.payment_processing.PartyEventData;
-import com.rbkmoney.damsel.payment_processing.RecurrentPaymentToolEventData;
+import dev.vality.damsel.payment_processing.EventPayload;
+import dev.vality.damsel.payment_processing.PartyEventData;
+import dev.vality.damsel.payment_processing.RecurrentPaymentToolEventData;
 import com.rbkmoney.geck.serializer.Geck;
-import com.rbkmoney.sink.common.parser.impl.MachineEventParser;
-import com.rbkmoney.sink.common.parser.impl.PartyEventDataMachineEventParser;
-import com.rbkmoney.sink.common.parser.impl.PaymentEventPayloadMachineEventParser;
-import com.rbkmoney.sink.common.serialization.BinaryDeserializer;
-import com.rbkmoney.sink.common.serialization.impl.AbstractThriftBinaryDeserializer;
-import com.rbkmoney.sink.common.serialization.impl.PartyEventDataDeserializer;
-import com.rbkmoney.sink.common.serialization.impl.PaymentEventPayloadDeserializer;
+import dev.vality.sink.common.parser.impl.MachineEventParser;
+import dev.vality.sink.common.parser.impl.PartyEventDataMachineEventParser;
+import dev.vality.sink.common.parser.impl.PaymentEventPayloadMachineEventParser;
+import dev.vality.sink.common.serialization.BinaryDeserializer;
+import dev.vality.sink.common.serialization.impl.AbstractThriftBinaryDeserializer;
+import dev.vality.sink.common.serialization.impl.PartyEventDataDeserializer;
+import dev.vality.sink.common.serialization.impl.PaymentEventPayloadDeserializer;
 import com.rbkmoney.xrates.rate.Change;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,114 +69,114 @@ public class SerializationConfig {
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.deposit.Event> depositEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.deposit.Event> depositEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.deposit.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.deposit.Event.class);
+            public dev.vality.fistful.deposit.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.deposit.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.deposit.Event> depositEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.deposit.Event> depositEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.deposit.Event> depositEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.deposit.Event> depositEventDataBinaryDeserializer) {
         return new MachineEventParser<>(depositEventDataBinaryDeserializer);
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.destination.Event> destinationEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.destination.Event> destinationEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.destination.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.destination.Event.class);
+            public dev.vality.fistful.destination.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.destination.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.destination.Event> destinationEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.destination.Event> destinationEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.destination.Event> destinationEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.destination.Event> destinationEventDataBinaryDeserializer) {
         return new MachineEventParser<>(destinationEventDataBinaryDeserializer);
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.identity.Event> identityEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.identity.Event> identityEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.identity.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.identity.Event.class);
+            public dev.vality.fistful.identity.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.identity.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.identity.Event> identityEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.identity.Event> identityEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.identity.Event> identityEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.identity.Event> identityEventDataBinaryDeserializer) {
         return new MachineEventParser<>(identityEventDataBinaryDeserializer);
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.source.Event> sourceEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.source.Event> sourceEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.source.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.source.Event.class);
+            public dev.vality.fistful.source.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.source.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.source.Event> sourceEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.source.Event> sourceEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.source.Event> sourceEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.source.Event> sourceEventDataBinaryDeserializer) {
         return new MachineEventParser<>(sourceEventDataBinaryDeserializer);
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.wallet.Event> walletEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.wallet.Event> walletEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.wallet.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.wallet.Event.class);
+            public dev.vality.fistful.wallet.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.wallet.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.wallet.Event> walletEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.wallet.Event> walletEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.wallet.Event> walletEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.wallet.Event> walletEventDataBinaryDeserializer) {
         return new MachineEventParser<>(walletEventDataBinaryDeserializer);
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.withdrawal.Event> withdrawalEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.withdrawal.Event> withdrawalEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.withdrawal.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.withdrawal.Event.class);
+            public dev.vality.fistful.withdrawal.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.withdrawal.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.withdrawal.Event> withdrawalEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.withdrawal.Event> withdrawalEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.withdrawal.Event> withdrawalEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.withdrawal.Event> withdrawalEventDataBinaryDeserializer) {
         return new MachineEventParser<>(withdrawalEventDataBinaryDeserializer);
     }
 
     @Bean
-    public BinaryDeserializer<com.rbkmoney.fistful.withdrawal_session.Event> withdrawalSessionEventDataBinaryDeserializer() {
+    public BinaryDeserializer<dev.vality.fistful.withdrawal_session.Event> withdrawalSessionEventDataBinaryDeserializer() {
         return new AbstractThriftBinaryDeserializer<>() {
             @Override
-            public com.rbkmoney.fistful.withdrawal_session.Event deserialize(byte[] bytes) {
-                return Geck.msgPackToTBase(bytes, com.rbkmoney.fistful.withdrawal_session.Event.class);
+            public dev.vality.fistful.withdrawal_session.Event deserialize(byte[] bytes) {
+                return Geck.msgPackToTBase(bytes, dev.vality.fistful.withdrawal_session.Event.class);
             }
         };
     }
 
     @Bean
-    public MachineEventParser<com.rbkmoney.fistful.withdrawal_session.Event> withdrawalSessionEventDataMachineEventParser(
-            BinaryDeserializer<com.rbkmoney.fistful.withdrawal_session.Event> withdrawalSessionEventDataBinaryDeserializer) {
+    public MachineEventParser<dev.vality.fistful.withdrawal_session.Event> withdrawalSessionEventDataMachineEventParser(
+            BinaryDeserializer<dev.vality.fistful.withdrawal_session.Event> withdrawalSessionEventDataBinaryDeserializer) {
         return new MachineEventParser<>(withdrawalSessionEventDataBinaryDeserializer);
     }
 }
