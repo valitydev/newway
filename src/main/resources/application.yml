@@ -28,11 +28,8 @@ management:
     port: '@management.port@'
   metrics:
     export:
-      statsd:
-        flavor: etsy
-        enabled: false
       prometheus:
-        enabled: false
+        enabled: true
   endpoint:
     health:
       show-details: always
