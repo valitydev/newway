@@ -2,10 +2,10 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <root level="info">
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
     </root>
     <logger name="dev.vality.newway">
-        <level value="info"/>
+        <level value="WARN"/>
     </logger>
 </configuration>
