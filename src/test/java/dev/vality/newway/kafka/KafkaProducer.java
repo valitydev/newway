@@ -6,7 +6,6 @@ import dev.vality.testcontainers.annotations.kafka.config.KafkaProducerConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 
@@ -17,9 +16,6 @@ import java.time.format.DateTimeFormatter;
 @Import(KafkaProducerConfig.class)
 @Slf4j
 public class KafkaProducer {
-
-    @Value("${kafka.bootstrap-servers}")
-    private String bootstrapServers;
 
     @Autowired
     private dev.vality.testcontainers.annotations.kafka.config.KafkaProducer<TBase<?, ?>> testThriftKafkaProducer;
