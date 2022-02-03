@@ -11,7 +11,7 @@ import dev.vality.newway.domain.tables.pojos.CashFlow;
 public class DaoUtils {
 
     public static CashFlow createCashFlow(long objId, long amount, String currencyCode, long sourceAccountId,
-                                          dev.vality.newway.domain.enums.CashFlowAccount provider, String sourceAccountTypeValue,
+                                          CashFlowAccount provider, String sourceAccountTypeValue,
                                           long destinationAccountId, CashFlowAccount destinationAccountType,
                                           String destinationAccountTypeValue, PaymentChangeType paymentChangeType) {
         CashFlow cashFlowPaymentAmount = new CashFlow();

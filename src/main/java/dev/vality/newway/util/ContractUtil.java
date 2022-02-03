@@ -14,9 +14,9 @@ public class ContractUtil {
                 .collect(Collectors.toList());
     }
 
-    public static dev.vality.newway.domain.tables.pojos.ContractAdjustment convertContractAdjustment(dev.vality.damsel.domain.ContractAdjustment ca,
+    public static dev.vality.newway.domain.tables.pojos.ContractAdjustment convertContractAdjustment(ContractAdjustment ca,
                                                                                                      long cntrctId) {
-        dev.vality.newway.domain.tables.pojos.ContractAdjustment adjustment = new dev.vality.newway.domain.tables.pojos.ContractAdjustment();
+        var adjustment = new dev.vality.newway.domain.tables.pojos.ContractAdjustment();
         adjustment.setCntrctId(cntrctId);
         adjustment.setContractAdjustmentId(ca.getId());
         adjustment.setCreatedAt(TypeUtil.stringToLocalDateTime(ca.getCreatedAt()));
@@ -39,8 +39,8 @@ public class ContractUtil {
                                                                                    String payoutToolId,
                                                                                    LocalDateTime createdAt,
                                                                                    String currCode,
-                                                                                   dev.vality.damsel.domain.PayoutToolInfo payoutToolInfo) {
-        dev.vality.newway.domain.tables.pojos.PayoutTool payoutTool = new dev.vality.newway.domain.tables.pojos.PayoutTool();
+                                                                                   PayoutToolInfo payoutToolInfo) {
+        var payoutTool = new dev.vality.newway.domain.tables.pojos.PayoutTool();
         payoutTool.setCntrctId(cntrctId);
         payoutTool.setPayoutToolId(payoutToolId);
         payoutTool.setCreatedAt(createdAt);
@@ -49,14 +49,14 @@ public class ContractUtil {
         return payoutTool;
     }
 
-    public static dev.vality.newway.domain.tables.pojos.PayoutTool convertPayoutTool(dev.vality.damsel.domain.PayoutTool pt, long cntrctId) {
+    public static dev.vality.newway.domain.tables.pojos.PayoutTool convertPayoutTool(PayoutTool pt, long cntrctId) {
         return buildPayoutTool(cntrctId, pt.getId(), TypeUtil.stringToLocalDateTime(pt.getCreatedAt()),
                 pt.getCurrency().getSymbolicCode(), pt.getPayoutToolInfo());
     }
 
     public static void setPayoutToolInfo(dev.vality.newway.domain.tables.pojos.PayoutTool payoutTool,
-                                         dev.vality.damsel.domain.PayoutToolInfo payoutToolInfoSource) {
-        dev.vality.newway.domain.enums.PayoutToolInfo payoutToolInfo =
+                                         PayoutToolInfo payoutToolInfoSource) {
+        var payoutToolInfo =
                 TypeUtil.toEnumField(payoutToolInfoSource.getSetField().getFieldName(), dev.vality.newway.domain.enums.PayoutToolInfo.class);
         if (payoutToolInfo == null) {
             throw new IllegalArgumentException("Illegal payout tool info: " + payoutToolInfoSource);
@@ -127,9 +127,9 @@ public class ContractUtil {
         contract.setReportActScheduleId(serviceAcceptanceActPreferences.getSchedule().getId());
         contract.setReportActSignerPosition(serviceAcceptanceActPreferences.getSigner().getPosition());
         contract.setReportActSignerFullName(serviceAcceptanceActPreferences.getSigner().getFullName());
-        dev.vality.damsel.domain.RepresentativeDocument representativeDocument =
+        RepresentativeDocument representativeDocument =
                 serviceAcceptanceActPreferences.getSigner().getDocument();
-        dev.vality.newway.domain.enums.RepresentativeDocument reportActSignerDocument =
+        var reportActSignerDocument =
                 TypeUtil.toEnumField(representativeDocument.getSetField().getFieldName(), dev.vality.newway.domain.enums.RepresentativeDocument.class);
         if (reportActSignerDocument == null) {
             throw new IllegalArgumentException("Illegal representative document: " + representativeDocument);

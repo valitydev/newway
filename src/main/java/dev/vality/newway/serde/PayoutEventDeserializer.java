@@ -1,25 +1,18 @@
 package dev.vality.newway.serde;
 
 import dev.vality.payout.manager.Event;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.transport.TTransportException;
 
 import java.util.Map;
 
 @Slf4j
 public class PayoutEventDeserializer implements Deserializer<Event> {
 
-    ThreadLocal<TDeserializer> thriftDeserializerThreadLocal =
-            ThreadLocal.withInitial(() -> {
-                try {
-                    return new TDeserializer(new TBinaryProtocol.Factory());
-                } catch (TTransportException e) {
-                    throw new RuntimeException();
-                }
-            });
+    ThreadLocal<TDeserializer> thriftDeserializerThreadLocal = ThreadLocal.withInitial(this::getTDeserializer);
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
@@ -41,5 +34,10 @@ public class PayoutEventDeserializer implements Deserializer<Event> {
 
     @Override
     public void close() {
+    }
+
+    @SneakyThrows
+    private TDeserializer getTDeserializer() {
+        return new TDeserializer(new TBinaryProtocol.Factory());
     }
 }

@@ -113,7 +113,7 @@ public class DaoTests {
         jdbcTemplate.execute("truncate table nw.terminal cascade");
         jdbcTemplate.execute("truncate table nw.term_set_hierarchy cascade");
 
-        dev.vality.newway.domain.tables.pojos.Calendar calendar = dev.vality.testcontainers.annotations.util.RandomBeans.random(dev.vality.newway.domain.tables.pojos.Calendar.class);
+        var calendar = dev.vality.testcontainers.annotations.util.RandomBeans.random(dev.vality.newway.domain.tables.pojos.Calendar.class);
         calendar.setCurrent(true);
         calendarDao.save(calendar);
         calendarDao.updateNotCurrent(calendar.getCalendarRefId());
@@ -123,7 +123,7 @@ public class DaoTests {
         categoryDao.save(category);
         categoryDao.updateNotCurrent(category.getCategoryRefId());
 
-        dev.vality.newway.domain.tables.pojos.Currency currency = dev.vality.testcontainers.annotations.util.RandomBeans.random(Currency.class);
+        var currency = dev.vality.testcontainers.annotations.util.RandomBeans.random(Currency.class);
         currency.setCurrent(true);
         currencyDao.save(currency);
         currencyDao.updateNotCurrent(currency.getCurrencyRefId());
@@ -560,16 +560,11 @@ public class DaoTests {
         Assertions.assertEquals(id, ids.get(0));
 
         rateDao.updateNotCurrent(Collections.singletonList(id));
-        try {
-            jdbcTemplate.queryForObject(
-                    "SELECT * FROM nw.rate AS rate WHERE rate.id = ? AND rate.current",
-                    new Object[]{id},
-                    new BeanPropertyRowMapper(Rate.class)
-            );
-            Assertions.fail();
-        } catch (Exception e) {
-            Assertions.assertTrue(e instanceof EmptyResultDataAccessException);
-        }
+        assertThrows(EmptyResultDataAccessException.class, () -> jdbcTemplate.queryForObject(
+                "SELECT * FROM nw.rate AS rate WHERE rate.id = ? AND rate.current",
+                new Object[]{id},
+                new BeanPropertyRowMapper(Rate.class)
+        ));
     }
 
     @Test

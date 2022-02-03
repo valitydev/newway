@@ -9,32 +9,28 @@ public class CashFlowUtilTest {
     @Test
     public void testCorrectCashFlowPostings() {
         for (CashFlowType cashFlowType : CashFlowType.values()) {
-            cashFlowType.getSources().forEach((sourceAccount) ->
-                    cashFlowType.getDestinations().forEach(
-                            (destinationAccount) ->
-                                    Assertions.assertEquals(cashFlowType, CashFlowType.getCashFlowType(
-                                            new FinalCashFlowPosting(
-                                                    new FinalCashFlowAccount(sourceAccount, 1),
-                                                    new FinalCashFlowAccount(destinationAccount, 2),
-                                                    new Cash(5, new CurrencyRef("UGA"))
-                                            )
-                                    ))
-
-                    )
-            );
+            for (CashFlowAccount sourceAccount : cashFlowType.getSources()) {
+                for (CashFlowAccount destinationAccount : cashFlowType.getDestinations()) {
+                    Assertions.assertEquals(cashFlowType, CashFlowType.getCashFlowType(
+                            new FinalCashFlowPosting(
+                                    new FinalCashFlowAccount(sourceAccount, 1),
+                                    new FinalCashFlowAccount(destinationAccount, 2),
+                                    new Cash(5, new CurrencyRef("UGA"))
+                            )
+                    ));
+                }
+            }
         }
     }
 
     @Test
     public void testCorrectCashFlowPostingsWithCashFlowAccount() {
         for (CashFlowType cashFlowType : CashFlowType.values()) {
-            cashFlowType.getSources().forEach((sourceAccount) ->
-                    cashFlowType.getDestinations().forEach(
-                            (destinationAccount) ->
-                                    Assertions.assertEquals(cashFlowType, CashFlowType.getCashFlowType(sourceAccount, destinationAccount))
-
-                    )
-            );
+            for (CashFlowAccount sourceAccount : cashFlowType.getSources()) {
+                for (CashFlowAccount destinationAccount : cashFlowType.getDestinations()) {
+                    Assertions.assertEquals(cashFlowType, CashFlowType.getCashFlowType(sourceAccount, destinationAccount));
+                }
+            }
         }
     }
 

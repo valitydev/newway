@@ -36,8 +36,8 @@ public class PayoutStatusChangedHandler implements PayoutHandler {
     public void handle(PayoutChange change, Event event) {
         String payoutId = event.getPayoutId();
         log.info("Start payout status changed handling, sequenceId={}, payoutId={}", event.getSequenceId(), payoutId);
-        dev.vality.newway.domain.tables.pojos.Payout payoutSourceOld = payoutDao.get(payoutId);
-        dev.vality.newway.domain.tables.pojos.Payout payoutNew = new Payout(payoutSourceOld);
+        var payoutSourceOld = payoutDao.get(payoutId);
+        var payoutNew = new Payout(payoutSourceOld);
         payoutNew.setId(null);
         payoutNew.setWtime(null);
         payoutNew.setSequenceId(event.getSequenceId());

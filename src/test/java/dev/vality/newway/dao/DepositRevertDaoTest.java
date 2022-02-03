@@ -6,13 +6,9 @@ import dev.vality.newway.domain.tables.pojos.DepositRevert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @PostgresqlSpringBootITest
 public class DepositRevertDaoTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private DepositRevertDao depositRevertDao;

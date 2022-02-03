@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class IdentityChallengeStatusChangedHandler implements IdentityHandler {
 
     private final ChallengeDao challengeDao;
-    private final MachineEventCopyFactory<dev.vality.newway.domain.tables.pojos.Challenge, String> challengeMachineEventCopyFactory;
+    private final MachineEventCopyFactory<Challenge, String> challengeMachineEventCopyFactory;
 
     @Getter
     private Filter filter = new PathConditionFilter(
@@ -42,8 +42,8 @@ public class IdentityChallengeStatusChangedHandler implements IdentityHandler {
         log.info("Start identity challenge status changed handling, sequenceId={}, identityId={}, challengeId={}",
                 sequenceId, identityId, challengeId);
 
-        final dev.vality.newway.domain.tables.pojos.Challenge challengeOld = challengeDao.get(identityId, challengeChange.getId());
-        Challenge challengeNew = challengeMachineEventCopyFactory
+        var challengeOld = challengeDao.get(identityId, challengeChange.getId());
+        var challengeNew = challengeMachineEventCopyFactory
                 .create(event, sequenceId, identityId, challengeOld, timestampedChange.getOccuredAt());
 
         challengeNew.setChallengeId(challengeChange.getId());
