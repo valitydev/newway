@@ -16,6 +16,7 @@ import dev.vality.newway.dao.recurrent.payment.tool.iface.RecurrentPaymentToolDa
 import dev.vality.newway.domain.enums.AdjustmentCashFlowType;
 import dev.vality.newway.domain.enums.CashFlowAccount;
 import dev.vality.newway.domain.enums.PaymentChangeType;
+import dev.vality.newway.domain.tables.pojos.Calendar;
 import dev.vality.newway.domain.tables.pojos.Currency;
 import dev.vality.newway.domain.tables.pojos.*;
 import dev.vality.newway.exception.NotFoundException;
@@ -113,7 +114,7 @@ public class DaoTests {
         jdbcTemplate.execute("truncate table nw.terminal cascade");
         jdbcTemplate.execute("truncate table nw.term_set_hierarchy cascade");
 
-        var calendar = dev.vality.testcontainers.annotations.util.RandomBeans.random(dev.vality.newway.domain.tables.pojos.Calendar.class);
+        var calendar = dev.vality.testcontainers.annotations.util.RandomBeans.random(Calendar.class);
         calendar.setCurrent(true);
         calendarDao.save(calendar);
         calendarDao.updateNotCurrent(calendar.getCalendarRefId());
