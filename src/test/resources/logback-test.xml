@@ -8,4 +8,5 @@
     <logger name="dev.vality.newway">
         <level value="WARN"/>
     </logger>
+    <logger name="org.apache.kafka.common.utils.AppInfoParser" level="OFF"/>
 </configuration>
