@@ -3,7 +3,6 @@ package dev.vality.newway.dao.invoicing.impl;
 import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.AdjustmentDao;
-import dev.vality.newway.domain.Tables;
 import dev.vality.newway.domain.tables.pojos.Adjustment;
 import dev.vality.newway.domain.tables.records.AdjustmentRecord;
 import dev.vality.newway.exception.DaoException;
@@ -18,6 +17,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Adjustment.ADJUSTMENT;
+
 @Component
 public class AdjustmentDaoImpl extends AbstractGenericDao implements AdjustmentDao {
 
@@ -26,17 +27,17 @@ public class AdjustmentDaoImpl extends AbstractGenericDao implements AdjustmentD
     @Autowired
     public AdjustmentDaoImpl(DataSource dataSource) {
         super(dataSource);
-        adjustmentRowMapper = new RecordRowMapper<>(Tables.ADJUSTMENT, Adjustment.class);
+        adjustmentRowMapper = new RecordRowMapper<>(ADJUSTMENT, Adjustment.class);
     }
 
     @Override
     public Optional<Long> save(Adjustment adjustment) throws DaoException {
-        AdjustmentRecord record = getDslContext().newRecord(Tables.ADJUSTMENT, adjustment);
-        Query query = getDslContext().insertInto(Tables.ADJUSTMENT)
+        AdjustmentRecord record = getDslContext().newRecord(ADJUSTMENT, adjustment);
+        Query query = getDslContext().insertInto(ADJUSTMENT)
                 .set(record)
-                .onConflict(Tables.ADJUSTMENT.INVOICE_ID, Tables.ADJUSTMENT.SEQUENCE_ID, Tables.ADJUSTMENT.CHANGE_ID)
+                .onConflict(ADJUSTMENT.INVOICE_ID, ADJUSTMENT.SEQUENCE_ID, ADJUSTMENT.CHANGE_ID)
                 .doNothing()
-                .returning(Tables.ADJUSTMENT.ID);
+                .returning(ADJUSTMENT.ID);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
@@ -45,11 +46,11 @@ public class AdjustmentDaoImpl extends AbstractGenericDao implements AdjustmentD
     @NotNull
     @Override
     public Adjustment get(String invoiceId, String paymentId, String adjustmentId) throws DaoException {
-        Query query = getDslContext().selectFrom(Tables.ADJUSTMENT)
-                .where(Tables.ADJUSTMENT.INVOICE_ID.eq(invoiceId)
-                        .and(Tables.ADJUSTMENT.PAYMENT_ID.eq(paymentId))
-                        .and(Tables.ADJUSTMENT.ADJUSTMENT_ID.eq(adjustmentId))
-                        .and(Tables.ADJUSTMENT.CURRENT));
+        Query query = getDslContext().selectFrom(ADJUSTMENT)
+                .where(ADJUSTMENT.INVOICE_ID.eq(invoiceId)
+                        .and(ADJUSTMENT.PAYMENT_ID.eq(paymentId))
+                        .and(ADJUSTMENT.ADJUSTMENT_ID.eq(adjustmentId))
+                        .and(ADJUSTMENT.CURRENT));
 
         return Optional.ofNullable(fetchOne(query, adjustmentRowMapper))
                 .orElseThrow(() -> new NotFoundException(
@@ -59,7 +60,7 @@ public class AdjustmentDaoImpl extends AbstractGenericDao implements AdjustmentD
 
     @Override
     public void updateNotCurrent(Long id) throws DaoException {
-        Query query = getDslContext().update(Tables.ADJUSTMENT).set(Tables.ADJUSTMENT.CURRENT, false).where(Tables.ADJUSTMENT.ID.eq(id));
+        Query query = getDslContext().update(ADJUSTMENT).set(ADJUSTMENT.CURRENT, false).where(ADJUSTMENT.ID.eq(id));
         executeOne(query);
     }
 }

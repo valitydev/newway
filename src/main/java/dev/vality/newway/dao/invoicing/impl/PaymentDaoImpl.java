@@ -3,7 +3,6 @@ package dev.vality.newway.dao.invoicing.impl;
 import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.PaymentDao;
-import dev.vality.newway.domain.Tables;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
@@ -21,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static dev.vality.newway.domain.tables.Payment.PAYMENT;
+
 @Component
 public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
 
@@ -29,16 +30,16 @@ public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
     @Autowired
     public PaymentDaoImpl(DataSource dataSource) {
         super(dataSource);
-        paymentRowMapper = new RecordRowMapper<>(Tables.PAYMENT, Payment.class);
+        paymentRowMapper = new RecordRowMapper<>(PAYMENT, Payment.class);
     }
 
     @Override
     public void saveBatch(List<Payment> payments) throws DaoException {
         List<Query> queries = payments.stream()
-                .map(payment -> getDslContext().newRecord(Tables.PAYMENT, payment))
-                .map(paymentRecord -> getDslContext().insertInto(Tables.PAYMENT)
+                .map(payment -> getDslContext().newRecord(PAYMENT, payment))
+                .map(paymentRecord -> getDslContext().insertInto(PAYMENT)
                         .set(paymentRecord)
-                        .onConflict(Tables.PAYMENT.INVOICE_ID, Tables.PAYMENT.SEQUENCE_ID, Tables.PAYMENT.CHANGE_ID)
+                        .onConflict(PAYMENT.INVOICE_ID, PAYMENT.SEQUENCE_ID, PAYMENT.CHANGE_ID)
                         .doNothing()
                 )
                 .collect(Collectors.toList());
@@ -48,10 +49,10 @@ public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
     @Override
     public void updateBatch(List<Payment> payments) throws DaoException {
         List<Query> queries = payments.stream()
-                .map(payment -> getDslContext().newRecord(Tables.PAYMENT, payment))
-                .map(paymentRecord -> getDslContext().update(Tables.PAYMENT)
+                .map(payment -> getDslContext().newRecord(PAYMENT, payment))
+                .map(paymentRecord -> getDslContext().update(PAYMENT)
                         .set(paymentRecord)
-                        .where(Tables.PAYMENT.ID.eq(paymentRecord.getId())))
+                        .where(PAYMENT.ID.eq(paymentRecord.getId())))
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
@@ -59,10 +60,10 @@ public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
     @NotNull
     @Override
     public Payment get(String invoiceId, String paymentId) throws DaoException {
-        Query query = getDslContext().selectFrom(Tables.PAYMENT)
-                .where(Tables.PAYMENT.INVOICE_ID.eq(invoiceId)
-                        .and(Tables.PAYMENT.PAYMENT_ID.eq(paymentId))
-                        .and(Tables.PAYMENT.CURRENT));
+        Query query = getDslContext().selectFrom(PAYMENT)
+                .where(PAYMENT.INVOICE_ID.eq(invoiceId)
+                        .and(PAYMENT.PAYMENT_ID.eq(paymentId))
+                        .and(PAYMENT.CURRENT));
 
         return Optional.ofNullable(fetchOne(query, paymentRowMapper))
                 .orElseThrow(() -> new NotFoundException(

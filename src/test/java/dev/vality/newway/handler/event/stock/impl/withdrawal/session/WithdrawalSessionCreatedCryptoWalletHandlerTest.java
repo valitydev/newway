@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Objects;
 
+import static dev.vality.newway.domain.tables.WithdrawalSession.WITHDRAWAL_SESSION;
 import static dev.vality.newway.utils.WithdrawalSessionCreatedHandlerUtils.createSession;
 
 @KafkaPostgresqlSpringBootITest
@@ -44,7 +45,7 @@ public class WithdrawalSessionCreatedCryptoWalletHandlerTest {
         );
 
         WithdrawalSession result = jdbcTemplate.queryForObject(sqlStatement,
-                new RecordRowMapper<>(dev.vality.newway.domain.tables.WithdrawalSession.WITHDRAWAL_SESSION, WithdrawalSession.class));
+                new RecordRowMapper<>(WITHDRAWAL_SESSION, WithdrawalSession.class));
 
         Assertions.assertNotNull(Objects.requireNonNull(result).getResourceCryptoWalletId());
         Assertions.assertNotNull(result.getResourceCryptoWalletData());

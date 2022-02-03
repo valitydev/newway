@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Deposit.DEPOSIT;
+
 @Component
 public class DepositDaoImpl extends AbstractGenericDao implements DepositDao {
 
@@ -25,18 +27,18 @@ public class DepositDaoImpl extends AbstractGenericDao implements DepositDao {
     @Autowired
     public DepositDaoImpl(DataSource dataSource) {
         super(dataSource);
-        depositRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Deposit.DEPOSIT, Deposit.class);
+        depositRowMapper = new RecordRowMapper<>(DEPOSIT, Deposit.class);
     }
 
     @Override
     public Optional<Long> save(Deposit deposit) throws DaoException {
-        DepositRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.Deposit.DEPOSIT, deposit);
+        DepositRecord record = getDslContext().newRecord(DEPOSIT, deposit);
         Query query = getDslContext()
-                .insertInto(dev.vality.newway.domain.tables.Deposit.DEPOSIT)
+                .insertInto(DEPOSIT)
                 .set(record)
-                .onConflict(dev.vality.newway.domain.tables.Deposit.DEPOSIT.DEPOSIT_ID, dev.vality.newway.domain.tables.Deposit.DEPOSIT.SEQUENCE_ID)
+                .onConflict(DEPOSIT.DEPOSIT_ID, DEPOSIT.SEQUENCE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.Deposit.DEPOSIT.ID);
+                .returning(DEPOSIT.ID);
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
@@ -46,9 +48,9 @@ public class DepositDaoImpl extends AbstractGenericDao implements DepositDao {
     @NotNull
     @Override
     public Deposit get(String depositId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Deposit.DEPOSIT)
-                .where(dev.vality.newway.domain.tables.Deposit.DEPOSIT.DEPOSIT_ID.eq(depositId)
-                        .and(dev.vality.newway.domain.tables.Deposit.DEPOSIT.CURRENT));
+        Query query = getDslContext().selectFrom(DEPOSIT)
+                .where(DEPOSIT.DEPOSIT_ID.eq(depositId)
+                        .and(DEPOSIT.CURRENT));
         return Optional.ofNullable(fetchOne(query, depositRowMapper))
                 .orElseThrow(
                         () -> new NotFoundException(String.format("Deposit not found, depositId='%s'", depositId)));
@@ -56,9 +58,9 @@ public class DepositDaoImpl extends AbstractGenericDao implements DepositDao {
 
     @Override
     public void updateNotCurrent(Long depositId) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.Deposit.DEPOSIT).set(dev.vality.newway.domain.tables.Deposit.DEPOSIT.CURRENT, false)
-                .where(dev.vality.newway.domain.tables.Deposit.DEPOSIT.ID.eq(depositId)
-                        .and(dev.vality.newway.domain.tables.Deposit.DEPOSIT.CURRENT));
+        Query query = getDslContext().update(DEPOSIT).set(DEPOSIT.CURRENT, false)
+                .where(DEPOSIT.ID.eq(depositId)
+                        .and(DEPOSIT.CURRENT));
         execute(query);
     }
 

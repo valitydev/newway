@@ -19,6 +19,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Refund.REFUND;
+
 @Component
 public class RefundDaoImpl extends AbstractGenericDao implements RefundDao {
 
@@ -27,17 +29,17 @@ public class RefundDaoImpl extends AbstractGenericDao implements RefundDao {
     @Autowired
     public RefundDaoImpl(DataSource dataSource) {
         super(dataSource);
-        refundRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Refund.REFUND, Refund.class);
+        refundRowMapper = new RecordRowMapper<>(REFUND, Refund.class);
     }
 
     @Override
     public Optional<Long> save(Refund refund) throws DaoException {
-        RefundRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.Refund.REFUND, refund);
-        Query query = getDslContext().insertInto(dev.vality.newway.domain.tables.Refund.REFUND)
+        RefundRecord record = getDslContext().newRecord(REFUND, refund);
+        Query query = getDslContext().insertInto(REFUND)
                 .set(record)
-                .onConflict(dev.vality.newway.domain.tables.Refund.REFUND.INVOICE_ID, dev.vality.newway.domain.tables.Refund.REFUND.SEQUENCE_ID, dev.vality.newway.domain.tables.Refund.REFUND.CHANGE_ID)
+                .onConflict(REFUND.INVOICE_ID, REFUND.SEQUENCE_ID, REFUND.CHANGE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.Refund.REFUND.ID);
+                .returning(REFUND.ID);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
@@ -46,11 +48,11 @@ public class RefundDaoImpl extends AbstractGenericDao implements RefundDao {
     @NotNull
     @Override
     public Refund get(String invoiceId, String paymentId, String refundId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Refund.REFUND)
-                .where(dev.vality.newway.domain.tables.Refund.REFUND.INVOICE_ID.eq(invoiceId)
-                        .and(dev.vality.newway.domain.tables.Refund.REFUND.PAYMENT_ID.eq(paymentId))
-                        .and(dev.vality.newway.domain.tables.Refund.REFUND.REFUND_ID.eq(refundId))
-                        .and(dev.vality.newway.domain.tables.Refund.REFUND.CURRENT));
+        Query query = getDslContext().selectFrom(REFUND)
+                .where(REFUND.INVOICE_ID.eq(invoiceId)
+                        .and(REFUND.PAYMENT_ID.eq(paymentId))
+                        .and(REFUND.REFUND_ID.eq(refundId))
+                        .and(REFUND.CURRENT));
 
         return Optional.ofNullable(fetchOne(query, refundRowMapper))
                 .orElseThrow(() -> new NotFoundException(String.format("Refund not found, " +
@@ -77,7 +79,7 @@ public class RefundDaoImpl extends AbstractGenericDao implements RefundDao {
 
     @Override
     public void updateNotCurrent(Long id) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.Refund.REFUND).set(dev.vality.newway.domain.tables.Refund.REFUND.CURRENT, false).where(dev.vality.newway.domain.tables.Refund.REFUND.ID.eq(id));
+        Query query = getDslContext().update(REFUND).set(REFUND.CURRENT, false).where(REFUND.ID.eq(id));
         executeOne(query);
     }
 }

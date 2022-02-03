@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.util.List;
 
+import static dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW;
+
 @Component
 public class FistfulCashFlowDaoImpl extends AbstractGenericDao implements FistfulCashFlowDao {
 
@@ -21,15 +23,15 @@ public class FistfulCashFlowDaoImpl extends AbstractGenericDao implements Fistfu
 
     public FistfulCashFlowDaoImpl(DataSource dataSource) {
         super(dataSource);
-        cashFlowRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW, FistfulCashFlow.class);
+        cashFlowRowMapper = new RecordRowMapper<>(FISTFUL_CASH_FLOW, FistfulCashFlow.class);
     }
 
     @Override
     public void save(List<FistfulCashFlow> cashFlowList) throws DaoException {
         //todo: Batch insert
         for (FistfulCashFlow paymentCashFlow : cashFlowList) {
-            FistfulCashFlowRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW, paymentCashFlow);
-            Query query = getDslContext().insertInto(dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW).set(record);
+            FistfulCashFlowRecord record = getDslContext().newRecord(FISTFUL_CASH_FLOW, paymentCashFlow);
+            Query query = getDslContext().insertInto(FISTFUL_CASH_FLOW).set(record);
             executeOne(query);
         }
     }
@@ -37,9 +39,9 @@ public class FistfulCashFlowDaoImpl extends AbstractGenericDao implements Fistfu
     @Override
     public List<FistfulCashFlow> getByObjId(Long objId, FistfulCashFlowChangeType cashFlowChangeType)
             throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW)
-                .where(dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW.OBJ_ID.eq(objId))
-                .and(dev.vality.newway.domain.tables.FistfulCashFlow.FISTFUL_CASH_FLOW.OBJ_TYPE.eq(cashFlowChangeType));
+        Query query = getDslContext().selectFrom(FISTFUL_CASH_FLOW)
+                .where(FISTFUL_CASH_FLOW.OBJ_ID.eq(objId))
+                .and(FISTFUL_CASH_FLOW.OBJ_TYPE.eq(cashFlowChangeType));
         return fetch(query, cashFlowRowMapper);
     }
 

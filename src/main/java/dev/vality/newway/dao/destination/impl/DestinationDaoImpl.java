@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Destination.DESTINATION;
+
 @Component
 public class DestinationDaoImpl extends AbstractGenericDao implements DestinationDao {
 
@@ -25,18 +27,18 @@ public class DestinationDaoImpl extends AbstractGenericDao implements Destinatio
     @Autowired
     public DestinationDaoImpl(DataSource dataSource) {
         super(dataSource);
-        destinationRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Destination.DESTINATION, Destination.class);
+        destinationRowMapper = new RecordRowMapper<>(DESTINATION, Destination.class);
     }
 
     @Override
     public Optional<Long> save(Destination destination) throws DaoException {
-        DestinationRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.Destination.DESTINATION, destination);
+        DestinationRecord record = getDslContext().newRecord(DESTINATION, destination);
         Query query = getDslContext()
-                .insertInto(dev.vality.newway.domain.tables.Destination.DESTINATION)
+                .insertInto(DESTINATION)
                 .set(record)
-                .onConflict(dev.vality.newway.domain.tables.Destination.DESTINATION.DESTINATION_ID, dev.vality.newway.domain.tables.Destination.DESTINATION.SEQUENCE_ID)
+                .onConflict(DESTINATION.DESTINATION_ID, DESTINATION.SEQUENCE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.Destination.DESTINATION.ID);
+                .returning(DESTINATION.ID);
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
@@ -46,9 +48,9 @@ public class DestinationDaoImpl extends AbstractGenericDao implements Destinatio
     @NotNull
     @Override
     public Destination get(String destinationId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Destination.DESTINATION)
-                .where(dev.vality.newway.domain.tables.Destination.DESTINATION.DESTINATION_ID.eq(destinationId)
-                        .and(dev.vality.newway.domain.tables.Destination.DESTINATION.CURRENT));
+        Query query = getDslContext().selectFrom(DESTINATION)
+                .where(DESTINATION.DESTINATION_ID.eq(destinationId)
+                        .and(DESTINATION.CURRENT));
 
         return Optional.ofNullable(fetchOne(query, destinationRowMapper))
                 .orElseThrow(() -> new NotFoundException(
@@ -57,9 +59,9 @@ public class DestinationDaoImpl extends AbstractGenericDao implements Destinatio
 
     @Override
     public void updateNotCurrent(Long destinationId) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.Destination.DESTINATION).set(dev.vality.newway.domain.tables.Destination.DESTINATION.CURRENT, false)
-                .where(dev.vality.newway.domain.tables.Destination.DESTINATION.ID.eq(destinationId)
-                        .and(dev.vality.newway.domain.tables.Destination.DESTINATION.CURRENT));
+        Query query = getDslContext().update(DESTINATION).set(DESTINATION.CURRENT, false)
+                .where(DESTINATION.ID.eq(destinationId)
+                        .and(DESTINATION.CURRENT));
         execute(query);
     }
 }

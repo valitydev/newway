@@ -16,6 +16,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL;
+
 @Component
 public class RecurrentPaymentToolDaoImpl extends AbstractGenericDao implements RecurrentPaymentToolDao {
 
@@ -23,19 +25,19 @@ public class RecurrentPaymentToolDaoImpl extends AbstractGenericDao implements R
 
     public RecurrentPaymentToolDaoImpl(DataSource dataSource) {
         super(dataSource);
-        recurrentPaymentToolRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL, RecurrentPaymentTool.class);
+        recurrentPaymentToolRowMapper = new RecordRowMapper<>(RECURRENT_PAYMENT_TOOL, RecurrentPaymentTool.class);
     }
 
     @Override
     public Optional<Long> save(RecurrentPaymentTool source) throws DaoException {
-        RecurrentPaymentToolRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL, source);
-        Query query = getDslContext().insertInto(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL)
+        RecurrentPaymentToolRecord record = getDslContext().newRecord(RECURRENT_PAYMENT_TOOL, source);
+        Query query = getDslContext().insertInto(RECURRENT_PAYMENT_TOOL)
                 .set(record)
-                .onConflict(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.RECURRENT_PAYMENT_TOOL_ID,
-                        dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.SEQUENCE_ID,
-                        dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.CHANGE_ID)
+                .onConflict(RECURRENT_PAYMENT_TOOL.RECURRENT_PAYMENT_TOOL_ID,
+                        RECURRENT_PAYMENT_TOOL.SEQUENCE_ID,
+                        RECURRENT_PAYMENT_TOOL.CHANGE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.ID);
+                .returning(RECURRENT_PAYMENT_TOOL.ID);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
@@ -44,9 +46,9 @@ public class RecurrentPaymentToolDaoImpl extends AbstractGenericDao implements R
     @NotNull
     @Override
     public RecurrentPaymentTool get(String recurrentPaymentToolId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL)
-                .where(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.RECURRENT_PAYMENT_TOOL_ID.eq(recurrentPaymentToolId)
-                        .and(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.CURRENT));
+        Query query = getDslContext().selectFrom(RECURRENT_PAYMENT_TOOL)
+                .where(RECURRENT_PAYMENT_TOOL.RECURRENT_PAYMENT_TOOL_ID.eq(recurrentPaymentToolId)
+                        .and(RECURRENT_PAYMENT_TOOL.CURRENT));
 
         return Optional.ofNullable(fetchOne(query, recurrentPaymentToolRowMapper))
                 .orElseThrow(() -> new NotFoundException(
@@ -55,8 +57,8 @@ public class RecurrentPaymentToolDaoImpl extends AbstractGenericDao implements R
 
     @Override
     public void updateNotCurrent(Long id) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL).set(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.CURRENT, false)
-                .where(dev.vality.newway.domain.tables.RecurrentPaymentTool.RECURRENT_PAYMENT_TOOL.ID.eq(id));
+        Query query = getDslContext().update(RECURRENT_PAYMENT_TOOL).set(RECURRENT_PAYMENT_TOOL.CURRENT, false)
+                .where(RECURRENT_PAYMENT_TOOL.ID.eq(id));
         executeOne(query);
     }
 

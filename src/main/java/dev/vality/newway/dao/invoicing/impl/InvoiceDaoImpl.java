@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static dev.vality.newway.domain.tables.Invoice.INVOICE;
+
 @Component
 public class InvoiceDaoImpl extends AbstractGenericDao implements InvoiceDao {
 
@@ -28,16 +30,16 @@ public class InvoiceDaoImpl extends AbstractGenericDao implements InvoiceDao {
     @Autowired
     public InvoiceDaoImpl(DataSource dataSource) {
         super(dataSource);
-        invoiceRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Invoice.INVOICE, Invoice.class);
+        invoiceRowMapper = new RecordRowMapper<>(INVOICE, Invoice.class);
     }
 
     @Override
     public void saveBatch(List<Invoice> invoices) throws DaoException {
         List<Query> queries = invoices.stream()
-                .map(invoice -> getDslContext().newRecord(dev.vality.newway.domain.tables.Invoice.INVOICE, invoice))
-                .map(invoiceRecord -> getDslContext().insertInto(dev.vality.newway.domain.tables.Invoice.INVOICE)
+                .map(invoice -> getDslContext().newRecord(INVOICE, invoice))
+                .map(invoiceRecord -> getDslContext().insertInto(INVOICE)
                         .set(invoiceRecord)
-                        .onConflict(dev.vality.newway.domain.tables.Invoice.INVOICE.INVOICE_ID, dev.vality.newway.domain.tables.Invoice.INVOICE.SEQUENCE_ID, dev.vality.newway.domain.tables.Invoice.INVOICE.CHANGE_ID)
+                        .onConflict(INVOICE.INVOICE_ID, INVOICE.SEQUENCE_ID, INVOICE.CHANGE_ID)
                         .doNothing()
                 )
                 .collect(Collectors.toList());
@@ -47,8 +49,8 @@ public class InvoiceDaoImpl extends AbstractGenericDao implements InvoiceDao {
     @NotNull
     @Override
     public Invoice get(String invoiceId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Invoice.INVOICE)
-                .where(dev.vality.newway.domain.tables.Invoice.INVOICE.INVOICE_ID.eq(invoiceId).and(dev.vality.newway.domain.tables.Invoice.INVOICE.CURRENT));
+        Query query = getDslContext().selectFrom(INVOICE)
+                .where(INVOICE.INVOICE_ID.eq(invoiceId).and(INVOICE.CURRENT));
         return Optional.ofNullable(fetchOne(query, invoiceRowMapper))
                 .orElseThrow(
                         () -> new NotFoundException(String.format("Invoice not found, invoiceId='%s'", invoiceId)));

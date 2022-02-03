@@ -15,6 +15,8 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static dev.vality.newway.domain.tables.CashFlow.CASH_FLOW;
+
 @Component
 public class CashFlowDaoImpl extends AbstractGenericDao implements CashFlowDao {
 
@@ -22,31 +24,31 @@ public class CashFlowDaoImpl extends AbstractGenericDao implements CashFlowDao {
 
     public CashFlowDaoImpl(DataSource dataSource) {
         super(dataSource);
-        cashFlowRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW, CashFlow.class);
+        cashFlowRowMapper = new RecordRowMapper<>(CASH_FLOW, CashFlow.class);
     }
 
     @Override
     public void save(List<CashFlow> cashFlows) throws DaoException {
         List<Query> queries = cashFlows.stream()
-                .map(cashFlow -> getDslContext().newRecord(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW, cashFlow))
-                .map(cashFlowRecord -> getDslContext().insertInto(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW).set(cashFlowRecord))
+                .map(cashFlow -> getDslContext().newRecord(CASH_FLOW, cashFlow))
+                .map(cashFlowRecord -> getDslContext().insertInto(CASH_FLOW).set(cashFlowRecord))
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
 
     @Override
     public List<CashFlow> getByObjId(Long objId, PaymentChangeType paymentChangeType) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW)
-                .where(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW.OBJ_ID.eq(objId).and(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW.OBJ_TYPE.eq(paymentChangeType)));
+        Query query = getDslContext().selectFrom(CASH_FLOW)
+                .where(CASH_FLOW.OBJ_ID.eq(objId).and(CASH_FLOW.OBJ_TYPE.eq(paymentChangeType)));
         return fetch(query, cashFlowRowMapper);
     }
 
     @Override
     public List<CashFlow> getForAdjustments(Long adjId, AdjustmentCashFlowType adjustmentCashFlowType)
             throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW)
-                .where(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW.OBJ_ID.eq(adjId).and(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW.OBJ_TYPE.eq(PaymentChangeType.adjustment))
-                        .and(dev.vality.newway.domain.tables.CashFlow.CASH_FLOW.ADJ_FLOW_TYPE.eq(adjustmentCashFlowType)));
+        Query query = getDslContext().selectFrom(CASH_FLOW)
+                .where(CASH_FLOW.OBJ_ID.eq(adjId).and(CASH_FLOW.OBJ_TYPE.eq(PaymentChangeType.adjustment))
+                        .and(CASH_FLOW.ADJ_FLOW_TYPE.eq(adjustmentCashFlowType)));
         return fetch(query, cashFlowRowMapper);
     }
 }

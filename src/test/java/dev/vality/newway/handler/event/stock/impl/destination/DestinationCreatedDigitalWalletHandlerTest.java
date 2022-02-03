@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Objects;
 
+import static dev.vality.newway.domain.tables.Destination.DESTINATION;
+
 @PostgresqlSpringBootITest
 public class DestinationCreatedDigitalWalletHandlerTest {
 
@@ -44,7 +46,7 @@ public class DestinationCreatedDigitalWalletHandlerTest {
                 ));
 
         Destination destinationResult = jdbcTemplate.queryForObject(sqlStatement,
-                new RecordRowMapper<>(dev.vality.newway.domain.tables.Destination.DESTINATION, Destination.class));
+                new RecordRowMapper<>(DESTINATION, Destination.class));
 
         Assertions.assertNotNull(Objects.requireNonNull(destinationResult).getResourceDigitalWalletId());
         Assertions.assertNotNull(destinationResult.getResourceDigitalWalletData());

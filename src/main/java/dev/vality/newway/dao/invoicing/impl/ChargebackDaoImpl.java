@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Chargeback.CHARGEBACK;
+
 @Component
 public class ChargebackDaoImpl extends AbstractGenericDao implements ChargebackDao {
 
@@ -25,17 +27,17 @@ public class ChargebackDaoImpl extends AbstractGenericDao implements ChargebackD
     @Autowired
     public ChargebackDaoImpl(DataSource dataSource) {
         super(dataSource);
-        this.chargebackRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK, Chargeback.class);
+        this.chargebackRowMapper = new RecordRowMapper<>(CHARGEBACK, Chargeback.class);
     }
 
     @Override
     public Optional<Long> save(Chargeback chargeback) throws DaoException {
-        ChargebackRecord chargebackRecord = getDslContext().newRecord(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK, chargeback);
-        Query query = getDslContext().insertInto(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK)
+        ChargebackRecord chargebackRecord = getDslContext().newRecord(CHARGEBACK, chargeback);
+        Query query = getDslContext().insertInto(CHARGEBACK)
                 .set(chargebackRecord)
-                .onConflict(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.INVOICE_ID, dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.SEQUENCE_ID, dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.CHANGE_ID)
+                .onConflict(CHARGEBACK.INVOICE_ID, CHARGEBACK.SEQUENCE_ID, CHARGEBACK.CHANGE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.ID);
+                .returning(CHARGEBACK.ID);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
@@ -44,11 +46,11 @@ public class ChargebackDaoImpl extends AbstractGenericDao implements ChargebackD
     @NotNull
     @Override
     public Chargeback get(String invoiceId, String paymentId, String chargebackId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK)
-                .where(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.INVOICE_ID.eq(invoiceId)
-                        .and(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.PAYMENT_ID.eq(paymentId))
-                        .and(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.CHARGEBACK_ID.eq(chargebackId))
-                        .and(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.CURRENT));
+        Query query = getDslContext().selectFrom(CHARGEBACK)
+                .where(CHARGEBACK.INVOICE_ID.eq(invoiceId)
+                        .and(CHARGEBACK.PAYMENT_ID.eq(paymentId))
+                        .and(CHARGEBACK.CHARGEBACK_ID.eq(chargebackId))
+                        .and(CHARGEBACK.CURRENT));
 
         return Optional.ofNullable(fetchOne(query, chargebackRowMapper))
                 .orElseThrow(() -> new NotFoundException(
@@ -58,7 +60,7 @@ public class ChargebackDaoImpl extends AbstractGenericDao implements ChargebackD
 
     @Override
     public void updateNotCurrent(Long id) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK).set(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.CURRENT, false).where(dev.vality.newway.domain.tables.Chargeback.CHARGEBACK.ID.eq(id));
+        Query query = getDslContext().update(CHARGEBACK).set(CHARGEBACK.CURRENT, false).where(CHARGEBACK.ID.eq(id));
         executeOne(query);
     }
 }

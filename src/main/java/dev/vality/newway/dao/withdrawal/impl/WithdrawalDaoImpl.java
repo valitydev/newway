@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL;
+
 @Component
 public class WithdrawalDaoImpl extends AbstractGenericDao implements WithdrawalDao {
 
@@ -25,18 +27,18 @@ public class WithdrawalDaoImpl extends AbstractGenericDao implements WithdrawalD
     @Autowired
     public WithdrawalDaoImpl(DataSource dataSource) {
         super(dataSource);
-        withdrawalRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL, Withdrawal.class);
+        withdrawalRowMapper = new RecordRowMapper<>(WITHDRAWAL, Withdrawal.class);
     }
 
     @Override
     public Optional<Long> save(Withdrawal withdrawal) throws DaoException {
-        WithdrawalRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL, withdrawal);
+        WithdrawalRecord record = getDslContext().newRecord(WITHDRAWAL, withdrawal);
         Query query = getDslContext()
-                .insertInto(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL)
+                .insertInto(WITHDRAWAL)
                 .set(record)
-                .onConflict(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.WITHDRAWAL_ID, dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.SEQUENCE_ID)
+                .onConflict(WITHDRAWAL.WITHDRAWAL_ID, WITHDRAWAL.SEQUENCE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.ID);
+                .returning(WITHDRAWAL.ID);
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
@@ -46,9 +48,9 @@ public class WithdrawalDaoImpl extends AbstractGenericDao implements WithdrawalD
     @NotNull
     @Override
     public Withdrawal get(String withdrawalId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL)
-                .where(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.WITHDRAWAL_ID.eq(withdrawalId)
-                        .and(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.CURRENT));
+        Query query = getDslContext().selectFrom(WITHDRAWAL)
+                .where(WITHDRAWAL.WITHDRAWAL_ID.eq(withdrawalId)
+                        .and(WITHDRAWAL.CURRENT));
         return Optional.ofNullable(fetchOne(query, withdrawalRowMapper))
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Withdrawal not found, withdrawalId='%s'", withdrawalId)));
@@ -56,9 +58,9 @@ public class WithdrawalDaoImpl extends AbstractGenericDao implements WithdrawalD
 
     @Override
     public void updateNotCurrent(Long id) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL).set(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.CURRENT, false)
-                .where(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.ID.eq(id)
-                        .and(dev.vality.newway.domain.tables.Withdrawal.WITHDRAWAL.CURRENT));
+        Query query = getDslContext().update(WITHDRAWAL).set(WITHDRAWAL.CURRENT, false)
+                .where(WITHDRAWAL.ID.eq(id)
+                        .and(WITHDRAWAL.CURRENT));
         execute(query);
     }
 }

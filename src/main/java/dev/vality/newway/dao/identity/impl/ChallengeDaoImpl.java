@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.util.Optional;
 
+import static dev.vality.newway.domain.tables.Challenge.CHALLENGE;
+
 @Component
 public class ChallengeDaoImpl extends AbstractGenericDao implements ChallengeDao {
 
@@ -23,18 +25,18 @@ public class ChallengeDaoImpl extends AbstractGenericDao implements ChallengeDao
     @Autowired
     public ChallengeDaoImpl(DataSource dataSource) {
         super(dataSource);
-        challengeRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.Challenge.CHALLENGE, Challenge.class);
+        challengeRowMapper = new RecordRowMapper<>(CHALLENGE, Challenge.class);
     }
 
     @Override
     public Optional<Long> save(Challenge challenge) throws DaoException {
-        ChallengeRecord record = getDslContext().newRecord(dev.vality.newway.domain.tables.Challenge.CHALLENGE, challenge);
+        ChallengeRecord record = getDslContext().newRecord(CHALLENGE, challenge);
         Query query = getDslContext()
-                .insertInto(dev.vality.newway.domain.tables.Challenge.CHALLENGE)
+                .insertInto(CHALLENGE)
                 .set(record)
-                .onConflict(dev.vality.newway.domain.tables.Challenge.CHALLENGE.IDENTITY_ID, dev.vality.newway.domain.tables.Challenge.CHALLENGE.CHALLENGE_ID, dev.vality.newway.domain.tables.Challenge.CHALLENGE.SEQUENCE_ID)
+                .onConflict(CHALLENGE.IDENTITY_ID, CHALLENGE.CHALLENGE_ID, CHALLENGE.SEQUENCE_ID)
                 .doNothing()
-                .returning(dev.vality.newway.domain.tables.Challenge.CHALLENGE.ID);
+                .returning(CHALLENGE.ID);
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
@@ -43,11 +45,11 @@ public class ChallengeDaoImpl extends AbstractGenericDao implements ChallengeDao
 
     @Override
     public Challenge get(String identityId, String challengeId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.Challenge.CHALLENGE)
+        Query query = getDslContext().selectFrom(CHALLENGE)
                 .where(
-                        dev.vality.newway.domain.tables.Challenge.CHALLENGE.IDENTITY_ID.eq(identityId)
-                                .and(dev.vality.newway.domain.tables.Challenge.CHALLENGE.CHALLENGE_ID.eq(challengeId))
-                                .and(dev.vality.newway.domain.tables.Challenge.CHALLENGE.CURRENT)
+                        CHALLENGE.IDENTITY_ID.eq(identityId)
+                                .and(CHALLENGE.CHALLENGE_ID.eq(challengeId))
+                                .and(CHALLENGE.CURRENT)
                 );
 
         return fetchOne(query, challengeRowMapper);
@@ -55,11 +57,11 @@ public class ChallengeDaoImpl extends AbstractGenericDao implements ChallengeDao
 
     @Override
     public void updateNotCurrent(String identityId, Long challengeId) throws DaoException {
-        Query query = getDslContext().update(dev.vality.newway.domain.tables.Challenge.CHALLENGE).set(dev.vality.newway.domain.tables.Challenge.CHALLENGE.CURRENT, false)
+        Query query = getDslContext().update(CHALLENGE).set(CHALLENGE.CURRENT, false)
                 .where(
-                        dev.vality.newway.domain.tables.Challenge.CHALLENGE.ID.eq(challengeId)
-                                .and(dev.vality.newway.domain.tables.Challenge.CHALLENGE.IDENTITY_ID.eq(identityId))
-                                .and(dev.vality.newway.domain.tables.Challenge.CHALLENGE.CURRENT)
+                        CHALLENGE.ID.eq(challengeId)
+                                .and(CHALLENGE.IDENTITY_ID.eq(identityId))
+                                .and(CHALLENGE.CURRENT)
                 );
         execute(query);
     }

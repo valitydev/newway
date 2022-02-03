@@ -14,6 +14,8 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static dev.vality.newway.domain.tables.InvoiceCart.INVOICE_CART;
+
 @Component
 public class InvoiceCartDaoImpl extends AbstractGenericDao implements InvoiceCartDao {
 
@@ -22,22 +24,22 @@ public class InvoiceCartDaoImpl extends AbstractGenericDao implements InvoiceCar
     @Autowired
     public InvoiceCartDaoImpl(DataSource dataSource) {
         super(dataSource);
-        invoiceCartRowMapper = new RecordRowMapper<>(dev.vality.newway.domain.tables.InvoiceCart.INVOICE_CART, InvoiceCart.class);
+        invoiceCartRowMapper = new RecordRowMapper<>(INVOICE_CART, InvoiceCart.class);
     }
 
     @Override
     public void save(List<InvoiceCart> carts) throws DaoException {
         List<Query> queries = carts.stream()
-                .map(cart -> getDslContext().newRecord(dev.vality.newway.domain.tables.InvoiceCart.INVOICE_CART, cart))
-                .map(cartRecord -> getDslContext().insertInto(dev.vality.newway.domain.tables.InvoiceCart.INVOICE_CART).set(cartRecord))
+                .map(cart -> getDslContext().newRecord(INVOICE_CART, cart))
+                .map(cartRecord -> getDslContext().insertInto(INVOICE_CART).set(cartRecord))
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
 
     @Override
     public List<InvoiceCart> getByInvId(Long invId) throws DaoException {
-        Query query = getDslContext().selectFrom(dev.vality.newway.domain.tables.InvoiceCart.INVOICE_CART)
-                .where(dev.vality.newway.domain.tables.InvoiceCart.INVOICE_CART.INV_ID.eq(invId));
+        Query query = getDslContext().selectFrom(INVOICE_CART)
+                .where(INVOICE_CART.INV_ID.eq(invId));
         return fetch(query, invoiceCartRowMapper);
     }
 }
