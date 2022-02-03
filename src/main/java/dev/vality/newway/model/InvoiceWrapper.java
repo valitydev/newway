@@ -1,0 +1,36 @@
+package dev.vality.newway.model;
+
+import dev.vality.newway.domain.tables.pojos.Invoice;
+import dev.vality.newway.domain.tables.pojos.InvoiceCart;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class InvoiceWrapper {
+    private Invoice invoice;
+    private List<InvoiceCart> carts;
+
+    public InvoiceWrapper copy() {
+        Invoice invoiceTarget = new Invoice();
+        BeanUtils.copyProperties(invoice, invoiceTarget);
+        InvoiceWrapper invoiceWrapperTarget = new InvoiceWrapper();
+        invoiceWrapperTarget.setInvoice(invoiceTarget);
+        if (carts != null) {
+            List<InvoiceCart> cartsTarget = new ArrayList<>();
+            carts.forEach(c -> {
+                InvoiceCart cartTarget = new InvoiceCart();
+                BeanUtils.copyProperties(c, cartTarget);
+                cartsTarget.add(cartTarget);
+            });
+            invoiceWrapperTarget.setCarts(cartsTarget);
+        }
+        return invoiceWrapperTarget;
+    }
+}

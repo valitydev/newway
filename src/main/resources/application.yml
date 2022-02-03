@@ -1,6 +1,3 @@
-info:
-  single-instance-mode: false
-
 server:
   port: '@server.port@'
 
@@ -29,7 +26,7 @@ management:
   metrics:
     export:
       prometheus:
-        enabled: true
+        enabled: false
   endpoint:
     health:
       show-details: always
@@ -82,97 +79,55 @@ kafka:
       enabled: false
     recurrent-payment-tool:
       id: mg-events-recurrent-paytools
+      enabled: false
     party-management:
       id: mg-events-party
       enabled: false
       consumer.group-id: "NewwayListenerPartyManagement"
     rate:
       id: mg-events-rates
+      enabled: false
     identity:
       id: mg-events-ff-identity
+      enabled: false
     wallet:
       id: mg-events-ff-wallet
+      enabled: false
     deposit:
       id: mg-events-ff-deposit
+      enabled: false
     withdrawal:
       id: mg-events-ff-withdrawal
+      enabled: false
     withdrawal-session:
       id: mg-events-ff-withdrawal-session
+      enabled: false
     source:
       id: mg-events-ff-source
+      enabled: false
     destination:
       id: mg-events-ff-destination
+      enabled: false
     pm-events-payout:
       id: pm-events-payout
+      enabled: false
 
-bm:
-  polling:
-    enabled: true
-payouter:
-  polling:
-    url: http://payouter:8022/repo
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-identity:
-  polling:
-    url: http://wapi:8022/v1/eventsink/identity
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-wallet:
-  polling:
-    url: http://wapi:8022/v1/eventsink/wallet
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-source:
-  polling:
-    url: http://wapi:8022/v1/eventsink/source
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-destination:
-  polling:
-    url: http://wapi:8022/v1/eventsink/destination
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-deposit:
-  polling:
-    url: http://wapi:8022/v1/eventsink/deposit
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-withdrawal:
-  polling:
-    url: http://wapi:8022/v1/eventsink/withdrawal
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
-withdrawal_session:
-  polling:
-    url: http://wapi:8022/v1/eventsink/withdrawal_session
-    delay: 10000
-    retryDelay: 1000
-    maxPoolSize: 1
 dmt:
   url: http://dominant:8022/v1/domain/repository
   networkTimeout: 5000
   polling:
     delay: 100
     maxQuerySize: 10
-    enabled: true
-recurrentPaymentTool:
-  url: http://hellgate:8022/v1/recpaytool/eventsink
-  networkTimeout: 5000
-  polling:
-    delay: 10000
-    limit: 500
-    enabled: true
+    enabled: false
 
 cache:
   invoice:
     size: 10000
   payment:
     size: 10000
+
+testcontainers:
+  postgresql:
+    tag: '11.4'
+  kafka:
+    tag: '6.2.0'
