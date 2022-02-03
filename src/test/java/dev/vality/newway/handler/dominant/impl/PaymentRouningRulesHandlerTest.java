@@ -3,24 +3,20 @@ package dev.vality.newway.handler.dominant.impl;
 import dev.vality.damsel.domain.*;
 import dev.vality.newway.dao.dominant.impl.PaymentRoutingRulesDaoImpl;
 import dev.vality.newway.domain.tables.pojos.PaymentRoutingRule;
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ExtendWith(MockitoExtension.class)
 public class PaymentRouningRulesHandlerTest {
 
     @Mock
     private PaymentRoutingRulesDaoImpl paymentRoutingRulesDao;
-
-    @Before
-    public void setUp() {
-        paymentRoutingRulesDao = Mockito.mock(PaymentRoutingRulesDaoImpl.class);
-    }
 
     @Test
     public void convertToDatabaseObjectTest() {

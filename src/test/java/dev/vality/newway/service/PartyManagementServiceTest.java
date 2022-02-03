@@ -11,14 +11,14 @@ import dev.vality.newway.dao.party.iface.PartyDao;
 import dev.vality.newway.factory.PartyMachineEventCopyFactoryImpl;
 import dev.vality.newway.handler.event.stock.impl.partymngmnt.party.PartyCreatedHandler;
 import dev.vality.sink.common.serialization.impl.PartyEventDataSerializer;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PartyMachineEventCopyFactoryImpl.class,
         PartyCreatedHandler.class, SerializationConfig.class, PartyManagementService.class})
 public class PartyManagementServiceTest {
@@ -40,7 +40,7 @@ public class PartyManagementServiceTest {
     @MockBean
     PartyDao partyDao;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(partyDao.save(any())).thenReturn(Optional.of(1L));
     }

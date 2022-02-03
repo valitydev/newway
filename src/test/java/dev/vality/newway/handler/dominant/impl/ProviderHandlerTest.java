@@ -2,11 +2,11 @@ package dev.vality.newway.handler.dominant.impl;
 
 import dev.vality.damsel.domain.*;
 import dev.vality.newway.dao.dominant.impl.ProviderDaoImpl;
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -14,15 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@ExtendWith(MockitoExtension.class)
 public class ProviderHandlerTest {
 
     @Mock
     private ProviderDaoImpl providerDao;
-
-    @Before
-    public void setUp() {
-        providerDao = Mockito.mock(ProviderDaoImpl.class);
-    }
 
     @Test
     public void convertToDatabaseObjectTest() throws IOException {

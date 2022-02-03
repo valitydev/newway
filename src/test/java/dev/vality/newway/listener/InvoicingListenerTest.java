@@ -15,12 +15,13 @@ import dev.vality.newway.service.PaymentBatchService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.Acknowledgment;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyList;
 
+@ExtendWith(MockitoExtension.class)
 public class InvoicingListenerTest {
 
     @Mock
@@ -43,9 +45,8 @@ public class InvoicingListenerTest {
 
     private InvoicingKafkaListener listener;
 
-    @Before
+    @BeforeEach
     public void init() {
-        MockitoAnnotations.openMocks(this);
         listener = new InvoicingKafkaListener(
                 new InvoicingService(new ArrayList<>(), Collections.singletonList(new InvoiceCreatedMapper()),
                         new ArrayList<>(), invoiceBatchService, paymentBatchService, eventParser));

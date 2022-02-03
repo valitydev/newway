@@ -17,18 +17,20 @@ import dev.vality.newway.handler.event.stock.impl.invoicing.chargeback.*;
 import dev.vality.newway.mapper.AbstractInvoicingMapper;
 import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SpringExtension.class)
 public class InvoicingServiceTest {
 
     private final List<AbstractInvoicingMapper<InvoiceWrapper>> wrongHandlers = new ArrayList<>();
@@ -47,9 +49,8 @@ public class InvoicingServiceTest {
     @Mock
     private MachineEventParser parser;
 
-    @Before
+    @BeforeEach
     public void init() {
-        MockitoAnnotations.openMocks(this);
         AbstractInvoicingMapper wrong = mock(AbstractInvoicingMapper.class);
         when(wrong.accept(any())).thenReturn(false);
         wrongHandlers.add(wrong);
