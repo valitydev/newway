@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: newway
+    name: '@project.name@'
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.postgresql.Driver
@@ -19,16 +19,18 @@ spring:
     schemas: nw
 
 management:
-  security:
-    flag: false
   server:
     port: '@management.port@'
   metrics:
     export:
       prometheus:
         enabled: false
+    tags:
+      application: '@project.name@'
   endpoint:
     health:
+      probes:
+        enabled: true
       show-details: always
     metrics:
       enabled: true
