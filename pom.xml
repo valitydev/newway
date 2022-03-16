@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.vality</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.0.11</version>
+        <version>1.0.13</version>
     </parent>
 
     <artifactId>newway</artifactId>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>payout-manager-proto</artifactId>
-            <version>1.26-8655fef</version>
+            <version>1.30-cc9875f</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>machinegun-proto</artifactId>
-            <version>1.25-4de3f11</version>
+            <version>1.27-dec518d</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -159,12 +159,12 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>fistful-proto</artifactId>
-            <version>1.137-d74e6fb</version>
+            <version>1.141-fd4117f</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>xrates-proto</artifactId>
-            <version>1.20-fbf41ed</version>
+            <version>1.22-4adcd9c</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
