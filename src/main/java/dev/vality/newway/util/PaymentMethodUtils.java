@@ -15,22 +15,22 @@ public class PaymentMethodUtils {
     public static Optional<String> getPaymentMethodRefIdByBankCard(
             Supplier<Optional<PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(dev.vality.damsel.domain.PaymentMethod::isSetBankCard)
-                .map(dev.vality.damsel.domain.PaymentMethod::getBankCard)
+                .filter(PaymentMethod::isSetBankCard)
+                .map(PaymentMethod::getBankCard)
                 .flatMap(bankCard -> PaymentSystemUtil.getPaymentSystemNameIfPresent(
                         bankCard.getPaymentSystem(),
                         bankCard.getPaymentSystemDeprecated()))
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetBankCardDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getBankCardDeprecated)
+                        .filter(PaymentMethod::isSetBankCardDeprecated)
+                        .map(PaymentMethod::getBankCardDeprecated)
                         .map(Enum::name))
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetEmptyCvvBankCardDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getEmptyCvvBankCardDeprecated)
+                        .filter(PaymentMethod::isSetEmptyCvvBankCardDeprecated)
+                        .map(PaymentMethod::getEmptyCvvBankCardDeprecated)
                         .map(legacyBankCardPaymentSystem -> EMPTY_CVV + legacyBankCardPaymentSystem.name()))
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetTokenizedBankCardDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getTokenizedBankCardDeprecated)
+                        .filter(PaymentMethod::isSetTokenizedBankCardDeprecated)
+                        .map(PaymentMethod::getTokenizedBankCardDeprecated)
                         .flatMap(PaymentMethodUtils::getTokenizedBankCardId));
     }
 
@@ -50,50 +50,59 @@ public class PaymentMethodUtils {
     }
 
     public static Optional<String> getPaymentMethodRefIdByPaymentTerminal(
-            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(dev.vality.damsel.domain.PaymentMethod::isSetPaymentTerminal)
-                .map(dev.vality.damsel.domain.PaymentMethod::getPaymentTerminal)
+                .filter(PaymentMethod::isSetPaymentTerminal)
+                .map(PaymentMethod::getPaymentTerminal)
                 .map(PaymentServiceRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetPaymentTerminalDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getPaymentTerminalDeprecated)
+                        .filter(PaymentMethod::isSetPaymentTerminalDeprecated)
+                        .map(PaymentMethod::getPaymentTerminalDeprecated)
                         .map(Enum::name));
     }
 
     public static Optional<String> getPaymentMethodRefIdByDigitalWallet(
-            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(dev.vality.damsel.domain.PaymentMethod::isSetDigitalWallet)
-                .map(dev.vality.damsel.domain.PaymentMethod::getDigitalWallet)
+                .filter(PaymentMethod::isSetDigitalWallet)
+                .map(PaymentMethod::getDigitalWallet)
                 .map(PaymentServiceRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetDigitalWalletDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getDigitalWalletDeprecated)
+                        .filter(PaymentMethod::isSetDigitalWalletDeprecated)
+                        .map(PaymentMethod::getDigitalWalletDeprecated)
                         .map(Enum::name));
     }
 
     public static Optional<String> getPaymentMethodRefIdByCryptoCurrency(
-            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(dev.vality.damsel.domain.PaymentMethod::isSetCryptoCurrency)
-                .map(dev.vality.damsel.domain.PaymentMethod::getCryptoCurrency)
+                .filter(PaymentMethod::isSetCryptoCurrency)
+                .map(PaymentMethod::getCryptoCurrency)
                 .map(CryptoCurrencyRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetCryptoCurrencyDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getCryptoCurrencyDeprecated)
+                        .filter(PaymentMethod::isSetCryptoCurrencyDeprecated)
+                        .map(PaymentMethod::getCryptoCurrencyDeprecated)
                         .map(Enum::name));
     }
 
     public static Optional<String> getPaymentMethodRefIdByMobile(
-            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
+            Supplier<Optional<PaymentMethod>> paymentMethod) {
         return paymentMethod.get()
-                .filter(dev.vality.damsel.domain.PaymentMethod::isSetMobile)
-                .map(dev.vality.damsel.domain.PaymentMethod::getMobile)
+                .filter(PaymentMethod::isSetMobile)
+                .map(PaymentMethod::getMobile)
                 .map(MobileOperatorRef::getId)
                 .or(() -> paymentMethod.get()
-                        .filter(dev.vality.damsel.domain.PaymentMethod::isSetMobileDeprecated)
-                        .map(dev.vality.damsel.domain.PaymentMethod::getMobileDeprecated)
+                        .filter(PaymentMethod::isSetMobileDeprecated)
+                        .map(PaymentMethod::getMobileDeprecated)
                         .map(Enum::name));
+    }
+
+    public static Optional<String> getPaymentMethodRefIdByGeneric(
+            Supplier<Optional<PaymentMethod>> paymentMethod) {
+        return paymentMethod.get()
+                .filter(PaymentMethod::isSetGeneric)
+                .map(PaymentMethod::getGeneric)
+                .map(GenericPaymentMethod::getPaymentService)
+                .map(PaymentServiceRef::getId);
     }
 }
