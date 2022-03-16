@@ -96,4 +96,13 @@ public class PaymentMethodUtils {
                         .map(dev.vality.damsel.domain.PaymentMethod::getMobileDeprecated)
                         .map(Enum::name));
     }
+
+    public static Optional<String> getPaymentMethodRefIdByGeneric(
+            Supplier<Optional<dev.vality.damsel.domain.PaymentMethod>> paymentMethod) {
+        return paymentMethod.get()
+                .filter(dev.vality.damsel.domain.PaymentMethod::isSetGeneric)
+                .map(dev.vality.damsel.domain.PaymentMethod::getGeneric)
+                .map(GenericPaymentMethod::getPaymentService)
+                .map(PaymentServiceRef::getId);
+    }
 }
