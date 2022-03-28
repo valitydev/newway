@@ -1,1 +1,0 @@
-ALTER TYPE nw.payout_tool_info ADD VALUE 'payment_institution_account';
