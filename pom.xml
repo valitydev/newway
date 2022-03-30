@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.vality</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.0.13</version>
+        <version>2.0.0-BETA-6</version>
     </parent>
 
     <artifactId>newway</artifactId>
@@ -79,11 +79,6 @@
             <artifactId>jooq</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-client</artifactId>
-            <version>2.6.2</version>
-        </dependency>
-        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>7.0.1</version>
@@ -132,7 +127,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>payout-manager-proto</artifactId>
-            <version>1.30-cc9875f</version>
+            <version>1.35-dbed280</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -150,7 +145,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>machinegun-proto</artifactId>
-            <version>1.27-dec518d</version>
+            <version>1.31-b43d6fd</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -159,7 +154,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>fistful-proto</artifactId>
-            <version>1.141-fd4117f</version>
+            <version>1.144-ea0fe7a</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
