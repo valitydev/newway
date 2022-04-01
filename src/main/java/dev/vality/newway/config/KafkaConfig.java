@@ -49,8 +49,8 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, MachineEvent> consumerFactory(Map<String, Object> consumerConfigs) {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs);
+    public ConsumerFactory<String, MachineEvent> consumerFactory(KafkaSslProperties kafkaSslProperties) {
+        return new DefaultKafkaConsumerFactory<>(createConsumerConfig(kafkaSslProperties));
     }
 
     @Bean
@@ -98,9 +98,11 @@ public class KafkaConfig {
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> payoutContainerFactory(
             KafkaSslProperties kafkaSslProperties) {
-        var kafkaConsumerFactory = new DefaultKafkaConsumerFactory<String, Event>(createConsumerConfig(kafkaSslProperties));
+        DefaultKafkaConsumerFactory<String, Event> kafkaConsumerFactory =
+                new DefaultKafkaConsumerFactory<>(createConsumerConfig(kafkaSslProperties));
         kafkaConsumerFactory.setValueDeserializer(new PayoutEventDeserializer());
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, Event>();
+        ConcurrentKafkaListenerContainerFactory<String, Event> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         initFactory(kafkaConsumerFactory, kafkaConsumerProperties.getPayoutConcurrency(), factory);
         return factory;
     }
@@ -163,9 +165,8 @@ public class KafkaConfig {
         }
     }
 
-    private ConcurrentKafkaListenerContainerFactory<String, MachineEvent> createConcurrentFactory(
-            ConsumerFactory<String, MachineEvent> consumerFactory,
-            int threadsNumber) {
+    private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> createConcurrentFactory(
+            ConsumerFactory<String, MachineEvent> consumerFactory, int threadsNumber) {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, MachineEvent>();
         initFactory(consumerFactory, threadsNumber, factory);
         return factory;
