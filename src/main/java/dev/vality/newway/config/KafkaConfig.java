@@ -44,8 +44,13 @@ public class KafkaConfig {
     private String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, MachineEvent> consumerFactory(KafkaSslProperties kafkaSslProperties) {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs(kafkaSslProperties));
+    public Map<String, Object> consumerConfigs(KafkaSslProperties kafkaSslProperties) {
+        return createConsumerConfig(kafkaSslProperties);
+    }
+
+    @Bean
+    public ConsumerFactory<String, MachineEvent> consumerFactory(Map<String, Object> consumerConfigs) {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs);
     }
 
     @Bean
@@ -93,7 +98,7 @@ public class KafkaConfig {
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> payoutContainerFactory(
             KafkaSslProperties kafkaSslProperties) {
-        var kafkaConsumerFactory = new DefaultKafkaConsumerFactory<String, Event>(consumerConfigs(kafkaSslProperties));
+        var kafkaConsumerFactory = new DefaultKafkaConsumerFactory<String, Event>(createConsumerConfig(kafkaSslProperties));
         kafkaConsumerFactory.setValueDeserializer(new PayoutEventDeserializer());
         var factory = new ConcurrentKafkaListenerContainerFactory<String, Event>();
         initFactory(kafkaConsumerFactory, kafkaConsumerProperties.getPayoutConcurrency(), factory);
@@ -121,13 +126,13 @@ public class KafkaConfig {
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> partyManagementContainerFactory(
             KafkaSslProperties kafkaSslProperties) {
-        Map<String, Object> configs = consumerConfigs(kafkaSslProperties);
+        Map<String, Object> configs = createConsumerConfig(kafkaSslProperties);
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, partyConsumerGroup);
         ConsumerFactory<String, MachineEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(configs);
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getPartyManagementConcurrency());
     }
 
-    private Map<String, Object> consumerConfigs(KafkaSslProperties kafkaSslProperties) {
+    private Map<String, Object> createConsumerConfig(KafkaSslProperties kafkaSslProperties) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
