@@ -1,5 +1,6 @@
 package dev.vality.newway.config;
 
+import dev.vality.kafka.common.util.ExponentialBackOffDefaultErrorHandlerFactory;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.config.properties.KafkaConsumerProperties;
 import dev.vality.newway.config.properties.KafkaSslProperties;
@@ -20,8 +21,6 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.util.backoff.ExponentialBackOff;
 
 import java.io.File;
 import java.util.HashMap;
@@ -171,9 +170,7 @@ public class KafkaConfig {
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-        var defaultErrorHandler = new DefaultErrorHandler(new ExponentialBackOff());
-        defaultErrorHandler.setAckAfterHandle(false);
-        factory.setCommonErrorHandler(defaultErrorHandler);
+        factory.setCommonErrorHandler(ExponentialBackOffDefaultErrorHandlerFactory.create());
         factory.setConcurrency(threadsNumber);
     }
 }
