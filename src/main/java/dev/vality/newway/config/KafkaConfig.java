@@ -18,10 +18,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 
 import java.io.File;
@@ -31,7 +29,6 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(KafkaSslProperties.class)
-@SuppressWarnings("LineLength")
 public class KafkaConfig {
 
     private final KafkaConsumerProperties kafkaConsumerProperties;
@@ -44,97 +41,90 @@ public class KafkaConfig {
     private String bootstrapServers;
 
     @Bean
-    public Map<String, Object> consumerConfigs(KafkaSslProperties kafkaSslProperties) {
-        return createConsumerConfig(kafkaSslProperties);
-    }
-
-    @Bean
     public ConsumerFactory<String, MachineEvent> consumerFactory(KafkaSslProperties kafkaSslProperties) {
-        return new DefaultKafkaConsumerFactory<>(createConsumerConfig(kafkaSslProperties));
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs(kafkaSslProperties));
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> kafkaListenerContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> kafkaListenerContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getInvoicingConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> recPayToolContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> recPayToolContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getRecurrentPaymentToolConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> rateContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> rateContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getRateConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> depositContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> depositContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getDepositConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> identityContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> identityContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getIdentityConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> walletContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> walletContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getWalletConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> withdrawalContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> withdrawalContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getWithdrawalConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> payoutContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, Event> payoutContainerFactory(
             KafkaSslProperties kafkaSslProperties) {
-        DefaultKafkaConsumerFactory<String, Event> kafkaConsumerFactory =
-                new DefaultKafkaConsumerFactory<>(createConsumerConfig(kafkaSslProperties));
+        var kafkaConsumerFactory = new DefaultKafkaConsumerFactory<String, Event>(consumerConfigs(kafkaSslProperties));
         kafkaConsumerFactory.setValueDeserializer(new PayoutEventDeserializer());
-        ConcurrentKafkaListenerContainerFactory<String, Event> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, Event>();
         initFactory(kafkaConsumerFactory, kafkaConsumerProperties.getPayoutConcurrency(), factory);
         return factory;
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> sourceContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> sourceContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getSourceConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> destinationContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> destinationContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getDestinationConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> withdrawalSessionContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> withdrawalSessionContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getWithdrawalSessionConcurrency());
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> partyManagementContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, MachineEvent> partyManagementContainerFactory(
             KafkaSslProperties kafkaSslProperties) {
-        Map<String, Object> configs = createConsumerConfig(kafkaSslProperties);
+        Map<String, Object> configs = consumerConfigs(kafkaSslProperties);
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, partyConsumerGroup);
         ConsumerFactory<String, MachineEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(configs);
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getPartyManagementConcurrency());
     }
 
-    private Map<String, Object> createConsumerConfig(KafkaSslProperties kafkaSslProperties) {
+    private Map<String, Object> consumerConfigs(KafkaSslProperties kafkaSslProperties) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -165,8 +155,9 @@ public class KafkaConfig {
         }
     }
 
-    private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> createConcurrentFactory(
-            ConsumerFactory<String, MachineEvent> consumerFactory, int threadsNumber) {
+    private ConcurrentKafkaListenerContainerFactory<String, MachineEvent> createConcurrentFactory(
+            ConsumerFactory<String, MachineEvent> consumerFactory,
+            int threadsNumber) {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, MachineEvent>();
         initFactory(consumerFactory, threadsNumber, factory);
         return factory;
