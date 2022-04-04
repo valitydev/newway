@@ -1,6 +1,6 @@
 package dev.vality.newway.config;
 
-import dev.vality.kafka.common.util.ExponentialBackOffDefaultErrorHandlerFactory;
+import dev.vality.kafka.common.exception.handler.SeekToCurrentWithSleepBatchErrorHandler;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.config.properties.KafkaConsumerProperties;
 import dev.vality.newway.config.properties.KafkaSslProperties;
@@ -170,7 +170,9 @@ public class KafkaConfig {
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-        factory.setCommonErrorHandler(ExponentialBackOffDefaultErrorHandlerFactory.create());
+//        todo timeout at deploy when replace BatchErrorHandler on CommonErrorHandler
+//        factory.setCommonErrorHandler(ExponentialBackOffDefaultErrorHandlerFactory.create());
+        factory.setBatchErrorHandler(new SeekToCurrentWithSleepBatchErrorHandler());
         factory.setConcurrency(threadsNumber);
     }
 }
