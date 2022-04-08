@@ -44,8 +44,7 @@ public class DestinationHandlerTestUtils {
     public static CryptoWallet createFistfulCryptoWallet() {
         CryptoWallet cryptoWallet = new CryptoWallet();
         cryptoWallet.setId(CRYPTO_WALLET_ID);
-        cryptoWallet.setData(CryptoData.bitcoin(new CryptoDataBitcoin()));
-        cryptoWallet.setCurrency(CryptoCurrency.bitcoin);
+        cryptoWallet.setCurrency(new CryptoCurrencyRef("bitcoin"));
         return cryptoWallet;
     }
 
