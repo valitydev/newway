@@ -49,7 +49,7 @@ public class DestinationCreatedCryptoWalletHandlerTest {
                 new RecordRowMapper<>(DESTINATION, Destination.class));
 
         Assertions.assertNotNull(Objects.requireNonNull(destinationResult).getResourceCryptoWalletId());
-        Assertions.assertNotNull(destinationResult.getResourceCryptoWalletData());
+        Assertions.assertNotNull(destinationResult.getResourceCryptoWalletType());
     }
 
 }
