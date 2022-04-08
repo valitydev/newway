@@ -81,12 +81,9 @@ public class DestinationCreatedHandler implements DestinationHandler {
             }
         } else if (resource.isSetCryptoWallet()) {
             ResourceCryptoWallet resourceCryptoWallet = resource.getCryptoWallet();
-            CryptoWallet wallet = resourceCryptoWallet.getCryptoWallet();
-            destination.setResourceCryptoWalletId(wallet.getId());
-            destination.setResourceCryptoWalletType(wallet.getCurrency().name());
-            if (wallet.isSetData()) {
-                destination.setResourceCryptoWalletData(wallet.getData().getSetField().getFieldName());
-            }
+            var cryptoWallet = resourceCryptoWallet.getCryptoWallet();
+            destination.setResourceCryptoWalletId(cryptoWallet.getId());
+            destination.setResourceCryptoWalletType(cryptoWallet.getCurrency().getId());
         } else if (resource.isSetDigitalWallet()) {
             ResourceDigitalWallet resourceDigitalWallet = resource.getDigitalWallet();
             DigitalWallet digitalWallet = resourceDigitalWallet.getDigitalWallet();

@@ -48,7 +48,7 @@ public class WithdrawalSessionCreatedCryptoWalletHandlerTest {
                 new RecordRowMapper<>(WITHDRAWAL_SESSION, WithdrawalSession.class));
 
         Assertions.assertNotNull(Objects.requireNonNull(result).getResourceCryptoWalletId());
-        Assertions.assertNotNull(result.getResourceCryptoWalletData());
+        Assertions.assertNotNull(result.getResourceCryptoWalletType());
     }
 
 }

@@ -11,7 +11,6 @@ import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
-import dev.vality.mamsel.PaymentSystemUtil;
 import dev.vality.newway.dao.withdrawal.session.iface.WithdrawalSessionDao;
 import dev.vality.newway.domain.enums.BankCardPaymentSystem;
 import dev.vality.newway.domain.enums.DestinationResourceType;
@@ -22,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.Locale;
 
 @Slf4j
 @Component
@@ -65,7 +66,7 @@ public class WithdrawalSessionCreatedHandler implements WithdrawalSessionHandler
             withdrawalSession.setDestinationCardMaskedPan(bankCard.getMaskedPan());
             if (bankCard.isSetPaymentSystem()) {
                 withdrawalSession.setDestinationCardPaymentSystem(
-                        BankCardPaymentSystem.valueOf(PaymentSystemUtil.getFistfulPaymentSystemName(bankCard)));
+                        BankCardPaymentSystem.valueOf(bankCard.getPaymentSystem().getId().toLowerCase(Locale.ROOT)));
             }
             withdrawalSession.setResourceBankCardBankName(bankCard.getBankName());
             if (bankCard.isSetIssuerCountry()) {
@@ -76,12 +77,9 @@ public class WithdrawalSessionCreatedHandler implements WithdrawalSessionHandler
             }
         } else if (resource.isSetCryptoWallet()) {
             ResourceCryptoWallet resourceCryptoWallet = resource.getCryptoWallet();
-            CryptoWallet cryptoWallet = resourceCryptoWallet.getCryptoWallet();
+            var cryptoWallet = resourceCryptoWallet.getCryptoWallet();
             withdrawalSession.setResourceCryptoWalletId(cryptoWallet.getId());
-            withdrawalSession.setResourceCryptoWalletType(cryptoWallet.getCurrency().toString());
-            if (cryptoWallet.isSetData()) {
-                withdrawalSession.setResourceCryptoWalletData(cryptoWallet.getData().getSetField().getFieldName());
-            }
+            withdrawalSession.setResourceCryptoWalletType(cryptoWallet.getCurrency().getId());
         } else if (resource.isSetDigitalWallet()) {
             ResourceDigitalWallet resourceDigitalWallet = resource.getDigitalWallet();
             DigitalWallet digitalWallet = resourceDigitalWallet.getDigitalWallet();
