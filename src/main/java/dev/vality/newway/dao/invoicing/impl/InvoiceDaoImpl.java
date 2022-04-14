@@ -6,18 +6,17 @@ import dev.vality.newway.dao.invoicing.iface.InvoiceDao;
 import dev.vality.newway.domain.tables.pojos.Invoice;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
-import dev.vality.newway.model.InvoicingKey;
 import org.jooq.Query;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static dev.vality.newway.domain.tables.Invoice.INVOICE;
@@ -57,13 +56,28 @@ public class InvoiceDaoImpl extends AbstractGenericDao implements InvoiceDao {
     }
 
     @Override
-    public void switchCurrent(Collection<InvoicingKey> invoicesSwitchIds) throws DaoException {
-        invoicesSwitchIds.forEach(ik ->
-                this.getNamedParameterJdbcTemplate()
-                        .update("update nw.invoice set current = false " +
-                                        "where invoice_id =:invoice_id and current;" +
-                                        "update nw.invoice set current = true " +
-                                        "where id = (select max(id) from nw.invoice where invoice_id =:invoice_id);",
-                                new MapSqlParameterSource("invoice_id", ik.getInvoiceId())));
+    public List<Invoice> getList(Set<String> invoiceIds) {
+        Query query = getDslContext().selectFrom(INVOICE)
+                .where(INVOICE.INVOICE_ID.in(invoiceIds).and(INVOICE.CURRENT));
+        return fetch(query, invoiceRowMapper);
+    }
+
+    @Override
+    public void switchCurrent(Set<String> invoiceIds) throws DaoException {
+        invoiceIds.forEach(invoiceId -> {
+            execute(getDslContext().update(INVOICE)
+                    .set(INVOICE.CURRENT, false)
+                    .where(INVOICE.INVOICE_ID.eq(invoiceId)
+                            .and(INVOICE.CURRENT))
+            );
+            execute(getDslContext().update(INVOICE)
+                    .set(INVOICE.CURRENT, true)
+                    .where(INVOICE.ID.eq(
+                            DSL.select(DSL.max(INVOICE.ID))
+                                    .from(INVOICE)
+                                    .where(INVOICE.INVOICE_ID.eq(invoiceId))
+                    ))
+            );
+        });
     }
 }

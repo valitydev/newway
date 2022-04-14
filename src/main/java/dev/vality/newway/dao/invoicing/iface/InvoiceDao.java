@@ -3,10 +3,9 @@ package dev.vality.newway.dao.invoicing.iface;
 import dev.vality.dao.GenericDao;
 import dev.vality.newway.domain.tables.pojos.Invoice;
 import dev.vality.newway.exception.DaoException;
-import dev.vality.newway.model.InvoicingKey;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface InvoiceDao extends GenericDao {
 
@@ -14,5 +13,7 @@ public interface InvoiceDao extends GenericDao {
 
     Invoice get(String invoiceId) throws DaoException;
 
-    void switchCurrent(Collection<InvoicingKey> invoicesSwitchIds) throws DaoException;
+    List<Invoice> getList(Set<String> invoiceIds);
+
+    void switchCurrent(Set<String> invoiceIds) throws DaoException;
 }

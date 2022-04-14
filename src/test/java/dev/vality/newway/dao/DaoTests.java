@@ -400,17 +400,17 @@ public class DaoTests {
     @Test
     public void invoiceCartDaoTest() {
         jdbcTemplate.execute("truncate table nw.invoice cascade");
+        jdbcTemplate.execute("truncate table nw.invoice_status_info cascade");
         jdbcTemplate.execute("truncate table nw.invoice_cart cascade");
         Invoice invoice = dev.vality.testcontainers.annotations.util.RandomBeans.random(Invoice.class);
         invoice.setCurrent(true);
-        Long invId = invoice.getId();
+        String invoiceId = invoice.getInvoiceId();
         invoiceDao.saveBatch(Collections.singletonList(invoice));
         List<InvoiceCart> invoiceCarts = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(10, InvoiceCart.class);
-        invoiceCarts.forEach(ic -> ic.setInvId(invId));
+        invoiceCarts.forEach(ic -> ic.setInvoiceId(invoiceId));
         invoiceCartDao.save(invoiceCarts);
-        List<InvoiceCart> byInvId = invoiceCartDao.getByInvId(invId);
+        List<InvoiceCart> byInvId = invoiceCartDao.getByInvoiceId(invoiceId);
         Assertions.assertEquals(new HashSet(invoiceCarts), new HashSet(byInvId));
-
     }
 
     @Test

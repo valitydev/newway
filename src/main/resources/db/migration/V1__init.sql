@@ -803,55 +803,86 @@ CREATE INDEX inspector_idx ON nw.inspector USING btree (inspector_ref_id);
 CREATE INDEX inspector_version_id ON nw.inspector USING btree (version_id);
 
 
-CREATE TABLE nw.invoice
+CREATE TABLE IF NOT EXISTS nw.invoice
 (
-    id                       bigserial                                                        NOT NULL,
-    event_created_at         timestamp without time zone                                      NOT NULL,
-    invoice_id               character varying                                                NOT NULL,
-    party_id                 character varying                                                NOT NULL,
-    shop_id                  character varying                                                NOT NULL,
-    party_revision           bigint,
-    created_at               timestamp without time zone                                      NOT NULL,
-    status                   nw.invoice_status                                                NOT NULL,
-    status_cancelled_details character varying,
-    status_fulfilled_details character varying,
-    details_product          character varying                                                NOT NULL,
-    details_description      character varying,
-    due                      timestamp without time zone                                      NOT NULL,
-    amount                   bigint                                                           NOT NULL,
-    currency_code            character varying                                                NOT NULL,
-    context                  bytea,
-    template_id              character varying,
-    wtime                    timestamp without time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-    current                  boolean                     DEFAULT true                         NOT NULL,
-    sequence_id              bigint,
-    change_id                integer,
-    external_id              character varying,
+    id                  bigserial                                      NOT NULL,
+    event_created_at    timestamp without time zone                    NOT NULL,
+    invoice_id          character varying COLLATE pg_catalog."default" NOT NULL,
+    party_id            character varying COLLATE pg_catalog."default" NOT NULL,
+    shop_id             character varying COLLATE pg_catalog."default" NOT NULL,
+    party_revision      bigint,
+    created_at          timestamp without time zone                    NOT NULL,
+
+    details_product     character varying COLLATE pg_catalog."default" NOT NULL,
+    details_description character varying COLLATE pg_catalog."default",
+    due                 timestamp without time zone                    NOT NULL,
+    amount              bigint                                         NOT NULL,
+    currency_code       character varying COLLATE pg_catalog."default" NOT NULL,
+    context             bytea,
+    template_id         character varying COLLATE pg_catalog."default",
+    wtime               timestamp without time zone                    NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    current             boolean                                        DEFAULT false NOT NULL,
+    sequence_id         bigint,
+    change_id           integer,
+    external_id         character varying COLLATE pg_catalog."default",
     CONSTRAINT invoice_pkey PRIMARY KEY (id),
     CONSTRAINT invoice_uniq UNIQUE (invoice_id, sequence_id, change_id)
 );
 
+-- TODO: why do we need start value? confirm and rework
+ALTER SEQUENCE nw.invoice_id_seq
+    MINVALUE 200000000
+    START with 200000000
+    RESTART
+    NO MAXVALUE
+    CACHE 1;
+
+-- TODO check for necessary indexes
 CREATE INDEX invoice_created_at ON nw.invoice USING btree (created_at);
 CREATE INDEX invoice_event_created_at ON nw.invoice USING btree (event_created_at);
 CREATE INDEX invoice_external_id_idx ON nw.invoice USING btree (external_id) WHERE (external_id IS NOT NULL);
 CREATE INDEX invoice_invoice_id ON nw.invoice USING btree (invoice_id);
 CREATE INDEX invoice_party_id ON nw.invoice USING btree (party_id);
-CREATE INDEX invoice_status ON nw.invoice USING btree (status);
 
-
-CREATE TABLE nw.invoice_cart
+CREATE TABLE IF NOT EXISTS nw.invoice_status_info
 (
-    id            bigserial         NOT NULL,
-    inv_id        bigint            NOT NULL,
-    product       character varying NOT NULL,
-    quantity      integer           NOT NULL,
-    amount        bigint            NOT NULL,
-    currency_code character varying NOT NULL,
-    metadata_json character varying NOT NULL,
+    id               BIGSERIAL,
+    event_created_at timestamp without time zone                    NOT NULL,
+    invoice_id       character varying COLLATE pg_catalog."default" NOT NULL,
+    status           nw.invoice_status                              NOT NULL,
+    details          character varying COLLATE pg_catalog."default",
+    wtime            timestamp without time zone                    NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    current          boolean                                        DEFAULT false NOT NULL,
+    sequence_id      bigint,
+    change_id        integer,
+    external_id      character varying COLLATE pg_catalog."default",
+    CONSTRAINT invoice_status_pkey PRIMARY KEY (id),
+    CONSTRAINT invoice_status_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+-- TODO should it be here?
+CREATE INDEX invoice_status ON nw.invoice_status_info USING btree (status);
+-- TODO: confirm this one. maybe use sequence_id or just add it to timestamp?
+CREATE INDEX current_invoice_status ON nw.invoice_status_info USING btree (invoice_id, wtime DESC);
+
+CREATE TABLE IF NOT EXISTS nw.invoice_cart
+(
+    id                  bigserial                                      NOT NULL,
+    event_created_at    timestamp without time zone                    NOT NULL,
+    invoice_id          character varying COLLATE pg_catalog."default" NOT NULL,
+    product             character varying COLLATE pg_catalog."default",
+    quantity            integer                                        NOT NULL,
+    amount              bigint                                         NOT NULL,
+    currency_code       character varying COLLATE pg_catalog."default" NOT NULL,
+    metadata_json       character varying COLLATE pg_catalog."default" NOT NULL,
+    wtime               timestamp without time zone                    NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id         bigint,
+    change_id           integer,
     CONSTRAINT invoice_cart_pkey PRIMARY KEY (id)
 );
 
-CREATE INDEX invoice_cart_inv_id ON nw.invoice_cart USING btree (inv_id);
+-- TODO should it be here?
+CREATE INDEX invoice_cart_invoice_id ON nw.invoice_cart USING btree (invoice_id);
 
 
 CREATE TABLE nw.party
@@ -977,6 +1008,13 @@ CREATE INDEX payment_external_id_idx ON nw.payment USING btree (external_id) WHE
 CREATE INDEX payment_invoice_id ON nw.payment USING btree (invoice_id);
 CREATE INDEX payment_party_id ON nw.payment USING btree (party_id);
 CREATE INDEX payment_status ON nw.payment USING btree (status);
+
+CREATE SEQUENCE nw.pmnt_seq
+    START WITH 600000000
+    INCREMENT BY 1
+    MINVALUE 600000000
+    NO MAXVALUE
+    CACHE 1;
 
 
 CREATE TABLE nw.payment_institution
@@ -1231,7 +1269,6 @@ CREATE TABLE nw.recurrent_payment_tool
 );
 
 CREATE INDEX recurrent_payment_tool_id_idx ON nw.recurrent_payment_tool USING btree (recurrent_payment_tool_id);
-
 
 CREATE TABLE nw.refund
 (
@@ -1543,22 +1580,6 @@ CREATE INDEX withdrawal_session_event_created_at_idx ON nw.withdrawal_session US
 CREATE INDEX withdrawal_session_event_occured_at_idx ON nw.withdrawal_session USING btree (event_occured_at);
 CREATE INDEX withdrawal_session_id_idx ON nw.withdrawal_session USING btree (withdrawal_session_id);
 
--- SEQUENCE
-
-CREATE SEQUENCE nw.inv_seq
-    START WITH 200000000
-    INCREMENT BY 1
-    MINVALUE 200000000
-    NO MAXVALUE
-    CACHE 1;
-
-
-CREATE SEQUENCE nw.pmnt_seq
-    START WITH 600000000
-    INCREMENT BY 1
-    MINVALUE 600000000
-    NO MAXVALUE
-    CACHE 1;
 
 -- Functions
 

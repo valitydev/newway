@@ -13,11 +13,11 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.mamsel.*;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
-import dev.vality.newway.domain.tables.pojos.Invoice;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.handler.event.stock.LocalStorage;
 import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.newway.model.InvoicingKey;
+import dev.vality.newway.model.PartyShop;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.service.InvoiceWrapperService;
 import dev.vality.newway.util.CashFlowType;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -67,15 +68,25 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingPaymentMapper 
         payment.setInvoiceId(invoiceId);
         payment.setExternalId(invoicePayment.getExternalId());
 
-        InvoiceWrapper invoiceWrapper = invoiceWrapperService.get(invoiceId, storage);
-        if (invoiceWrapper == null) {
+
+        PartyShop partyShop = Optional.ofNullable((PartyShop) storage.get(InvoicingKey.buildKey(invoiceId)))
+                .orElseGet(() -> {
+                    InvoiceWrapper invoiceWrapper = invoiceWrapperService.get(invoiceId);
+                    if (invoiceWrapper == null || invoiceWrapper.getInvoice() == null) {
+                        return null;
+                    }
+                    return new PartyShop(
+                            invoiceWrapper.getInvoice().getPartyId(),
+                            invoiceWrapper.getInvoice().getShopId()
+                    );
+                });
+
+        if (partyShop == null) {
             return null;
         }
-        Invoice invoice = invoiceWrapper.getInvoice();
 
-
-        payment.setPartyId(invoice.getPartyId());
-        payment.setShopId(invoice.getShopId());
+        payment.setPartyId(partyShop.getPartyId());
+        payment.setShopId(partyShop.getShopId());
         payment.setDomainRevision(invoicePayment.getDomainRevision());
         if (invoicePayment.isSetPartyRevision()) {
             payment.setPartyRevision(invoicePayment.getPartyRevision());

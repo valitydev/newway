@@ -8,6 +8,7 @@ import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.mapper.AbstractInvoicingMapper;
 import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.newway.model.InvoicingKey;
+import dev.vality.newway.model.PartyShop;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,14 @@ public class InvoicingService {
                         PaymentWrapper paymentWrapper = mapPayment(change, me, i, storage);
                         if (invoiceWrapper != null) {
                             invoices.add(invoiceWrapper);
-                            storage.put(InvoicingKey.buildKey(invoiceWrapper), invoiceWrapper);
+                            if (invoiceWrapper.getInvoice() != null) {
+                                storage.put(
+                                        InvoicingKey.buildKey(invoiceWrapper.getInvoice().getInvoiceId()),
+                                        new PartyShop(
+                                                invoiceWrapper.getInvoice().getPartyId(),
+                                                invoiceWrapper.getInvoice().getShopId()
+                                        ));
+                            }
                         }
                         if (paymentWrapper != null) {
                             payments.add(paymentWrapper);

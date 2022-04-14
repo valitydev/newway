@@ -10,8 +10,11 @@ public class InvoiceWrapperTest {
         InvoiceWrapper invoiceWrapper = dev.vality.testcontainers.annotations.util.RandomBeans.random(InvoiceWrapper.class);
         InvoiceWrapper copy = invoiceWrapper.copy();
         invoiceWrapper.getInvoice().setInvoiceId("kek");
-        invoiceWrapper.getCarts().get(0).setInvId(124L);
+        invoiceWrapper.getCarts().get(0).setInvoiceId("kek");
         Assertions.assertNotEquals(invoiceWrapper.getInvoice().getInvoiceId(), copy.getInvoice().getInvoiceId());
-        Assertions.assertNotEquals(invoiceWrapper.getCarts().get(0).getInvId(), copy.getCarts().get(0).getInvId());
+        Assertions.assertNotEquals(
+                invoiceWrapper.getCarts().get(0).getInvoiceId(),
+                copy.getCarts().get(0).getInvoiceId()
+        );
     }
 }
