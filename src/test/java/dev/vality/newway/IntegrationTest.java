@@ -175,5 +175,15 @@ public class IntegrationTest {
         invoicingService.handleEvents(machineEventsFirst);
         Assertions.assertEquals(4, Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT count(*) FROM nw.payment WHERE invoice_id = ? and payment_id = ? ",
                 new Object[]{invoiceId, paymentId}, Integer.class)).intValue());
+
+        Assertions.assertEquals(2, Objects.requireNonNull(jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM nw.invoice_status_info  WHERE invoice_id = ?",
+                new Object[]{invoiceId}, Integer.class)).intValue());
+        Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM nw.invoice_status_info  WHERE invoice_id = ? and current",
+                new Object[]{invoiceId}, Integer.class)).intValue());
+        Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM nw.invoice_cart  WHERE invoice_id = ?",
+                new Object[]{invoiceId}, Integer.class)).intValue());
     }
 }

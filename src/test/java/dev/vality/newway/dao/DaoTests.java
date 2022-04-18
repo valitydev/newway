@@ -3,10 +3,7 @@ package dev.vality.newway.dao;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
 import dev.vality.newway.dao.dominant.iface.DominantDao;
 import dev.vality.newway.dao.dominant.impl.*;
-import dev.vality.newway.dao.invoicing.iface.AdjustmentDao;
-import dev.vality.newway.dao.invoicing.iface.CashFlowDao;
-import dev.vality.newway.dao.invoicing.iface.InvoiceCartDao;
-import dev.vality.newway.dao.invoicing.iface.RefundDao;
+import dev.vality.newway.dao.invoicing.iface.*;
 import dev.vality.newway.dao.invoicing.impl.InvoiceDaoImpl;
 import dev.vality.newway.dao.invoicing.impl.PaymentDaoImpl;
 import dev.vality.newway.dao.invoicing.impl.PaymentIdsGeneratorDaoImpl;
@@ -23,6 +20,7 @@ import dev.vality.newway.exception.NotFoundException;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.InvoicingType;
 import dev.vality.newway.utils.HashUtil;
+import dev.vality.testcontainers.annotations.util.RandomBeans;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +30,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @PostgresqlSpringBootITest
 public class DaoTests {
@@ -77,6 +78,8 @@ public class DaoTests {
     private InvoiceCartDao invoiceCartDao;
     @Autowired
     private InvoiceDaoImpl invoiceDao;
+    @Autowired
+    private InvoiceStatusInfoDao invoiceStatusInfoDao;
     @Autowired
     private RefundDao refundDao;
     @Autowired
@@ -190,7 +193,7 @@ public class DaoTests {
                 terminal.getVersionId(),
                 termSetHierarchy.getVersionId()).max();
 
-        Assertions.assertEquals(maxVersionId.getAsLong(), lastVersionId.longValue());
+        assertEquals(maxVersionId.getAsLong(), lastVersionId.longValue());
     }
 
     @Test
@@ -260,42 +263,42 @@ public class DaoTests {
 
         cashFlowDao.save(cashFlows);
 
-        Assertions.assertEquals(cashFlowPaymentAmount.getAmount(), jdbcTemplate
+        assertEquals(cashFlowPaymentAmount.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentFee.getAmount(), jdbcTemplate
+        assertEquals(cashFlowPaymentFee.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentExternalIncomeFee.getAmount() + cashFlowPaymentExternalOutcomeFee.getAmount(), (long) jdbcTemplate.queryForObject(
+        assertEquals(cashFlowPaymentExternalIncomeFee.getAmount() + cashFlowPaymentExternalOutcomeFee.getAmount(), (long) jdbcTemplate.queryForObject(
                 "SELECT nw.get_payment_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                 new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentProviderFee.getAmount(), jdbcTemplate
+        assertEquals(cashFlowPaymentProviderFee.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentGuaranteeDeposit.getAmount(), jdbcTemplate.queryForObject(
+        assertEquals(cashFlowPaymentGuaranteeDeposit.getAmount(), jdbcTemplate.queryForObject(
                 "SELECT nw.get_payment_guarantee_deposit(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                 new SingleColumnRowMapper<>(Long.class)));
 
-        Assertions.assertEquals(cashFlowRefundAmount.getAmount(), jdbcTemplate
+        assertEquals(cashFlowRefundAmount.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowRefundFee.getAmount(), jdbcTemplate
+        assertEquals(cashFlowRefundFee.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowRefundExternalIncomeFee.getAmount() + cashFlowRefundExternalOutcomeFee.getAmount(), (long) jdbcTemplate.queryForObject(
+        assertEquals(cashFlowRefundExternalIncomeFee.getAmount() + cashFlowRefundExternalOutcomeFee.getAmount(), (long) jdbcTemplate.queryForObject(
                 "SELECT nw.get_refund_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                 new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowRefundProviderFee.getAmount(), jdbcTemplate
+        assertEquals(cashFlowRefundProviderFee.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
 
-        Assertions.assertEquals(cashFlowPayoutAmount.getAmount(), jdbcTemplate
+        assertEquals(cashFlowPayoutAmount.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_payout_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPayoutFixedFee.getAmount(), jdbcTemplate
+        assertEquals(cashFlowPayoutFixedFee.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_payout_fixed_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPayoutFee.getAmount(), jdbcTemplate
+        assertEquals(cashFlowPayoutFee.getAmount(), jdbcTemplate
                 .queryForObject("SELECT nw.get_payout_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
     }
@@ -307,55 +310,55 @@ public class DaoTests {
         notCashFlow.setObjId(1L);
         cashFlowDao.save(Collections.singletonList(notCashFlow));
 
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payment_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate.queryForObject(
+        assertEquals(0L, (long) jdbcTemplate.queryForObject(
                 "SELECT nw.get_payment_guarantee_deposit(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                 new SingleColumnRowMapper<>(Long.class)));
 
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_refund_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
 
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payout_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payout_fixed_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_payout_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
 
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_adjustment_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
+        assertEquals(0L, (long) jdbcTemplate
                 .queryForObject("SELECT nw.get_adjustment_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                         new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate.queryForObject(
+        assertEquals(0L, (long) jdbcTemplate.queryForObject(
                 "SELECT nw.get_adjustment_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                 new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate.queryForObject(
+        assertEquals(0L, (long) jdbcTemplate.queryForObject(
                 "SELECT nw.get_adjustment_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
                 new SingleColumnRowMapper<>(Long.class)));
     }
@@ -380,7 +383,7 @@ public class DaoTests {
         });
         cashFlowDao.save(cashFlowList);
         List<CashFlow> byObjId = cashFlowDao.getByObjId(pmntId, PaymentChangeType.payment);
-        Assertions.assertEquals(new HashSet(byObjId), new HashSet(cashFlowList));
+        assertEquals(new HashSet(byObjId), new HashSet(cashFlowList));
     }
 
 
@@ -390,7 +393,7 @@ public class DaoTests {
         Adjustment adjustment = dev.vality.testcontainers.annotations.util.RandomBeans.random(Adjustment.class);
         adjustment.setCurrent(true);
         adjustmentDao.save(adjustment);
-        Assertions.assertEquals(adjustment.getPartyId(), adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
+        assertEquals(adjustment.getPartyId(), adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
                 .getPartyId());
         adjustmentDao.updateNotCurrent(adjustment.getId());
 
@@ -398,19 +401,79 @@ public class DaoTests {
     }
 
     @Test
-    public void invoiceCartDaoTest() {
+    void invoiceDaoTest() {
         jdbcTemplate.execute("truncate table nw.invoice cascade");
-        jdbcTemplate.execute("truncate table nw.invoice_status_info cascade");
-        jdbcTemplate.execute("truncate table nw.invoice_cart cascade");
-        Invoice invoice = dev.vality.testcontainers.annotations.util.RandomBeans.random(Invoice.class);
+        List<Invoice> invoices = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(3, Invoice.class);
+        invoices.forEach(invoice -> invoice.setCurrent(true));
+        invoiceDao.saveBatch(invoices);
+        assertEquals(invoices.get(0), invoiceDao.get(invoices.get(0).getInvoiceId()));
+        assertEquals(invoices.get(1), invoiceDao.get(invoices.get(1).getInvoiceId()));
+        assertEquals(invoices.get(2), invoiceDao.get(invoices.get(2).getInvoiceId()));
+
+        Invoice invoice = RandomBeans.random(Invoice.class);
+        invoice.setInvoiceId(invoices.get(0).getInvoiceId());
+        invoice.setCurrent(false);
+        invoice.setId(invoices.get(0).getId() + 1);
+        invoiceDao.saveBatch(List.of(invoice));
+        assertNotEquals(invoice, invoices.get(0));
+        assertEquals(invoices.get(0), invoiceDao.get(invoice.getInvoiceId()));
+        invoiceDao.switchCurrent(Set.of(invoice.getInvoiceId()));
         invoice.setCurrent(true);
-        String invoiceId = invoice.getInvoiceId();
-        invoiceDao.saveBatch(Collections.singletonList(invoice));
+        assertEquals(invoice, invoiceDao.get(invoice.getInvoiceId()));
+
+        Set<String> invoiceIds = invoices.stream()
+                .map(Invoice::getInvoiceId)
+                .collect(Collectors.toSet());
+        assertEquals(Set.of(invoice, invoices.get(1), invoices.get(2)), Set.copyOf(invoiceDao.getList(invoiceIds)));
+    }
+
+
+    @Test
+    void invoiceStatusInfoDaoTest() {
+        jdbcTemplate.execute("truncate table nw.invoice_status_info cascade");
+        List<InvoiceStatusInfo> statusInfos =
+                dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(3, InvoiceStatusInfo.class);
+        statusInfos.forEach(status -> status.setCurrent(true));
+        invoiceStatusInfoDao.saveBatch(statusInfos);
+        assertEquals(statusInfos.get(0), invoiceStatusInfoDao.get(statusInfos.get(0).getInvoiceId()));
+        assertEquals(statusInfos.get(1), invoiceStatusInfoDao.get(statusInfos.get(1).getInvoiceId()));
+        assertEquals(statusInfos.get(2), invoiceStatusInfoDao.get(statusInfos.get(2).getInvoiceId()));
+
+        InvoiceStatusInfo statusInfo = RandomBeans.random(InvoiceStatusInfo.class);
+        InvoiceStatusInfo initialStatusInfo = statusInfos.get(0);
+        statusInfo.setInvoiceId(initialStatusInfo.getInvoiceId());
+        statusInfo.setCurrent(false);
+        statusInfo.setId(initialStatusInfo.getId() + 1);
+        invoiceStatusInfoDao.saveBatch(List.of(statusInfo));
+        assertNotEquals(statusInfo, initialStatusInfo);
+        assertEquals(initialStatusInfo, invoiceStatusInfoDao.get(initialStatusInfo.getInvoiceId()));
+        invoiceStatusInfoDao.switchCurrent(Set.of(statusInfo.getInvoiceId()));
+        statusInfo.setCurrent(true);
+        assertEquals(statusInfo, invoiceStatusInfoDao.get(initialStatusInfo.getInvoiceId()));
+
+        Set<String> invoiceIds = statusInfos.stream()
+                .map(InvoiceStatusInfo::getInvoiceId)
+                .collect(Collectors.toSet());
+        assertEquals(
+                Set.of(statusInfo, statusInfos.get(1), statusInfos.get(2)),
+                Set.copyOf(invoiceStatusInfoDao.getList(invoiceIds))
+        );
+    }
+
+    @Test
+    public void invoiceCartDaoTest() {
+        jdbcTemplate.execute("truncate table nw.invoice_cart cascade");
+        String invoiceId = UUID.randomUUID().toString();
         List<InvoiceCart> invoiceCarts = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(10, InvoiceCart.class);
         invoiceCarts.forEach(ic -> ic.setInvoiceId(invoiceId));
         invoiceCartDao.save(invoiceCarts);
-        List<InvoiceCart> byInvId = invoiceCartDao.getByInvoiceId(invoiceId);
-        Assertions.assertEquals(new HashSet(invoiceCarts), new HashSet(byInvId));
+        assertEquals(invoiceCarts, invoiceCartDao.getByInvoiceId(invoiceId));
+        List<InvoiceCart> invoiceRandomCarts = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(10, InvoiceCart.class);
+        invoiceCartDao.save(invoiceRandomCarts);
+        Set<String> invoiceIds = invoiceRandomCarts.stream()
+                .map(InvoiceCart::getInvoiceId)
+                .collect(Collectors.toSet());
+        assertEquals(invoiceRandomCarts, invoiceCartDao.getByInvoiceIdsIn(invoiceIds));
     }
 
     @Test
@@ -429,11 +492,11 @@ public class DaoTests {
                 new InvoicingKey(payment.getInvoiceId(), payment.getPaymentId(), InvoicingType.PAYMENT)));
         Payment paymentGet = paymentDao.get(payment.getInvoiceId(), payment.getPaymentId());
         paymentTwo.setCurrent(true);
-        Assertions.assertEquals(paymentTwo, paymentGet);
+        assertEquals(paymentTwo, paymentGet);
         paymentTwo.setPartyRevision(1111L);
         paymentDao.updateBatch(Collections.singletonList(paymentTwo));
         Payment paymentGet2 = paymentDao.get(payment.getInvoiceId(), payment.getPaymentId());
-        Assertions.assertEquals(paymentTwo, paymentGet2);
+        assertEquals(paymentTwo, paymentGet2);
     }
 
     @Test
@@ -443,7 +506,7 @@ public class DaoTests {
         refund.setCurrent(true);
         refundDao.save(refund);
         Refund refundGet = refundDao.get(refund.getInvoiceId(), refund.getPaymentId(), refund.getRefundId());
-        Assertions.assertEquals(refund, refundGet);
+        assertEquals(refund, refundGet);
         refundDao.updateNotCurrent(refund.getId());
 
         assertThrows(NotFoundException.class, () -> refundDao.get(refund.getInvoiceId(), refund.getPaymentId(), refund.getRefundId()));
@@ -460,7 +523,7 @@ public class DaoTests {
         contractAdjustments.forEach(ca -> ca.setCntrctId(cntrctId));
         contractAdjustmentDao.save(contractAdjustments);
         List<ContractAdjustment> byCntrctId = contractAdjustmentDao.getByCntrctId(cntrctId);
-        Assertions.assertEquals(new HashSet(contractAdjustments), new HashSet(byCntrctId));
+        assertEquals(new HashSet(contractAdjustments), new HashSet(byCntrctId));
     }
 
     @Test
@@ -470,7 +533,7 @@ public class DaoTests {
         contract.setCurrent(true);
         contractDao.save(contract);
         Contract contractGet = contractDao.get(contract.getPartyId(), contract.getContractId());
-        Assertions.assertEquals(contract, contractGet);
+        assertEquals(contract, contractGet);
     }
 
     @Test
@@ -480,7 +543,7 @@ public class DaoTests {
         contractor.setCurrent(true);
         contractorDao.save(contractor);
         Contractor contractorGet = contractorDao.get(contractor.getPartyId(), contractor.getContractorId());
-        Assertions.assertEquals(contractor, contractorGet);
+        assertEquals(contractor, contractorGet);
         Integer changeId = contractor.getChangeId() + 1;
         contractor.setChangeId(changeId);
         Long oldId = contractor.getId();
@@ -496,7 +559,7 @@ public class DaoTests {
         party.setCurrent(true);
         partyDao.save(party);
         Party partyGet = partyDao.get(party.getPartyId());
-        Assertions.assertEquals(party, partyGet);
+        assertEquals(party, partyGet);
         Long oldId = party.getId();
 
         Integer changeId = party.getChangeId() + 1;
@@ -506,7 +569,7 @@ public class DaoTests {
         partyDao.updateNotCurrent(oldId);
 
         partyGet = partyDao.get(party.getPartyId());
-        Assertions.assertEquals(changeId, partyGet.getChangeId());
+        assertEquals(changeId, partyGet.getChangeId());
     }
 
     @Test
@@ -520,7 +583,7 @@ public class DaoTests {
         payoutTools.forEach(pt -> pt.setCntrctId(cntrctId));
         payoutToolDao.save(payoutTools);
         List<PayoutTool> byCntrctId = payoutToolDao.getByCntrctId(cntrctId);
-        Assertions.assertEquals(new HashSet(payoutTools), new HashSet(byCntrctId));
+        assertEquals(new HashSet(payoutTools), new HashSet(byCntrctId));
     }
 
     @Test
@@ -530,7 +593,7 @@ public class DaoTests {
         shop.setCurrent(true);
         shopDao.save(shop);
         Shop shopGet = shopDao.get(shop.getPartyId(), shop.getShopId());
-        Assertions.assertEquals(shop, shopGet);
+        assertEquals(shop, shopGet);
 
         Integer changeId = shop.getChangeId() + 1;
         shop.setChangeId(changeId);
@@ -548,7 +611,7 @@ public class DaoTests {
 
         Long id = rateDao.save(rate);
         rate.setId(id);
-        Assertions.assertEquals(rate, jdbcTemplate.queryForObject(
+        assertEquals(rate, jdbcTemplate.queryForObject(
                 "SELECT * FROM nw.rate WHERE id = ? ",
                 new Object[]{id},
                 new BeanPropertyRowMapper(Rate.class)
@@ -557,8 +620,8 @@ public class DaoTests {
         List<Long> ids = rateDao.getIds(rate.getSourceId());
         Assertions.assertNotNull(ids);
         Assertions.assertFalse(ids.isEmpty());
-        Assertions.assertEquals(1, ids.size());
-        Assertions.assertEquals(id, ids.get(0));
+        assertEquals(1, ids.size());
+        assertEquals(id, ids.get(0));
 
         rateDao.updateNotCurrent(Collections.singletonList(id));
         assertThrows(EmptyResultDataAccessException.class, () -> jdbcTemplate.queryForObject(
@@ -573,7 +636,7 @@ public class DaoTests {
         Integer javaHash = HashUtil.getIntHash("kek");
         Integer postgresHash =
                 jdbcTemplate.queryForObject("select ('x0'||substr(md5('kek'), 1, 7))::bit(32)::int", Integer.class);
-        Assertions.assertEquals(javaHash, postgresHash);
+        assertEquals(javaHash, postgresHash);
     }
 
     @Test
@@ -587,22 +650,22 @@ public class DaoTests {
         adjustment.setCurrent(true);
         adjustmentDao.save(adjustment);
 
-        Assertions.assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
+        assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
                 .getPartyId());
 
         adjustment.setPartyId("2");
 
         adjustmentDao.save(adjustment);
 
-        Assertions.assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
+        assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
                 .getPartyId());
     }
 
     @Test
     public void idsGeneratorTest() {
         List<Long> list = idsGeneratorDao.get(100);
-        Assertions.assertEquals(100, list.size());
-        Assertions.assertEquals(99, list.get(99) - list.get(0));
+        assertEquals(100, list.size());
+        assertEquals(99, list.get(99) - list.get(0));
     }
 
     @Test
@@ -613,7 +676,7 @@ public class DaoTests {
         Optional<Long> id = recurrentPaymentToolDao.save(recurrentPaymentTool);
         Assertions.assertTrue(id.isPresent());
         recurrentPaymentTool.setId(id.get());
-        Assertions.assertEquals(recurrentPaymentTool, recurrentPaymentToolDao.get(recurrentPaymentTool.getRecurrentPaymentToolId()));
+        assertEquals(recurrentPaymentTool, recurrentPaymentToolDao.get(recurrentPaymentTool.getRecurrentPaymentToolId()));
         recurrentPaymentToolDao.updateNotCurrent(recurrentPaymentTool.getId());
 
         assertThrows(NotFoundException.class, () -> recurrentPaymentToolDao.get(recurrentPaymentTool.getRecurrentPaymentToolId()));

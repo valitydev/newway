@@ -27,6 +27,7 @@ public class InvoiceWrapperService {
     private final InvoiceDao invoiceDao;
     private final InvoiceStatusInfoDao invoiceStatusInfoDao;
     private final InvoiceCartDao invoiceCartDao;
+    // TODO: is it required? Get stats for later
     private final Cache<InvoicingKey, InvoiceWrapper> invoiceDataCache;
 
     public InvoiceWrapper get(String invoiceId) throws DaoException, NotFoundException {
