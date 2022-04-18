@@ -1,9 +1,6 @@
 package dev.vality.newway.handler.event.stock.impl.recurrent.payment.tool;
 
-import dev.vality.damsel.domain.BankCard;
-import dev.vality.damsel.domain.DigitalWallet;
-import dev.vality.damsel.domain.DisposablePaymentResource;
-import dev.vality.damsel.domain.PaymentTool;
+import dev.vality.damsel.domain.*;
 import dev.vality.damsel.payment_processing.RecurrentPaymentToolChange;
 import dev.vality.damsel.payment_processing.RecurrentPaymentToolHasCreated;
 import dev.vality.geck.common.util.TBaseUtil;
@@ -25,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -114,7 +112,8 @@ public class RecurrentPaymentToolHasCreatedHandler implements RecurrentPaymentTo
     private void fillDigitalWallet(RecurrentPaymentTool recurrentPaymentTool, PaymentTool paymentTool) {
         DigitalWallet digitalWallet = paymentTool.getDigitalWallet();
         recurrentPaymentTool.setDigitalWalletId(digitalWallet.getId());
-        recurrentPaymentTool.setDigitalWalletProvider(digitalWallet.getPaymentService().getId());
+        recurrentPaymentTool.setDigitalWalletProvider(Optional.ofNullable(digitalWallet.getPaymentService())
+                .map(PaymentServiceRef::getId).orElse(null));
         recurrentPaymentTool.setDigitalWalletToken(digitalWallet.getToken());
     }
 
@@ -126,7 +125,8 @@ public class RecurrentPaymentToolHasCreatedHandler implements RecurrentPaymentTo
     private void fillBankCard(RecurrentPaymentTool recurrentPaymentTool, PaymentTool paymentTool) {
         BankCard bankCard = paymentTool.getBankCard();
         recurrentPaymentTool.setBankCardToken(bankCard.getToken());
-        recurrentPaymentTool.setBankCardPaymentSystem(bankCard.getPaymentSystem().getId());
+        recurrentPaymentTool.setBankCardPaymentSystem(Optional.ofNullable(bankCard.getPaymentSystem())
+                .map(PaymentSystemRef::getId).orElse(null));
         recurrentPaymentTool.setBankCardBin(bankCard.getBin());
         recurrentPaymentTool.setBankCardMaskedPan(bankCard.getLastDigits());
         recurrentPaymentTool.setBankCardTokenProvider(bankCard.getPaymentToken().getId());
