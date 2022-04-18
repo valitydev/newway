@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -151,7 +152,8 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingPaymentMapper 
         if (paymentTool.isSetBankCard()) {
             BankCard bankCard = paymentTool.getBankCard();
             payment.setPayerBankCardToken(bankCard.getToken());
-            payment.setPayerBankCardPaymentSystem(bankCard.getPaymentSystem().getId());
+            payment.setPayerBankCardPaymentSystem(Optional.ofNullable(bankCard.getPaymentSystem())
+                    .map(PaymentSystemRef::getId).orElse(null));
             payment.setPayerBankCardBin(bankCard.getBin());
             payment.setPayerBankCardMaskedPan(bankCard.getLastDigits());
             payment.setPayerBankName(bankCard.getBankName());
@@ -159,16 +161,20 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingPaymentMapper 
             if (bankCard.isSetIssuerCountry()) {
                 payment.setPayerIssuerCountry(bankCard.getIssuerCountry().name());
             }
-            payment.setPayerBankCardTokenProvider(bankCard.getPaymentToken().getId());
+            payment.setPayerBankCardTokenProvider(Optional.ofNullable(bankCard.getPaymentToken())
+                    .map(BankCardTokenServiceRef::getId).orElse(null));
         } else if (paymentTool.isSetPaymentTerminal()) {
             payment.setPayerPaymentTerminalType(
-                    paymentTool.getPaymentTerminal().getPaymentService().getId());
+                    Optional.ofNullable(paymentTool.getPaymentTerminal().getPaymentService())
+                            .map(PaymentServiceRef::getId).orElse(null));
         } else if (paymentTool.isSetDigitalWallet()) {
             payment.setPayerDigitalWalletId(paymentTool.getDigitalWallet().getId());
             payment.setPayerDigitalWalletProvider(
-                    paymentTool.getDigitalWallet().getPaymentService().getId());
+                    Optional.ofNullable(paymentTool.getDigitalWallet().getPaymentService())
+                            .map(PaymentServiceRef::getId).orElse(null));
         } else if (paymentTool.isSetCryptoCurrency()) {
-            payment.setPayerCryptoCurrencyType(paymentTool.getCryptoCurrency().getId());
+            payment.setPayerCryptoCurrencyType(Optional.ofNullable(paymentTool.getCryptoCurrency())
+                    .map(CryptoCurrencyRef::getId).orElse(null));
         } else if (paymentTool.isSetMobileCommerce()) {
             payment.setPayerMobileOperator(paymentTool.getMobileCommerce().getOperator().getId());
             payment.setPayerMobilePhoneCc(paymentTool.getMobileCommerce().getPhone().getCc());
