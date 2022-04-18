@@ -129,7 +129,8 @@ public class RecurrentPaymentToolHasCreatedHandler implements RecurrentPaymentTo
                 .map(PaymentSystemRef::getId).orElse(null));
         recurrentPaymentTool.setBankCardBin(bankCard.getBin());
         recurrentPaymentTool.setBankCardMaskedPan(bankCard.getLastDigits());
-        recurrentPaymentTool.setBankCardTokenProvider(bankCard.getPaymentToken().getId());
+        recurrentPaymentTool.setBankCardTokenProvider(Optional.ofNullable(bankCard.getPaymentToken())
+                .map(BankCardTokenServiceRef::getId).orElse(null));
         if (bankCard.isSetIssuerCountry()) {
             recurrentPaymentTool.setBankCardIssuerCountry(bankCard.getIssuerCountry().name());
         }
