@@ -1,8 +1,6 @@
 package dev.vality.newway.util;
 
 import dev.vality.damsel.domain.*;
-import dev.vality.mamsel.PaymentSystemUtil;
-import dev.vality.mamsel.TokenProviderUtil;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -17,9 +15,7 @@ public class PaymentMethodUtils {
         return paymentMethod.get()
                 .filter(PaymentMethod::isSetBankCard)
                 .map(PaymentMethod::getBankCard)
-                .flatMap(bankCard -> PaymentSystemUtil.getPaymentSystemNameIfPresent(
-                        bankCard.getPaymentSystem(),
-                        bankCard.getPaymentSystemDeprecated()))
+                .flatMap(bankCard -> Optional.ofNullable(bankCard.getPaymentSystem()).map(PaymentSystemRef::getId))
                 .or(() -> paymentMethod.get()
                         .filter(PaymentMethod::isSetBankCardDeprecated)
                         .map(PaymentMethod::getBankCardDeprecated)
@@ -35,16 +31,14 @@ public class PaymentMethodUtils {
     }
 
     private static Optional<String> getTokenizedBankCardId(TokenizedBankCard tokenizedBankCard) {
-        Optional<String> paymentSystemNameIfPresent = PaymentSystemUtil.getPaymentSystemNameIfPresent(
-                tokenizedBankCard.getPaymentSystem(),
-                tokenizedBankCard.getPaymentSystemDeprecated());
-        Optional<String> tokenProviderNameIfPresent = TokenProviderUtil.getTokenProviderNameIfPresent(
-                tokenizedBankCard.getPaymentToken(),
-                tokenizedBankCard.getTokenProviderDeprecated());
+        Optional<String> paymentSystemName = Optional.ofNullable(tokenizedBankCard.getPaymentSystem())
+                .map(PaymentSystemRef::getId);
+        Optional<String> paymentToken = Optional.ofNullable(tokenizedBankCard.getPaymentToken())
+                .map(BankCardTokenServiceRef::getId);
 
-        return paymentSystemNameIfPresent
-                .flatMap(paymentSystemName -> tokenProviderNameIfPresent
-                        .map(tokenProviderName -> paymentSystemName +
+        return paymentSystemName
+                .flatMap(name -> paymentToken
+                        .map(tokenProviderName -> name +
                                 TOKENIZED_BANK_CARD_SEPARATOR +
                                 tokenProviderName));
     }
@@ -54,11 +48,7 @@ public class PaymentMethodUtils {
         return paymentMethod.get()
                 .filter(PaymentMethod::isSetPaymentTerminal)
                 .map(PaymentMethod::getPaymentTerminal)
-                .map(PaymentServiceRef::getId)
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetPaymentTerminalDeprecated)
-                        .map(PaymentMethod::getPaymentTerminalDeprecated)
-                        .map(Enum::name));
+                .map(PaymentServiceRef::getId);
     }
 
     public static Optional<String> getPaymentMethodRefIdByDigitalWallet(
@@ -66,11 +56,7 @@ public class PaymentMethodUtils {
         return paymentMethod.get()
                 .filter(PaymentMethod::isSetDigitalWallet)
                 .map(PaymentMethod::getDigitalWallet)
-                .map(PaymentServiceRef::getId)
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetDigitalWalletDeprecated)
-                        .map(PaymentMethod::getDigitalWalletDeprecated)
-                        .map(Enum::name));
+                .map(PaymentServiceRef::getId);
     }
 
     public static Optional<String> getPaymentMethodRefIdByCryptoCurrency(
@@ -78,11 +64,7 @@ public class PaymentMethodUtils {
         return paymentMethod.get()
                 .filter(PaymentMethod::isSetCryptoCurrency)
                 .map(PaymentMethod::getCryptoCurrency)
-                .map(CryptoCurrencyRef::getId)
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetCryptoCurrencyDeprecated)
-                        .map(PaymentMethod::getCryptoCurrencyDeprecated)
-                        .map(Enum::name));
+                .map(CryptoCurrencyRef::getId);
     }
 
     public static Optional<String> getPaymentMethodRefIdByMobile(
@@ -90,11 +72,7 @@ public class PaymentMethodUtils {
         return paymentMethod.get()
                 .filter(PaymentMethod::isSetMobile)
                 .map(PaymentMethod::getMobile)
-                .map(MobileOperatorRef::getId)
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetMobileDeprecated)
-                        .map(PaymentMethod::getMobileDeprecated)
-                        .map(Enum::name));
+                .map(MobileOperatorRef::getId);
     }
 
     public static Optional<String> getPaymentMethodRefIdByGeneric(

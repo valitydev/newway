@@ -10,7 +10,6 @@ import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
-import dev.vality.mamsel.*;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.Invoice;
@@ -152,7 +151,7 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingPaymentMapper 
         if (paymentTool.isSetBankCard()) {
             BankCard bankCard = paymentTool.getBankCard();
             payment.setPayerBankCardToken(bankCard.getToken());
-            payment.setPayerBankCardPaymentSystem(PaymentSystemUtil.getPaymentSystemName(bankCard));
+            payment.setPayerBankCardPaymentSystem(bankCard.getPaymentSystem().getId());
             payment.setPayerBankCardBin(bankCard.getBin());
             payment.setPayerBankCardMaskedPan(bankCard.getLastDigits());
             payment.setPayerBankName(bankCard.getBankName());
@@ -160,18 +159,18 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingPaymentMapper 
             if (bankCard.isSetIssuerCountry()) {
                 payment.setPayerIssuerCountry(bankCard.getIssuerCountry().name());
             }
-            payment.setPayerBankCardTokenProvider(TokenProviderUtil.getTokenProviderName(bankCard));
+            payment.setPayerBankCardTokenProvider(bankCard.getPaymentToken().getId());
         } else if (paymentTool.isSetPaymentTerminal()) {
             payment.setPayerPaymentTerminalType(
-                    TerminalPaymentUtil.getTerminalPaymentProviderName(paymentTool.getPaymentTerminal()));
+                    paymentTool.getPaymentTerminal().getPaymentService().getId());
         } else if (paymentTool.isSetDigitalWallet()) {
             payment.setPayerDigitalWalletId(paymentTool.getDigitalWallet().getId());
             payment.setPayerDigitalWalletProvider(
-                    DigitalWalletUtil.getDigitalWalletName(paymentTool.getDigitalWallet()));
-        } else if (CryptoCurrencyUtil.isSetCryptoCurrency(paymentTool)) {
-            payment.setPayerCryptoCurrencyType(CryptoCurrencyUtil.getCryptoCurrencyName(paymentTool));
+                    paymentTool.getDigitalWallet().getPaymentService().getId());
+        } else if (paymentTool.isSetCryptoCurrency()) {
+            payment.setPayerCryptoCurrencyType(paymentTool.getCryptoCurrency().getId());
         } else if (paymentTool.isSetMobileCommerce()) {
-            payment.setPayerMobileOperator(MobileOperatorUtil.getMobileOperatorName(paymentTool.getMobileCommerce()));
+            payment.setPayerMobileOperator(paymentTool.getMobileCommerce().getOperator().getId());
             payment.setPayerMobilePhoneCc(paymentTool.getMobileCommerce().getPhone().getCc());
             payment.setPayerMobilePhoneCtn(paymentTool.getMobileCommerce().getPhone().getCtn());
         }

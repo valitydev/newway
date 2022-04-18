@@ -178,10 +178,6 @@
             <groupId>dev.vality.geck</groupId>
             <artifactId>filter</artifactId>
         </dependency>
-        <dependency>
-            <groupId>dev.vality</groupId>
-            <artifactId>mamsel</artifactId>
-        </dependency>
 
         <!-- Test -->
         <dependency>
