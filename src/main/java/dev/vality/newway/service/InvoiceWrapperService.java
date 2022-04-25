@@ -30,6 +30,7 @@ public class InvoiceWrapperService {
     // TODO: is it required? Get stats for later
     private final Cache<InvoicingKey, InvoiceWrapper> invoiceDataCache;
 
+    // TODO: refactor, required only for PartyShop, which can be extracted from
     public InvoiceWrapper get(String invoiceId) throws DaoException, NotFoundException {
         InvoicingKey key = InvoicingKey.buildKey(invoiceId);
         InvoiceWrapper invoiceWrapper = invoiceDataCache.getIfPresent(key);

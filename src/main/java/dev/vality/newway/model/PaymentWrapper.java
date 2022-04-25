@@ -1,39 +1,47 @@
 package dev.vality.newway.model;
 
-import dev.vality.newway.domain.tables.pojos.CashFlow;
-import dev.vality.newway.domain.tables.pojos.Payment;
+import dev.vality.newway.domain.tables.pojos.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentWrapper {
     private Payment payment;
+    private PaymentStatusInfo paymentStatusInfo;
+    private PaymentPayerInfo paymentPayerInfo;
+    private PaymentAdditionalInfo paymentAdditionalInfo;
+    private PaymentRecurrentInfo paymentRecurrentInfo;
+    private PaymentRiskData paymentRiskData;
+    private PaymentFee paymentFee;
+    private PaymentRoute paymentRoute;
     private List<CashFlow> cashFlows;
-    private boolean shouldInsert;
+    // TODO: check if required
     private InvoicingKey key;
 
     public PaymentWrapper copy() {
-        Payment paymentTarget = new Payment();
-        BeanUtils.copyProperties(payment, paymentTarget);
-        PaymentWrapper paymentWrapperTarget = new PaymentWrapper();
-        paymentWrapperTarget.setKey(InvoicingKey.buildKey(this));
-        paymentWrapperTarget.setPayment(paymentTarget);
-        if (cashFlows != null) {
-            List<CashFlow> cashFlowsTarget = new ArrayList<>();
-            cashFlows.forEach(c -> {
-                CashFlow cartTarget = new CashFlow();
-                BeanUtils.copyProperties(c, cartTarget);
-                cashFlowsTarget.add(cartTarget);
-            });
-            paymentWrapperTarget.setCashFlows(cashFlowsTarget);
-        }
-        return paymentWrapperTarget;
+        return new PaymentWrapper(
+                new Payment(payment),
+                new PaymentStatusInfo(paymentStatusInfo),
+                new PaymentPayerInfo(paymentPayerInfo),
+                new PaymentAdditionalInfo(paymentAdditionalInfo),
+                new PaymentRecurrentInfo(paymentRecurrentInfo),
+                new PaymentRiskData(paymentRiskData),
+                new PaymentFee(paymentFee),
+                new PaymentRoute(paymentRoute),
+                cashFlows != null ? copyCashFlow() : null,
+                InvoicingKey.buildKey(this)
+        );
+    }
+
+    private List<CashFlow> copyCashFlow() {
+        return cashFlows.stream()
+                .map(CashFlow::new)
+                .collect(Collectors.toList());
     }
 }

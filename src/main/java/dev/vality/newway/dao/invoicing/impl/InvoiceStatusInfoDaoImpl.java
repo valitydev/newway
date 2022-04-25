@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.beans.Transient;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -67,7 +66,7 @@ public class InvoiceStatusInfoDaoImpl extends AbstractGenericDao implements Invo
 
 
     @Override
-    public void switchCurrent(Collection<String> invoiceIds) throws DaoException {
+    public void switchCurrent(Set<String> invoiceIds) throws DaoException {
         invoiceIds.forEach(invoiceId -> {
                     execute(getDslContext().update(INVOICE_STATUS_INFO)
                             .set(INVOICE_STATUS_INFO.CURRENT, false)
