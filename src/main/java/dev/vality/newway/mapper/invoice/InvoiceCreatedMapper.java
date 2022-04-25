@@ -14,8 +14,7 @@ import dev.vality.newway.domain.enums.InvoiceStatus;
 import dev.vality.newway.domain.tables.pojos.InvoiceCart;
 import dev.vality.newway.domain.tables.pojos.InvoiceStatusInfo;
 import dev.vality.newway.exception.DaoException;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.newway.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +29,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoiceCreatedMapper extends AbstractInvoicingMapper<InvoiceWrapper> {
+public class InvoiceCreatedMapper implements Mapper<InvoiceWrapper> {
 
     private final Filter filter = new PathConditionFilter(
             new PathConditionRule("invoice_created", new IsNullCondition().not())
     );
 
     @Override
-    public InvoiceWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId, LocalStorage storage)
+    public InvoiceWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId)
             throws DaoException {
         Invoice invoice = invoiceChange.getInvoiceCreated().getInvoice();
         long sequenceId = event.getEventId();

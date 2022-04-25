@@ -13,8 +13,7 @@ import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentAdditionalInfo;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +25,14 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoicePaymentSessionChangeTransactionBoundMapper extends AbstractInvoicingMapper<PaymentWrapper> {
+public class InvoicePaymentSessionChangeTransactionBoundMapper implements Mapper<PaymentWrapper> {
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_session_change.payload.session_transaction_bound",
             new IsNullCondition().not()));
 
     @Override
-    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId, LocalStorage storage) {
+    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {
         InvoicePaymentChange invoicePaymentChange = change.getInvoicePaymentChange();
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();

@@ -13,8 +13,6 @@ public interface InvoiceStatusInfoDao extends GenericDao {
 
     InvoiceStatusInfo get(String invoiceId);
 
-    List<InvoiceStatusInfo> getList(Set<String> invoiceIds);
-
     void switchCurrent(Set<String> invoiceIds) throws DaoException;
 
 }

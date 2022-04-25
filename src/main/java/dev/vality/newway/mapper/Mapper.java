@@ -1,14 +1,15 @@
 package dev.vality.newway.mapper;
 
+import dev.vality.damsel.payment_processing.InvoiceChange;
 import dev.vality.geck.filter.Filter;
-import dev.vality.newway.handler.event.stock.LocalStorage;
+import dev.vality.machinegun.eventsink.MachineEvent;
 
-public interface Mapper<C, E, M> {
-    default boolean accept(C change) {
+public interface Mapper<M> {
+    default boolean accept(InvoiceChange change) {
         return getFilter().match(change);
     }
 
-    M map(C change, E event, Integer changeId, LocalStorage storage);
+    M map(InvoiceChange change, MachineEvent event, Integer changeId);
 
     Filter getFilter();
 }

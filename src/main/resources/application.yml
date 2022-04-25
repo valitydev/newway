@@ -123,10 +123,11 @@ dmt:
     enabled: false
 
 cache:
-  invoice:
+  party-shop:
     size: 10000
-  payment:
-    size: 10000
+    expire:
+      after:
+        sec: 600
 
 testcontainers:
   postgresql:

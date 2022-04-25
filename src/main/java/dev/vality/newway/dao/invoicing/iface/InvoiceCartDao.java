@@ -5,7 +5,6 @@ import dev.vality.newway.domain.tables.pojos.InvoiceCart;
 import dev.vality.newway.exception.DaoException;
 
 import java.util.List;
-import java.util.Set;
 
 public interface InvoiceCartDao extends GenericDao {
 
@@ -13,5 +12,4 @@ public interface InvoiceCartDao extends GenericDao {
 
     List<InvoiceCart> getByInvoiceId(String invoiceId) throws DaoException;
 
-    List<InvoiceCart> getByInvoiceIdsIn(Set<String> invoiceIds);
 }

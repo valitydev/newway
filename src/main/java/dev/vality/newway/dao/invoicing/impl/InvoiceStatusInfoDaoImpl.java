@@ -56,14 +56,6 @@ public class InvoiceStatusInfoDaoImpl extends AbstractGenericDao implements Invo
                 new NotFoundException(String.format("InvoiceStatusInfo not found, invoiceId='%s'", invoiceId)));
     }
 
-    @Override
-    public List<InvoiceStatusInfo> getList(Set<String> invoiceIds) {
-        Query query = getDslContext().selectFrom(INVOICE_STATUS_INFO)
-                .where(INVOICE_STATUS_INFO.INVOICE_ID.in(invoiceIds)
-                        .and(INVOICE_STATUS_INFO.CURRENT));
-        return fetch(query, rowMapper);
-    }
-
 
     @Override
     public void switchCurrent(Set<String> invoiceIds) throws DaoException {

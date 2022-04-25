@@ -821,7 +821,6 @@ CREATE TABLE IF NOT EXISTS nw.invoice
     context             bytea,
     template_id         character varying COLLATE pg_catalog."default",
     wtime               timestamp without time zone                    NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
-    current             boolean                                        DEFAULT false NOT NULL,
     sequence_id         bigint,
     change_id           integer,
     external_id         character varying COLLATE pg_catalog."default",

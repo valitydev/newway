@@ -9,8 +9,7 @@ import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentRecurrentInfo;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.PaymentWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +18,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoicePaymentRecTokenAcquiredMapper extends AbstractInvoicingMapper<PaymentWrapper> {
+public class InvoicePaymentRecTokenAcquiredMapper implements Mapper<PaymentWrapper> {
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_rec_token_acquired",
             new IsNullCondition().not()));
 
     @Override
-    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId, LocalStorage storage) {
+    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {
         InvoicePaymentChange invoicePaymentChange = change.getInvoicePaymentChange();
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();

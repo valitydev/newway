@@ -47,13 +47,6 @@ public class InvoiceCartDaoImpl extends AbstractGenericDao implements InvoiceCar
         return fetch(query, invoiceCartRowMapper);
     }
 
-    @Override
-    public List<InvoiceCart> getByInvoiceIdsIn(Set<String> invoiceIds) {
-        Query query = getDslContext().selectFrom(INVOICE_CART)
-                .where(INVOICE_CART.INVOICE_ID.in(invoiceIds));
-        return fetch(query, invoiceCartRowMapper);
-    }
-
     /**
      * Invoice cart can be written only once when Invoice is created.
      * Invoice cart cannot be changed, only way to change invoice cart is to cancel invoice and create new one.

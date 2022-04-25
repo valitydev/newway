@@ -11,8 +11,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.InvoiceStatusInfo;
 import dev.vality.newway.exception.DaoException;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoiceWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +20,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoiceStatusChangedMapper extends AbstractInvoicingMapper<InvoiceWrapper> {
+public class InvoiceStatusChangedMapper implements Mapper<InvoiceWrapper> {
 
     private Filter filter = new PathConditionFilter(
             new PathConditionRule("invoice_status_changed", new IsNullCondition().not()));
 
     @Override
-    public InvoiceWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId, LocalStorage storage)
+    public InvoiceWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId)
             throws DaoException {
         InvoiceStatus invoiceStatus = invoiceChange.getInvoiceStatusChanged().getStatus();
         long sequenceId = event.getEventId();

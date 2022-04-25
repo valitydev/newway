@@ -14,34 +14,31 @@ import dev.vality.mamsel.*;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.domain.tables.pojos.PaymentPayerInfo;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
-import dev.vality.newway.model.InvoiceWrapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PartyShop;
 import dev.vality.newway.model.PaymentWrapper;
-import dev.vality.newway.service.InvoiceWrapperService;
+import dev.vality.newway.service.PartyShopService;
 import dev.vality.newway.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoicePaymentCreatedMapper extends AbstractInvoicingMapper<PaymentWrapper> {
+public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
 
-    private final InvoiceWrapperService invoiceWrapperService;
+    private final PartyShopService partyShopService;
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_started",
             new IsNullCondition().not()));
 
     @Override
-    public PaymentWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId, LocalStorage storage) {
+    public PaymentWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId) {
         InvoicePaymentStarted invoicePaymentStarted = invoiceChange
                 .getInvoicePaymentChange()
                 .getPayload()
@@ -52,11 +49,10 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingMapper<Payment
         long sequenceId = event.getEventId();
         String invoiceId = event.getSourceId();
         String paymentId = invoicePayment.getId();
-        LocalDateTime eventCreatedAt = TypeUtil.stringToLocalDateTime(event.getCreatedAt());
         log.info("Start payment created mapping, sequenceId={}, invoiceId={}, paymentId={}", sequenceId, invoiceId,
                 paymentId);
 
-        PartyShop partyShop = getPartyShop(storage, invoiceId);
+        PartyShop partyShop = partyShopService.get(invoiceId);
         if (partyShop == null) {
             log.info("PartyShop not found for invoiceId = {}", invoiceId);
             return null;
@@ -64,6 +60,7 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingMapper<Payment
 
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
+        LocalDateTime eventCreatedAt = TypeUtil.stringToLocalDateTime(event.getCreatedAt());
         paymentWrapper.setPayment(getPayment(
                 invoicePayment,
                 invoiceId,
@@ -117,20 +114,6 @@ public class InvoicePaymentCreatedMapper extends AbstractInvoicingMapper<Payment
         log.info("Payment has been mapped, sequenceId={}, invoiceId={}, paymentId={}", sequenceId, invoiceId,
                 paymentId);
         return paymentWrapper;
-    }
-
-    private PartyShop getPartyShop(LocalStorage storage, String invoiceId) {
-        return Optional.ofNullable((PartyShop) storage.get(InvoicingKey.buildKey(invoiceId)))
-                .orElseGet(() -> {
-                    InvoiceWrapper invoiceWrapper = invoiceWrapperService.get(invoiceId);
-                    if (invoiceWrapper == null || invoiceWrapper.getInvoice() == null) {
-                        return null;
-                    }
-                    return new PartyShop(
-                            invoiceWrapper.getInvoice().getPartyId(),
-                            invoiceWrapper.getInvoice().getShopId()
-                    );
-                });
     }
 
     private Payment getPayment(InvoicePayment invoicePayment,

@@ -10,8 +10,7 @@ import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.enums.PaymentChangeType;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.CashFlowUtil;
 import dev.vality.newway.util.PaymentFeeUtil;
@@ -25,7 +24,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoicePaymentCashFlowChangedMapper extends AbstractInvoicingMapper<PaymentWrapper> {
+public class InvoicePaymentCashFlowChangedMapper implements Mapper<PaymentWrapper> {
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_cash_flow_changed",
@@ -35,7 +34,7 @@ public class InvoicePaymentCashFlowChangedMapper extends AbstractInvoicingMapper
     //  при приходе adjustment - приходит новый кешфлоу(првоерить) и нужно пересчитать fee?
 
     @Override
-    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId, LocalStorage storage) {
+    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {
         InvoicePaymentChange invoicePaymentChange = change.getInvoicePaymentChange();
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();

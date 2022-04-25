@@ -49,35 +49,10 @@ public class InvoiceDaoImpl extends AbstractGenericDao implements InvoiceDao {
     @Override
     public Invoice get(String invoiceId) throws DaoException {
         Query query = getDslContext().selectFrom(INVOICE)
-                .where(INVOICE.INVOICE_ID.eq(invoiceId).and(INVOICE.CURRENT));
+                .where(INVOICE.INVOICE_ID.eq(invoiceId));
         return Optional.ofNullable(fetchOne(query, invoiceRowMapper))
                 .orElseThrow(
                         () -> new NotFoundException(String.format("Invoice not found, invoiceId='%s'", invoiceId)));
     }
 
-    @Override
-    public List<Invoice> getList(Set<String> invoiceIds) {
-        Query query = getDslContext().selectFrom(INVOICE)
-                .where(INVOICE.INVOICE_ID.in(invoiceIds).and(INVOICE.CURRENT));
-        return fetch(query, invoiceRowMapper);
-    }
-
-    @Override
-    public void switchCurrent(Set<String> invoiceIds) throws DaoException {
-        invoiceIds.forEach(invoiceId -> {
-            execute(getDslContext().update(INVOICE)
-                    .set(INVOICE.CURRENT, false)
-                    .where(INVOICE.INVOICE_ID.eq(invoiceId)
-                            .and(INVOICE.CURRENT))
-            );
-            execute(getDslContext().update(INVOICE)
-                    .set(INVOICE.CURRENT, true)
-                    .where(INVOICE.ID.eq(
-                            DSL.select(DSL.max(INVOICE.ID))
-                                    .from(INVOICE)
-                                    .where(INVOICE.INVOICE_ID.eq(invoiceId))
-                    ))
-            );
-        });
-    }
 }

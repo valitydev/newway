@@ -9,8 +9,7 @@ import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentStatusInfo;
-import dev.vality.newway.handler.event.stock.LocalStorage;
-import dev.vality.newway.mapper.AbstractInvoicingMapper;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.PaymentStatusInfoUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoicePaymentStatusChangedMapper extends AbstractInvoicingMapper<PaymentWrapper> {
+public class InvoicePaymentStatusChangedMapper implements Mapper<PaymentWrapper> {
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_status_changed",
@@ -28,7 +27,7 @@ public class InvoicePaymentStatusChangedMapper extends AbstractInvoicingMapper<P
     ));
 
     @Override
-    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId, LocalStorage storage) {
+    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {
         InvoicePaymentStatus invoicePaymentStatus =
                 change.getInvoicePaymentChange().getPayload().getInvoicePaymentStatusChanged().getStatus();
         long sequenceId = event.getEventId();
