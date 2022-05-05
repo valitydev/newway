@@ -11,7 +11,10 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.CashFlowWrapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
+import dev.vality.newway.util.CashFlowLinkUtil;
 import dev.vality.newway.util.CashFlowUtil;
 import dev.vality.newway.util.PaymentFeeUtil;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +48,11 @@ public class InvoicePaymentCashFlowChangedMapper implements Mapper<PaymentWrappe
         List<FinalCashFlowPosting> finalCashFlow =
                 invoicePaymentChange.getPayload().getInvoicePaymentCashFlowChanged().getCashFlow();
         PaymentWrapper paymentWrapper = new PaymentWrapper();
-        paymentWrapper.setCashFlows(
-                CashFlowUtil.convertCashFlows(finalCashFlow, null, PaymentChangeType.payment));
+        paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
+        paymentWrapper.setCashFlowWrapper(new CashFlowWrapper(
+                CashFlowLinkUtil.getCashFlowLink(paymentId, invoiceId, eventCreatedAt, changeId, sequenceId),
+                CashFlowUtil.convertCashFlows(finalCashFlow, null, PaymentChangeType.payment)
+        ));
         paymentWrapper.setPaymentFee(
                 PaymentFeeUtil.getPaymentFee(finalCashFlow, invoiceId, paymentId, eventCreatedAt, changeId, sequenceId));
         log.info("Payment cashflow has been mapped, sequenceId='{}', invoiceId='{}', paymentId='{}'",

@@ -10,6 +10,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentStatusInfo;
 import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.PaymentStatusInfoUtil;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class InvoicePaymentStatusChangedMapper implements Mapper<PaymentWrapper>
         log.info("Payment status has been mapped, sequenceId={}, invoiceId={}, paymentId={}, status={}",
                 sequenceId, invoiceId, paymentId, invoicePaymentStatus.getSetField().getFieldName());
         PaymentWrapper paymentWrapper = new PaymentWrapper();
+        paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentStatusInfo(statusInfo);
         return paymentWrapper;
     }

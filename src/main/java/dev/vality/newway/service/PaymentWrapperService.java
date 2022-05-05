@@ -1,23 +1,16 @@
 package dev.vality.newway.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import dev.vality.newway.dao.invoicing.iface.CashFlowDao;
-import dev.vality.newway.dao.invoicing.iface.PaymentDao;
-import dev.vality.newway.domain.enums.PaymentChangeType;
-import dev.vality.newway.domain.tables.pojos.CashFlow;
-import dev.vality.newway.domain.tables.pojos.Payment;
-import dev.vality.newway.exception.DaoException;
-import dev.vality.newway.exception.NotFoundException;
-import dev.vality.newway.handler.event.stock.LocalStorage;
+import dev.vality.newway.dao.invoicing.iface.*;
+import dev.vality.newway.domain.tables.pojos.*;
+import dev.vality.newway.model.CashFlowWrapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
+import dev.vality.newway.util.PaymentWrapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,68 +19,127 @@ import java.util.stream.Collectors;
 public class PaymentWrapperService {
 
     private final PaymentDao paymentDao;
-    private final CashFlowDao cashFlowDao;
-    private final Cache<InvoicingKey, PaymentWrapper> paymentDataCache;
+    private final PaymentStatusInfoDao paymentStatusInfoDao;
+    private final PaymentPayerInfoDao paymentPayerInfoDao;
+    private final PaymentAdditionalInfoDao paymentAdditionalInfoDao;
+    private final PaymentRecurrentInfoDao paymentRecurrentInfoDao;
+    private final PaymentRiskDataDao paymentRiskDataDao;
+    private final PaymentFeeDao paymentFeeDao;
+    private final PaymentRouteDao paymentRouteDao;
+    private final CashFlowWrapperService cashFlowWrapperService;
 
-    public PaymentWrapper get(String invoiceId, String paymentId,
-                              long sequenceId, Integer changeId,
-                              LocalStorage storage) throws DaoException, NotFoundException {
-        InvoicingKey key = InvoicingKey.buildKey(invoiceId, paymentId);
-        PaymentWrapper paymentWrapper = (PaymentWrapper) storage.get(key);
-        if (paymentWrapper != null) {
-            paymentWrapper = paymentWrapper.copy();
-        } else {
-            paymentWrapper = paymentDataCache.getIfPresent(key);
-            if (paymentWrapper != null) {
-                paymentWrapper = paymentWrapper.copy();
-            } else {
-                Payment payment = paymentDao.get(invoiceId, paymentId);
-                List<CashFlow> cashFlows = cashFlowDao.getByObjId(payment.getId(), PaymentChangeType.payment);
-                paymentWrapper = new PaymentWrapper();
-                paymentWrapper.setPayment(payment);
-                paymentWrapper.setCashFlows(cashFlows);
-                paymentWrapper.setKey(key);
-            }
-        }
-        if ((paymentWrapper.getPayment().getSequenceId() > sequenceId)
-                || (paymentWrapper.getPayment().getSequenceId() == sequenceId
-                && paymentWrapper.getPayment().getChangeId() >= changeId)) {
-            paymentWrapper = null;
-        }
-        return paymentWrapper;
-    }
+    // TODO: проверить порядок вставки и корректно ли работает switchCurrent
+    //  в случае если в одном батче приходит несколько событий, например:
+    //      - создание платежа
+    //      - 2 смены статуса
+    //      - изменение кеш флоу
 
     public void save(List<PaymentWrapper> paymentWrappers) {
-        paymentWrappers.forEach(pw -> paymentDataCache.put(pw.getKey(), pw));
-        List<Payment> paymentsForInsert = paymentWrappers.stream()
-                .filter(PaymentWrapper::isShouldInsert)
+        savePayments(paymentWrappers);
+        savePaymentStatusInfo(paymentWrappers);
+        savePaymentPayerInfo(paymentWrappers);
+        savePaymentAdditionalInfo(paymentWrappers);
+        savePaymentRecurrentInfo(paymentWrappers);
+        savePaymentRiskData(paymentWrappers);
+        savePaymentFee(paymentWrappers);
+        savePaymentRoute(paymentWrappers);
+        saveCashFlow(paymentWrappers);
+    }
+
+    private void savePayments(List<PaymentWrapper> paymentWrappers) {
+        List<Payment> payments = paymentWrappers.stream()
                 .map(PaymentWrapper::getPayment)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        List<Payment> paymentsForUpdate = paymentWrappers.stream()
-                .filter(pw -> !pw.isShouldInsert())
-                .map(PaymentWrapper::getPayment)
-                .collect(Collectors.toList());
-        List<CashFlow> cashFlows = paymentWrappers
-                .stream()
-                .filter(PaymentWrapper::isShouldInsert)
-                .filter(p -> p.getCashFlows() != null)
-                .map(PaymentWrapper::getCashFlows)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(paymentsForUpdate)) {
-            log.info("Payments for update: {}", paymentsForUpdate.size());
-            paymentDao.updateBatch(paymentsForUpdate);
-        }
-        if (!CollectionUtils.isEmpty(paymentsForInsert)) {
-            log.info("Payments for insert: {}", paymentsForInsert.size());
-            paymentDao.saveBatch(paymentsForInsert);
-        }
-        if (!CollectionUtils.isEmpty(cashFlows)) {
-            cashFlowDao.save(cashFlows);
+        if (!payments.isEmpty()) {
+            paymentDao.saveBatch(payments);
         }
     }
 
-    public void switchCurrent(Collection<InvoicingKey> switchIds) {
-        paymentDao.switchCurrent(switchIds);
+    private void savePaymentStatusInfo(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentStatusInfo> paymentStatusInfos = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentStatusInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentStatusInfos.isEmpty()) {
+            paymentStatusInfoDao.saveBatch(paymentStatusInfos);
+            paymentStatusInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(paymentWrappers));
+        }
     }
+
+    private void savePaymentPayerInfo(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentPayerInfo> paymentPayerInfos = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentPayerInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentPayerInfos.isEmpty()) {
+            paymentPayerInfoDao.saveBatch(paymentPayerInfos);
+        }
+    }
+
+    private void savePaymentAdditionalInfo(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentAdditionalInfo> paymentAdditionalInfos = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentAdditionalInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentAdditionalInfos.isEmpty()) {
+            paymentAdditionalInfoDao.saveBatch(paymentAdditionalInfos);
+            paymentAdditionalInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(paymentWrappers));
+        }
+    }
+
+    private void savePaymentRecurrentInfo(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentRecurrentInfo> paymentRecurrentInfos = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentRecurrentInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentRecurrentInfos.isEmpty()) {
+            paymentRecurrentInfoDao.saveBatch(paymentRecurrentInfos);
+            paymentRecurrentInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(paymentWrappers));
+        }
+    }
+
+    private void savePaymentRiskData(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentRiskData> paymentRiskDatas = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentRiskData)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentRiskDatas.isEmpty()) {
+            paymentRiskDataDao.saveBatch(paymentRiskDatas);
+            paymentRiskDataDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(paymentWrappers));
+        }
+    }
+
+    private void savePaymentFee(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentFee> paymentFees = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentFee)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentFees.isEmpty()) {
+            paymentFeeDao.saveBatch(paymentFees);
+            paymentFeeDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(paymentWrappers));
+        }
+    }
+
+    private void savePaymentRoute(List<PaymentWrapper> paymentWrappers) {
+        List<PaymentRoute> paymentRoutes = paymentWrappers.stream()
+                .map(PaymentWrapper::getPaymentRoute)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!paymentRoutes.isEmpty()) {
+            paymentRouteDao.saveBatch(paymentRoutes);
+            paymentRouteDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(paymentWrappers));
+        }
+    }
+
+    private void saveCashFlow(List<PaymentWrapper> paymentWrappers) {
+        List<CashFlowWrapper> cashFlowWrappers = paymentWrappers.stream()
+                .map(PaymentWrapper::getCashFlowWrapper)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (!cashFlowWrappers.isEmpty()) {
+            cashFlowWrapperService.saveBatch(cashFlowWrappers);
+        }
+    }
+
 }

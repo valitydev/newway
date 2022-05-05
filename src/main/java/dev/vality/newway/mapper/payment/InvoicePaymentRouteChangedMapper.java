@@ -10,6 +10,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentRoute;
 import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.PaymentRouteUtil;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class InvoicePaymentRouteChangedMapper implements Mapper<PaymentWrapper> 
         log.info("Payment route have been mapped, route='{}', sequenceId='{}', invoiceId='{}', paymentId='{}'",
                 paymentRoute, sequenceId, invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
+        paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentRoute(paymentRoute);
         return paymentWrapper;
     }

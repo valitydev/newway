@@ -10,6 +10,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentRecurrentInfo;
 import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class InvoicePaymentRecTokenAcquiredMapper implements Mapper<PaymentWrapp
         log.info("Payment recurrent token have been saved, sequenceId='{}', invoiceId='{}', paymentId='{}'", sequenceId,
                 invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
+        paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentRecurrentInfo(recurrentInfo);
         return paymentWrapper;
     }

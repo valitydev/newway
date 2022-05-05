@@ -15,6 +15,7 @@ import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.domain.tables.pojos.PaymentPayerInfo;
 import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.CashFlowWrapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PartyShop;
 import dev.vality.newway.model.PaymentWrapper;
@@ -97,10 +98,9 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
             ));
         }
         if (invoicePaymentStarted.isSetCashFlow()) {
-            paymentWrapper.setCashFlows(CashFlowUtil.convertCashFlows(
-                    invoicePaymentStarted.getCashFlow(),
-                    null,
-                    PaymentChangeType.payment
+            paymentWrapper.setCashFlowWrapper(new CashFlowWrapper(
+                    CashFlowLinkUtil.getCashFlowLink(paymentId, invoiceId, eventCreatedAt, changeId, sequenceId),
+                    CashFlowUtil.convertCashFlows(invoicePaymentStarted.getCashFlow(), null, PaymentChangeType.payment)
             ));
             paymentWrapper.setPaymentFee(PaymentFeeUtil.getPaymentFee(
                     invoicePaymentStarted.getCashFlow(),

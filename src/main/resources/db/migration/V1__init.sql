@@ -333,6 +333,21 @@ CREATE INDEX adjustment_party_id ON nw.adjustment USING btree (party_id);
 CREATE INDEX adjustment_status ON nw.adjustment USING btree (status);
 
 
+create table nw.cash_flow_link
+(
+    id               BIGSERIAL                   NOT NULL,
+    event_created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    invoice_id       CHARACTER VARYING           NOT NULL,
+    payment_id       CHARACTER VARYING           NOT NULL,
+    sequence_id      BIGINT,
+    change_id        INTEGER,
+    wtime            TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    current          BOOLEAN                     NOT NULL DEFAULT false
+);
+
+CREATE INDEX link_idx ON nw.cash_flow_link USING btree (invoice_id, payment_id);
+
+
 CREATE TABLE nw.cash_flow
 (
     id                             bigserial              NOT NULL,
@@ -917,96 +932,31 @@ CREATE INDEX party_current ON nw.party USING btree (current);
 CREATE INDEX party_event_created_at ON nw.party USING btree (event_created_at);
 CREATE INDEX party_party_id ON nw.party USING btree (party_id);
 
-
-CREATE TABLE nw.payment
+CREATE TABLE IF NOT EXISTS nw.payment
 (
-    id                                               bigserial                                                        NOT NULL,
-    event_created_at                                 timestamp without time zone                                      NOT NULL,
-    payment_id                                       character varying                                                NOT NULL,
-    created_at                                       timestamp without time zone                                      NOT NULL,
-    invoice_id                                       character varying                                                NOT NULL,
-    party_id                                         character varying                                                NOT NULL,
-    shop_id                                          character varying                                                NOT NULL,
-    domain_revision                                  bigint                                                           NOT NULL,
-    party_revision                                   bigint,
-    status                                           nw.payment_status                                                NOT NULL,
-    status_cancelled_reason                          character varying,
-    status_captured_reason                           character varying,
-    status_failed_failure                            character varying,
-    amount                                           bigint                                                           NOT NULL,
-    currency_code                                    character varying                                                NOT NULL,
-    payer_type                                       nw.payer_type                                                    NOT NULL,
-    payer_payment_tool_type                          nw.payment_tool_type                                             NOT NULL,
-    payer_bank_card_token                            character varying,
-    payer_bank_card_payment_system                   character varying,
-    payer_bank_card_bin                              character varying,
-    payer_bank_card_masked_pan                       character varying,
-    payer_bank_card_token_provider                   character varying,
-    payer_payment_terminal_type                      character varying,
-    payer_digital_wallet_provider                    character varying,
-    payer_digital_wallet_id                          character varying,
-    payer_payment_session_id                         character varying,
-    payer_ip_address                                 character varying,
-    payer_fingerprint                                character varying,
-    payer_phone_number                               character varying,
-    payer_email                                      character varying,
-    payer_customer_id                                character varying,
-    payer_customer_binding_id                        character varying,
-    payer_customer_rec_payment_tool_id               character varying,
-    context                                          bytea,
-    payment_flow_type                                nw.payment_flow_type                                             NOT NULL,
-    payment_flow_on_hold_expiration                  character varying,
-    payment_flow_held_until                          timestamp without time zone,
-    risk_score                                       nw.risk_score,
-    route_provider_id                                integer,
-    route_terminal_id                                integer,
-    wtime                                            timestamp without time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-    current                                          boolean                     DEFAULT true                         NOT NULL,
-    session_payload_transaction_bound_trx_id         character varying,
-    session_payload_transaction_bound_trx_extra_json character varying,
-    fee                                              bigint,
-    provider_fee                                     bigint,
-    external_fee                                     bigint,
-    guarantee_deposit                                bigint,
-    make_recurrent                                   boolean,
-    payer_recurrent_parent_invoice_id                character varying,
-    payer_recurrent_parent_payment_id                character varying,
-    recurrent_intention_token                        character varying,
-    sequence_id                                      bigint,
-    change_id                                        integer,
-    trx_additional_info_rrn                          character varying,
-    trx_additional_info_approval_code                character varying,
-    trx_additional_info_acs_url                      character varying,
-    trx_additional_info_pareq                        character varying,
-    trx_additional_info_md                           character varying,
-    trx_additional_info_term_url                     character varying,
-    trx_additional_info_pares                        character varying,
-    trx_additional_info_eci                          character varying,
-    trx_additional_info_cavv                         character varying,
-    trx_additional_info_xid                          character varying,
-    trx_additional_info_cavv_algorithm               character varying,
-    trx_additional_info_three_ds_verification        character varying,
-    payer_crypto_currency_type                       character varying,
-    status_captured_started_reason                   character varying,
-    payer_mobile_operator_legacy                     nw.mobile_operator_type,
-    payer_mobile_phone_cc                            character varying,
-    payer_mobile_phone_ctn                           character varying,
-    capture_started_params_cart_json                 character varying,
-    external_id                                      character varying,
-    payer_issuer_country                             character varying,
-    payer_bank_name                                  character varying,
-    payer_bank_card_cardholder_name                  character varying,
-    payer_mobile_operator                            character varying,
+    id                              BIGSERIAL                   NOT NULL,
+    event_created_at                TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    invoice_id                      CHARACTER VARYING           NOT NULL,
+    payment_id                      CHARACTER VARYING           NOT NULL,
+    created_at                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    party_id                        CHARACTER VARYING           NOT NULL,
+    shop_id                         CHARACTER VARYING           NOT NULL,
+    domain_revision                 BIGINT                      NOT NULL,
+    party_revision                  BIGINT,
+    amount                          BIGINT                      NOT NULL,
+    currency_code                   CHARACTER VARYING           NOT NULL,
+    make_recurrent                  BOOLEAN,
+    sequence_id                     BIGINT,
+    change_id                       INTEGER,
+    wtime                           TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    external_id                     character varying COLLATE pg_catalog."default",
+    payment_flow_type               nw.payment_flow_type        NOT NULL,
+    payment_flow_on_hold_expiration character varying COLLATE pg_catalog."default",
+    payment_flow_held_until         timestamp without time zone,
+
     CONSTRAINT payment_pkey PRIMARY KEY (id),
     CONSTRAINT payment_uniq UNIQUE (invoice_id, sequence_id, change_id)
 );
-
-CREATE INDEX payment_created_at ON nw.payment USING btree (created_at);
-CREATE INDEX payment_event_created_at ON nw.payment USING btree (event_created_at);
-CREATE INDEX payment_external_id_idx ON nw.payment USING btree (external_id) WHERE (external_id IS NOT NULL);
-CREATE INDEX payment_invoice_id ON nw.payment USING btree (invoice_id);
-CREATE INDEX payment_party_id ON nw.payment USING btree (party_id);
-CREATE INDEX payment_status ON nw.payment USING btree (status);
 
 CREATE SEQUENCE nw.pmnt_seq
     START WITH 600000000
@@ -1014,6 +964,185 @@ CREATE SEQUENCE nw.pmnt_seq
     MINVALUE 600000000
     NO MAXVALUE
     CACHE 1;
+
+-- TODO should it be here?
+CREATE INDEX payment_created_at ON nw.payment USING btree (created_at);
+CREATE INDEX payment_event_created_at ON nw.payment USING btree (event_created_at);
+CREATE INDEX payment_external_id_idx ON nw.payment USING btree (external_id) WHERE (external_id IS NOT NULL);
+CREATE INDEX payment_invoice_id ON nw.payment USING btree (invoice_id);
+CREATE INDEX payment_party_id ON nw.payment USING btree (party_id);
+
+CREATE TABLE IF NOT EXISTS nw.payment_fee
+(
+    id                               bigserial                   NOT NULL,
+    event_created_at                 timestamp without time zone NOT NULL,
+    invoice_id                       character varying           NOT NULL,
+    payment_id                       character varying           NOT NULL,
+    fee                              BIGINT,
+    provider_fee                     BIGINT,
+    external_fee                     BIGINT,
+    guarantee_deposit                BIGINT,
+    current                          BOOLEAN                     NOT NULL DEFAULT false,
+    wtime                            timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id                      bigint,
+    change_id                        integer,
+    CONSTRAINT payment_fee_pkey PRIMARY KEY (id),
+    CONSTRAINT payment_fee_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+CREATE INDEX payment_fee_invoice_id_payment_id ON nw.payment_fee USING btree (invoice_id, payment_id);
+
+
+CREATE TABLE IF NOT EXISTS nw.payment_route
+(
+    id                              BIGSERIAL                   NOT NULL,
+    event_created_at                TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    invoice_id                      CHARACTER VARYING           NOT NULL,
+    payment_id                      CHARACTER VARYING           NOT NULL,
+    route_provider_id               INTEGER,
+    route_terminal_id               INTEGER,
+    sequence_id                     BIGINT,
+    change_id                       INTEGER,
+    wtime                           TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    current                         BOOLEAN                     NOT NULL DEFAULT false,
+
+    CONSTRAINT payment_route_pkey PRIMARY KEY (id),
+    CONSTRAINT payment_route_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+CREATE INDEX payment_route_invoice_id_payment_id ON nw.payment_route USING btree (invoice_id, payment_id);
+
+
+CREATE TABLE IF NOT EXISTS nw.payment_status_info
+(
+    id                               bigserial                   NOT NULL,
+    event_created_at                 timestamp without time zone NOT NULL,
+    invoice_id                       character varying           NOT NULL,
+    payment_id                       character varying           NOT NULL,
+    created_at                       timestamp without time zone NOT NULL,
+    status                           nw.payment_status           NOT NULL,
+    reason                           character varying,
+    amount                           BIGINT                      NOT NULL,
+    currency_code                    CHARACTER VARYING           NOT NULL,
+    cart_json                        CHARACTER VARYING,
+    current                          BOOLEAN                     NOT NULL DEFAULT false,
+    wtime                            timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id                      bigint,
+    change_id                        integer,
+    CONSTRAINT payment_status_pkey PRIMARY KEY (id),
+    -- TODO: add payment id ot index?
+    CONSTRAINT payment_status_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+-- TODO
+CREATE INDEX payment_status ON nw.payment_status_info USING btree (status);
+
+
+CREATE TABLE IF NOT EXISTS nw.payment_payer_info
+(
+    id                                bigserial                   NOT NULL,
+    event_created_at                  timestamp without time zone NOT NULL,
+    invoice_id                        character varying,
+    payment_id                        character varying,
+    payer_type                        nw.payer_type               NOT NULL,
+    payment_tool_type                 nw.payment_tool_type        NOT NULL,
+    bank_card_token                   character varying,
+    bank_card_payment_system          character varying,
+    bank_card_bin                     character varying,
+    bank_card_masked_pan              character varying,
+    bank_card_token_provider          character varying,
+    payment_terminal_type             character varying,
+    digital_wallet_provider           character varying,
+    digital_wallet_id                 character varying,
+    payment_session_id                character varying,
+    ip_address                        character varying,
+    fingerprint                       character varying,
+    phone_number                      character varying,
+    email                             character varying,
+    customer_id                       character varying,
+    customer_binding_id               character varying,
+    customer_rec_payment_tool_id      character varying,
+
+    recurrent_parent_invoice_id       character varying,
+    recurrent_parent_payment_id       character varying,
+
+    crypto_currency_type              character varying,
+    mobile_phone_cc                   character varying,
+    mobile_phone_ctn                  character varying,
+    issuer_country                    character varying,
+    bank_name                         character varying,
+    bank_card_cardholder_name         character varying,
+    mobile_operator                   character varying,
+
+    wtime                             timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id                       bigint,
+    change_id                         integer,
+    CONSTRAINT payment_payment_payer_info_pkey PRIMARY KEY (id),
+    CONSTRAINT payment_payment_payer_info_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS nw.payment_additional_info
+(
+    id                    bigserial                   NOT NULL,
+    event_created_at      timestamp without time zone NOT NULL,
+    invoice_id            character varying           NOT NULL,
+    payment_id            character varying           NOT NULL,
+    transaction_id        character varying,
+    extra_json            character varying,
+    rrn                   character varying,
+    approval_code         character varying,
+    acs_url               character varying,
+    md                    character varying,
+    term_url              character varying,
+    eci                   character varying,
+    cavv                  character varying,
+    xid                   character varying,
+    cavv_algorithm        character varying,
+    three_ds_verification character varying,
+    current               boolean                     NOT NULL DEFAULT false,
+    wtime                 timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id           bigint,
+    change_id             integer,
+    CONSTRAINT payment_additional_info_pkey PRIMARY KEY (id),
+    CONSTRAINT payment_additional_info_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS nw.payment_recurrent_info
+(
+    id                                bigserial                   NOT NULL,
+    event_created_at                  timestamp without time zone NOT NULL,
+    invoice_id                        character varying           NOT NULL,
+    payment_id                        character varying           NOT NULL,
+
+    token                             character varying,
+    -- TODO: может ли приходить больше одного токена по платежу?
+    current                           BOOLEAN                     NOT NULL DEFAULT false,
+    wtime                             timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id                       bigint,
+    change_id                         integer,
+    CONSTRAINT payment_recurrent_info_pkey PRIMARY KEY (id),
+    CONSTRAINT payment_recurrent_info_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+-- TODO: очень много обзявки ради одного поля
+CREATE TABLE IF NOT EXISTS nw.payment_risk_data
+(
+    id               bigserial                   NOT NULL,
+    event_created_at timestamp without time zone NOT NULL,
+    invoice_id       character varying           NOT NULL,
+    payment_id       character varying           NOT NULL,
+    risk_score       nw.risk_score               NOT NULL,
+    current          BOOLEAN                     NOT NULL DEFAULT false,
+    wtime            timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
+    sequence_id      bigint,
+    change_id        integer,
+    CONSTRAINT payment_risk_data_pkey PRIMARY KEY (id),
+    CONSTRAINT payment_risk_data_uniq UNIQUE (invoice_id, sequence_id, change_id)
+);
+
+CREATE INDEX payment_risk_data_invoice_id_payment_id ON nw.payment_risk_data USING btree (invoice_id, payment_id);
 
 
 CREATE TABLE nw.payment_institution
@@ -1578,778 +1707,3 @@ CREATE TABLE nw.withdrawal_session
 CREATE INDEX withdrawal_session_event_created_at_idx ON nw.withdrawal_session USING btree (event_created_at);
 CREATE INDEX withdrawal_session_event_occured_at_idx ON nw.withdrawal_session USING btree (event_occured_at);
 CREATE INDEX withdrawal_session_id_idx ON nw.withdrawal_session USING btree (withdrawal_session_id);
-
-
--- Functions
-
-CREATE FUNCTION nw.cashflow_sum_finalfunc(amounts bigint[]) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE STRICT
-AS
-$_$
-begin
-    return (select sum(amount_values) from unnest($1) as amount_values);
-end;
-$_$;
-
-CREATE FUNCTION nw.cashflow_sum_finalfunc(amount bigint) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$$
-begin
-    return amount;
-end;
-$$;
-
-
-CREATE FUNCTION nw.get_adjustment_amount_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_amount_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_external_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'external'::nw.cash_flow_account,
-                '{"income", "outcome"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_external_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'external'::nw.cash_flow_account,
-                '{"income", "outcome"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_provider_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_adjustment_provider_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'adjustment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_cashflow_sum(_cash_flow nw.cash_flow, obj_type nw.payment_change_type,
-                                    source_account_type nw.cash_flow_account,
-                                    source_account_type_values character varying[],
-                                    destination_account_type nw.cash_flow_account,
-                                    destination_account_type_values character varying[]) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return (
-        coalesce(
-                (
-                    select amount
-                    from (select ($1).*) as cash_flow
-                    where cash_flow.obj_type = $2
-                      and cash_flow.source_account_type = $3
-                      and cash_flow.source_account_type_value = ANY ($4)
-                      and cash_flow.destination_account_type = $5
-                      and cash_flow.destination_account_type_value = ANY ($6)
-                      and (
-                            (cash_flow.obj_type = 'adjustment' and cash_flow.adj_flow_type = 'new_cash_flow')
-                            or (cash_flow.obj_type != 'adjustment' and cash_flow.adj_flow_type is null)
-                        )
-                ), 0)
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_amount_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_amount_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_external_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'external'::nw.cash_flow_account,
-                '{"income", "outcome"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_external_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'external'::nw.cash_flow_account,
-                '{"income", "outcome"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_guarantee_deposit_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"guarantee"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_guarantee_deposit_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"guarantee"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_provider_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payment_provider_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payment'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payout_amount_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payout'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"payout"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payout_amount_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payout'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'merchant'::nw.cash_flow_account,
-                '{"payout"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payout_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payout'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payout_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payout'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payout_fixed_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'payout'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"payout"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_payout_fixed_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'payout'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"payout"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_amount_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_amount_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_external_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'external'::nw.cash_flow_account,
-                '{"income", "outcome"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_external_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'external'::nw.cash_flow_account,
-                '{"income", "outcome"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'merchant'::nw.cash_flow_account,
-                '{"settlement"}',
-                'system'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_provider_fee_sfunc(amounts bigint[], cash_flow nw.cash_flow) RETURNS bigint[]
-    LANGUAGE plpgsql
-AS
-$_$
-begin
-    return $1 || (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
-CREATE FUNCTION nw.get_refund_provider_fee_sfunc(amount bigint, cash_flow nw.cash_flow) RETURNS bigint
-    LANGUAGE plpgsql
-    IMMUTABLE PARALLEL SAFE
-AS
-$_$
-begin
-    return $1 + (
-        nw.get_cashflow_sum(
-                $2,
-                'refund'::nw.payment_change_type,
-                'system'::nw.cash_flow_account,
-                '{"settlement"}',
-                'provider'::nw.cash_flow_account,
-                '{"settlement"}'
-            )
-        );
-end;
-$_$;
-
--- AGGREGATES
-
-CREATE AGGREGATE nw.get_adjustment_amount(nw.cash_flow) (
-    SFUNC = nw.get_adjustment_amount_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_adjustment_external_fee(nw.cash_flow) (
-    SFUNC = nw.get_adjustment_external_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_adjustment_fee(nw.cash_flow) (
-    SFUNC = nw.get_adjustment_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_adjustment_provider_fee(nw.cash_flow) (
-    SFUNC = nw.get_adjustment_provider_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payment_amount(nw.cash_flow) (
-    SFUNC = nw.get_payment_amount_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payment_external_fee(nw.cash_flow) (
-    SFUNC = nw.get_payment_external_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payment_fee(nw.cash_flow) (
-    SFUNC = nw.get_payment_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payment_guarantee_deposit(nw.cash_flow) (
-    SFUNC = nw.get_payment_guarantee_deposit_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payment_provider_fee(nw.cash_flow) (
-    SFUNC = nw.get_payment_provider_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payout_amount(nw.cash_flow) (
-    SFUNC = nw.get_payout_amount_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payout_fee(nw.cash_flow) (
-    SFUNC = nw.get_payout_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_payout_fixed_fee(nw.cash_flow) (
-    SFUNC = nw.get_payout_fixed_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_refund_amount(nw.cash_flow) (
-    SFUNC = nw.get_refund_amount_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_refund_external_fee(nw.cash_flow) (
-    SFUNC = nw.get_refund_external_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_refund_fee(nw.cash_flow) (
-    SFUNC = nw.get_refund_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );
-
-CREATE AGGREGATE nw.get_refund_provider_fee(nw.cash_flow) (
-    SFUNC = nw.get_refund_provider_fee_sfunc,
-    STYPE = bigint,
-    INITCOND = '0',
-    FINALFUNC = nw.cashflow_sum_finalfunc,
-    PARALLEL = safe
-    );

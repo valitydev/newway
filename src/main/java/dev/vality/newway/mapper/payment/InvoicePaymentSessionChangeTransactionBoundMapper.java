@@ -14,6 +14,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.tables.pojos.PaymentAdditionalInfo;
 import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,7 @@ public class InvoicePaymentSessionChangeTransactionBoundMapper implements Mapper
         log.info("Payment session transaction info has been mapped, sequenceId='{}', invoiceId='{}', paymentId='{}'",
                 sequenceId, invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
+        paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentAdditionalInfo(additionalInfo);
         return paymentWrapper;
     }
