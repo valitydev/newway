@@ -6,9 +6,12 @@ import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.machinegun.msgpack.Value;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
-import dev.vality.newway.dao.invoicing.iface.PaymentDao;
+import dev.vality.newway.dao.invoicing.iface.*;
 import dev.vality.newway.domain.enums.PaymentStatus;
 import dev.vality.newway.domain.tables.pojos.Payment;
+import dev.vality.newway.domain.tables.pojos.PaymentRecurrentInfo;
+import dev.vality.newway.domain.tables.pojos.PaymentRiskData;
+import dev.vality.newway.domain.tables.pojos.PaymentStatusInfo;
 import dev.vality.newway.service.InvoicingService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.serialization.impl.PaymentEventPayloadSerializer;
@@ -32,6 +35,20 @@ public class IntegrationTest {
 
     @Autowired
     private PaymentDao paymentDao;
+    @Autowired
+    private PaymentStatusInfoDao paymentStatusInfoDao;
+    @Autowired
+    private PaymentPayerInfoDao paymentPayerInfoDao;
+    @Autowired
+    private PaymentAdditionalInfoDao paymentAdditionalInfoDao;
+    @Autowired
+    private PaymentRecurrentInfoDao paymentRecurrentInfoDao;
+    @Autowired
+    private PaymentRiskDataDao paymentRiskDataDao;
+    @Autowired
+    private PaymentFeeDao paymentFeeDao;
+    @Autowired
+    private PaymentRouteDao paymentRouteDao;
 
     @Test
     public void test() {
@@ -97,8 +114,10 @@ public class IntegrationTest {
                 new Object[]{invoiceId, paymentId}, Integer.class)).intValue());
 
         Payment payment = paymentDao.get(invoiceId, paymentId);
-        Assertions.assertEquals(PaymentStatus.captured, payment.getStatus());
-        Assertions.assertEquals("high", payment.getRiskScore().name());
+        PaymentStatusInfo statusInfo = paymentStatusInfoDao.get(invoiceId, paymentId);
+        Assertions.assertEquals(PaymentStatus.captured, statusInfo.getStatus());
+        PaymentRiskData paymentRiskData = paymentRiskDataDao.get(invoiceId, paymentId);
+        Assertions.assertEquals("high", paymentRiskData.getRiskScore().name());
         Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT count(*) FROM nw.cash_flow WHERE obj_id = ? ",
                 new Object[]{payment.getId()}, Integer.class)).intValue());
 
@@ -133,8 +152,10 @@ public class IntegrationTest {
                 new Object[]{invoiceId, paymentId}, Integer.class)).intValue());
 
         Payment paymentSecond = paymentDao.get(invoiceId, paymentId);
-        Assertions.assertEquals("low", paymentSecond.getRiskScore().name());
-        Assertions.assertEquals("keks", paymentSecond.getRecurrentIntentionToken());
+        PaymentRiskData paymentRiskDataSecond = paymentRiskDataDao.get(invoiceId, paymentId);
+        Assertions.assertEquals("low", paymentRiskDataSecond.getRiskScore().name());
+        PaymentRecurrentInfo recurrentInfoSecond = paymentRecurrentInfoDao.get(invoiceId, paymentId);
+        Assertions.assertEquals("keks", recurrentInfoSecond.getToken());
         Assertions.assertEquals(paymentSecond.getId(), payment.getId());
 
         //--- third changes - insert
@@ -163,7 +184,8 @@ public class IntegrationTest {
                 new Object[]{invoiceId, paymentId}, Integer.class)).intValue());
 
         Payment paymentThird = paymentDao.get(invoiceId, paymentId);
-        Assertions.assertEquals(PaymentStatus.failed, paymentThird.getStatus());
+        PaymentStatusInfo statusInfoThird = paymentStatusInfoDao.get(invoiceId, paymentId);
+        Assertions.assertEquals(PaymentStatus.failed, statusInfoThird.getStatus());
         Assertions.assertEquals(3, paymentThird.getSequenceId().longValue());
         Assertions.assertNotEquals(paymentSecond.getId(), paymentThird.getId());
 

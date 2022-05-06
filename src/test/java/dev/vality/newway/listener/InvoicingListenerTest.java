@@ -11,6 +11,7 @@ import dev.vality.newway.exception.ParseException;
 import dev.vality.newway.mapper.invoice.InvoiceCreatedMapper;
 import dev.vality.newway.service.InvoiceBatchService;
 import dev.vality.newway.service.InvoicingService;
+import dev.vality.newway.service.PartyShopService;
 import dev.vality.newway.service.PaymentBatchService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
@@ -35,6 +36,8 @@ import static org.mockito.ArgumentMatchers.anyList;
 public class InvoicingListenerTest {
 
     @Mock
+    private PartyShopService partyShopService;
+    @Mock
     private InvoiceBatchService invoiceBatchService;
     @Mock
     private PaymentBatchService paymentBatchService;
@@ -47,9 +50,15 @@ public class InvoicingListenerTest {
 
     @BeforeEach
     public void init() {
-        listener = new InvoicingKafkaListener(
-                new InvoicingService(new ArrayList<>(), Collections.singletonList(new InvoiceCreatedMapper()),
-                        new ArrayList<>(), invoiceBatchService, paymentBatchService, eventParser));
+        listener = new InvoicingKafkaListener(new InvoicingService(
+                new ArrayList<>(),
+                Collections.singletonList(new InvoiceCreatedMapper()),
+                new ArrayList<>(),
+                partyShopService,
+                invoiceBatchService,
+                paymentBatchService,
+                eventParser
+        ));
     }
 
     @Test

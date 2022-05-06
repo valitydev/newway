@@ -52,7 +52,7 @@ public class PaymentRecurrentInfoDaoImpl extends AbstractGenericDao implements P
         Query query = getDslContext().selectFrom(PAYMENT_RECURRENT_INFO)
                 .where(PAYMENT_RECURRENT_INFO.INVOICE_ID.eq(invoiceId)
                         .and(PAYMENT_RECURRENT_INFO.PAYMENT_ID.eq(paymentId))
-                );
+                        .and(PAYMENT_RECURRENT_INFO.CURRENT));
         return Optional.ofNullable(fetchOne(query, rowMapper)).orElseThrow(() ->
                 new NotFoundException("PaymentPayerInfo not found, invoiceId=" + invoiceId + " paymentId=" + paymentId));
     }

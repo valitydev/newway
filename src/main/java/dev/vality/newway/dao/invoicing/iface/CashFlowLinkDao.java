@@ -12,6 +12,8 @@ public interface CashFlowLinkDao extends GenericDao {
 
     void saveBatch(List<CashFlowLink> links) throws DaoException;
 
+    CashFlowLink get(String invoiceId, String paymentId);
+
     void switchCurrent(Set<InvoicingKey> keys) throws DaoException;
 
 }

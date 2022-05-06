@@ -30,13 +30,9 @@ public class InvoiceWrapperServiceTest {
                 .collect(Collectors.toList());
 
         invoiceWrappers.forEach(iw -> {
-            iw.getInvoice().setCurrent(false);
             iw.getInvoiceStatusInfo().setInvoiceId(iw.getInvoice().getInvoiceId());
             iw.getCarts().forEach(c -> c.setInvoiceId(iw.getInvoice().getInvoiceId()));
         });
         service.save(invoiceWrappers);
-
-        InvoiceWrapper invoiceWrapper = service.get(invoiceWrappers.get(0).getInvoice().getInvoiceId());
-        Assertions.assertEquals(invoiceWrappers.get(0).getInvoice().getShopId(), invoiceWrapper.getInvoice().getShopId());
     }
 }

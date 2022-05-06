@@ -43,7 +43,6 @@ public class InvoiceBatchServiceTest {
         String invoiceIdThird = invoiceWrappers.get(2).getInvoice().getInvoiceId();
         String invoiceIdFourth = invoiceWrappers.get(3).getInvoice().getInvoiceId();
         invoiceWrappers.forEach(iw -> {
-            iw.getInvoice().setCurrent(false);
             iw.getInvoiceStatusInfo().setInvoiceId(iw.getInvoice().getInvoiceId());
             iw.getCarts().forEach(cart ->
                     cart.setInvoiceId(iw.getInvoice().getInvoiceId()));

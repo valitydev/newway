@@ -14,8 +14,6 @@ public interface CashFlowDao extends GenericDao {
 
     List<CashFlow> getByObjId(Long objId, PaymentChangeType paymentchangetype) throws DaoException;
 
-    // TODO: add switchCurrent. What to do with getForAdjustments?
-
     List<CashFlow> getForAdjustments(Long adjId, AdjustmentCashFlowType adjustmentcashflowtype) throws DaoException;
 
 }

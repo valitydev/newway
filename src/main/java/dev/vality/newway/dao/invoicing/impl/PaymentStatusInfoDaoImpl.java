@@ -54,8 +54,7 @@ public class PaymentStatusInfoDaoImpl extends AbstractGenericDao implements Paym
         Query query = getDslContext().selectFrom(PAYMENT_STATUS_INFO)
                 .where(PAYMENT_STATUS_INFO.INVOICE_ID.eq(invoiceId)
                         .and(PAYMENT_STATUS_INFO.PAYMENT_ID.eq(paymentId))
-                        .and(PAYMENT_STATUS_INFO.CURRENT)
-                );
+                        .and(PAYMENT_STATUS_INFO.CURRENT));
         return Optional.ofNullable(fetchOne(query, rowMapper)).orElseThrow(() ->
                 new NotFoundException("PaymentStatusInfo not found, invoiceId=" + invoiceId + " paymentId=" + paymentId));
     }
