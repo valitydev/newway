@@ -38,6 +38,7 @@ public class PaymentFeeDaoImpl extends AbstractGenericDao implements PaymentFeeD
                         .set(record)
                         .onConflict(
                                 PAYMENT_FEE.INVOICE_ID,
+                                PAYMENT_FEE.PAYMENT_ID,
                                 PAYMENT_FEE.SEQUENCE_ID,
                                 PAYMENT_FEE.CHANGE_ID
                         )

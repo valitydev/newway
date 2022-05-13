@@ -6,7 +6,9 @@ import dev.vality.newway.dao.invoicing.impl.CashFlowLinkIdsGeneratorDaoImpl;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
 import dev.vality.newway.model.CashFlowWrapper;
+import dev.vality.newway.model.InvoicePaymentEventId;
 import dev.vality.newway.model.InvoicingKey;
+import dev.vality.newway.util.InvoicePaymentEventIdUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -24,26 +26,32 @@ public class CashFlowWrapperService {
 
     private final CashFlowLinkIdsGeneratorDaoImpl idsGenerator;
 
-    // TODO: что если в одной пачке придут события на создание и изменение cash flow?
-    //  добавить sequence id?
-    //  сортировать/группировать записи
-
     public void saveBatch(List<CashFlowWrapper> cashFlowWrappers) {
         if (!CollectionUtils.isEmpty(cashFlowWrappers)) {
-            setLinkIds(cashFlowWrappers);
-            List<CashFlowLink> links = cashFlowWrappers.stream()
-                    .map(CashFlowWrapper::getCashFlowLink)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            cashFlowLinkDao.saveBatch(links);
-            Set<InvoicingKey> invoicingKeys = links.stream()
-                    .map(link -> InvoicingKey.buildKey(link.getInvoiceId(), link.getPaymentId()))
-                    .collect(Collectors.toSet());
-            cashFlowLinkDao.switchCurrent(invoicingKeys);
-            List<CashFlow> cashFlows = cashFlowWrappers.stream()
-                    .flatMap(wrapper -> wrapper.getCashFlows().stream())
-                    .collect(Collectors.toList());
-            cashFlowDao.save(cashFlows);
+            Set<InvoicePaymentEventId> existingEvents = cashFlowLinkDao.getExistingEvents(
+                    cashFlowWrappers.stream()
+                            .map(CashFlowWrapper::getCashFlowLink)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList())
+            );
+            cashFlowWrappers.removeIf(wrapper ->
+                    existingEvents.contains(InvoicePaymentEventIdUtil.get(wrapper.getCashFlowLink())));
+            if (!CollectionUtils.isEmpty(cashFlowWrappers)) {
+                setLinkIds(cashFlowWrappers);
+                List<CashFlowLink> links = cashFlowWrappers.stream()
+                        .map(CashFlowWrapper::getCashFlowLink)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                cashFlowLinkDao.saveBatch(links);
+                Set<InvoicingKey> invoicingKeys = links.stream()
+                        .map(link -> InvoicingKey.buildKey(link.getInvoiceId(), link.getPaymentId()))
+                        .collect(Collectors.toSet());
+                cashFlowLinkDao.switchCurrent(invoicingKeys);
+                List<CashFlow> cashFlows = cashFlowWrappers.stream()
+                        .flatMap(wrapper -> wrapper.getCashFlows().stream())
+                        .collect(Collectors.toList());
+                cashFlowDao.save(cashFlows);
+            }
         }
     }
 

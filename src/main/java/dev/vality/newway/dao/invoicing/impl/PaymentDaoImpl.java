@@ -36,7 +36,7 @@ public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
                 .map(payment -> getDslContext().newRecord(PAYMENT, payment))
                 .map(paymentRecord -> getDslContext().insertInto(PAYMENT)
                         .set(paymentRecord)
-                        .onConflict(PAYMENT.INVOICE_ID, PAYMENT.SEQUENCE_ID, PAYMENT.CHANGE_ID)
+                        .onConflict(PAYMENT.INVOICE_ID, PAYMENT.PAYMENT_ID, PAYMENT.SEQUENCE_ID, PAYMENT.CHANGE_ID)
                         .doNothing()
                 )
                 .collect(Collectors.toList());

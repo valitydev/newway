@@ -39,6 +39,7 @@ public class PaymentAdditionalInfoDaoImpl extends AbstractGenericDao implements 
                         .set(record)
                         .onConflict(
                                 PAYMENT_ADDITIONAL_INFO.INVOICE_ID,
+                                PAYMENT_ADDITIONAL_INFO.PAYMENT_ID,
                                 PAYMENT_ADDITIONAL_INFO.SEQUENCE_ID,
                                 PAYMENT_ADDITIONAL_INFO.CHANGE_ID
                         )

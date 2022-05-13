@@ -28,12 +28,6 @@ public class PaymentWrapperService {
     private final PaymentRouteDao paymentRouteDao;
     private final CashFlowWrapperService cashFlowWrapperService;
 
-    // TODO: проверить порядок вставки и корректно ли работает switchCurrent
-    //  в случае если в одном батче приходит несколько событий, например:
-    //      - создание платежа
-    //      - 2 смены статуса
-    //      - изменение кеш флоу
-
     public void save(List<PaymentWrapper> paymentWrappers) {
         savePayments(paymentWrappers);
         savePaymentStatusInfo(paymentWrappers);

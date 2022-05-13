@@ -342,10 +342,10 @@ create table nw.cash_flow_link
     sequence_id      BIGINT,
     change_id        INTEGER,
     wtime            TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
-    current          BOOLEAN                     NOT NULL DEFAULT false
+    current          BOOLEAN                     NOT NULL DEFAULT false,
+    CONSTRAINT cash_flow_link_pkey PRIMARY KEY (id),
+    CONSTRAINT cash_flow_link_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
-
-CREATE INDEX link_idx ON nw.cash_flow_link USING btree (invoice_id, payment_id);
 
 
 CREATE TABLE nw.cash_flow
@@ -843,15 +843,7 @@ CREATE TABLE IF NOT EXISTS nw.invoice
     CONSTRAINT invoice_uniq UNIQUE (invoice_id, sequence_id, change_id)
 );
 
--- TODO: why do we need start value? confirm and rework
-ALTER SEQUENCE nw.invoice_id_seq
-    MINVALUE 200000000
-    START with 200000000
-    RESTART
-    NO MAXVALUE
-    CACHE 1;
-
--- TODO check for necessary indexes
+-- TODO refactor indices
 CREATE INDEX invoice_created_at ON nw.invoice USING btree (created_at);
 CREATE INDEX invoice_event_created_at ON nw.invoice USING btree (event_created_at);
 CREATE INDEX invoice_external_id_idx ON nw.invoice USING btree (external_id) WHERE (external_id IS NOT NULL);
@@ -874,10 +866,8 @@ CREATE TABLE IF NOT EXISTS nw.invoice_status_info
     CONSTRAINT invoice_status_uniq UNIQUE (invoice_id, sequence_id, change_id)
 );
 
--- TODO should it be here?
 CREATE INDEX invoice_status ON nw.invoice_status_info USING btree (status);
--- TODO: confirm this one. maybe use sequence_id or just add it to timestamp?
-CREATE INDEX current_invoice_status ON nw.invoice_status_info USING btree (invoice_id, wtime DESC);
+
 
 CREATE TABLE IF NOT EXISTS nw.invoice_cart
 (
@@ -895,7 +885,6 @@ CREATE TABLE IF NOT EXISTS nw.invoice_cart
     CONSTRAINT invoice_cart_pkey PRIMARY KEY (id)
 );
 
--- TODO should it be here?
 CREATE INDEX invoice_cart_invoice_id ON nw.invoice_cart USING btree (invoice_id);
 
 
@@ -955,17 +944,10 @@ CREATE TABLE IF NOT EXISTS nw.payment
     payment_flow_held_until         timestamp without time zone,
 
     CONSTRAINT payment_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
 
-CREATE SEQUENCE nw.pmnt_seq
-    START WITH 600000000
-    INCREMENT BY 1
-    MINVALUE 600000000
-    NO MAXVALUE
-    CACHE 1;
-
--- TODO should it be here?
+-- TODO refactor indices
 CREATE INDEX payment_created_at ON nw.payment USING btree (created_at);
 CREATE INDEX payment_event_created_at ON nw.payment USING btree (event_created_at);
 CREATE INDEX payment_external_id_idx ON nw.payment USING btree (external_id) WHERE (external_id IS NOT NULL);
@@ -987,10 +969,8 @@ CREATE TABLE IF NOT EXISTS nw.payment_fee
     sequence_id                      bigint,
     change_id                        integer,
     CONSTRAINT payment_fee_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_fee_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_fee_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
-
-CREATE INDEX payment_fee_invoice_id_payment_id ON nw.payment_fee USING btree (invoice_id, payment_id);
 
 
 CREATE TABLE IF NOT EXISTS nw.payment_route
@@ -1007,10 +987,8 @@ CREATE TABLE IF NOT EXISTS nw.payment_route
     current                         BOOLEAN                     NOT NULL DEFAULT false,
 
     CONSTRAINT payment_route_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_route_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_route_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
-
-CREATE INDEX payment_route_invoice_id_payment_id ON nw.payment_route USING btree (invoice_id, payment_id);
 
 
 CREATE TABLE IF NOT EXISTS nw.payment_status_info
@@ -1019,22 +997,19 @@ CREATE TABLE IF NOT EXISTS nw.payment_status_info
     event_created_at                 timestamp without time zone NOT NULL,
     invoice_id                       character varying           NOT NULL,
     payment_id                       character varying           NOT NULL,
-    created_at                       timestamp without time zone NOT NULL,
     status                           nw.payment_status           NOT NULL,
     reason                           character varying,
-    amount                           BIGINT                      NOT NULL,
-    currency_code                    CHARACTER VARYING           NOT NULL,
+    amount                           BIGINT,
+    currency_code                    CHARACTER VARYING,
     cart_json                        CHARACTER VARYING,
     current                          BOOLEAN                     NOT NULL DEFAULT false,
     wtime                            timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
     sequence_id                      bigint,
     change_id                        integer,
     CONSTRAINT payment_status_pkey PRIMARY KEY (id),
-    -- TODO: add payment id ot index?
-    CONSTRAINT payment_status_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_status_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
 
--- TODO
 CREATE INDEX payment_status ON nw.payment_status_info USING btree (status);
 
 
@@ -1078,7 +1053,7 @@ CREATE TABLE IF NOT EXISTS nw.payment_payer_info
     sequence_id                       bigint,
     change_id                         integer,
     CONSTRAINT payment_payment_payer_info_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_payment_payer_info_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_payment_payer_info_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
 
 
@@ -1105,7 +1080,7 @@ CREATE TABLE IF NOT EXISTS nw.payment_additional_info
     sequence_id           bigint,
     change_id             integer,
     CONSTRAINT payment_additional_info_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_additional_info_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_additional_info_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
 
 
@@ -1117,16 +1092,14 @@ CREATE TABLE IF NOT EXISTS nw.payment_recurrent_info
     payment_id                        character varying           NOT NULL,
 
     token                             character varying,
-    -- TODO: может ли приходить больше одного токена по платежу?
     current                           BOOLEAN                     NOT NULL DEFAULT false,
     wtime                             timestamp without time zone NOT NULL DEFAULT (now() AT TIME ZONE 'utc'::text),
     sequence_id                       bigint,
     change_id                         integer,
     CONSTRAINT payment_recurrent_info_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_recurrent_info_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_recurrent_info_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
 
--- TODO: очень много обзявки ради одного поля
 CREATE TABLE IF NOT EXISTS nw.payment_risk_data
 (
     id               bigserial                   NOT NULL,
@@ -1139,10 +1112,8 @@ CREATE TABLE IF NOT EXISTS nw.payment_risk_data
     sequence_id      bigint,
     change_id        integer,
     CONSTRAINT payment_risk_data_pkey PRIMARY KEY (id),
-    CONSTRAINT payment_risk_data_uniq UNIQUE (invoice_id, sequence_id, change_id)
+    CONSTRAINT payment_risk_data_uniq UNIQUE (invoice_id, payment_id, sequence_id, change_id)
 );
-
-CREATE INDEX payment_risk_data_invoice_id_payment_id ON nw.payment_risk_data USING btree (invoice_id, payment_id);
 
 
 CREATE TABLE nw.payment_institution

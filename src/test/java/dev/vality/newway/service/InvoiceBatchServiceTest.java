@@ -1,21 +1,25 @@
 package dev.vality.newway.service;
 
 import dev.vality.newway.config.PostgresqlSpringBootITest;
+import dev.vality.newway.dao.invoicing.iface.InvoiceCartDao;
 import dev.vality.newway.dao.invoicing.iface.InvoiceDao;
+import dev.vality.newway.dao.invoicing.iface.InvoiceStatusInfoDao;
 import dev.vality.newway.domain.tables.pojos.Invoice;
 import dev.vality.newway.domain.tables.pojos.InvoiceCart;
 import dev.vality.newway.domain.tables.pojos.InvoiceStatusInfo;
 import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.testcontainers.annotations.util.RandomBeans;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static dev.vality.newway.utils.JdbcUtil.countEntities;
+import static dev.vality.newway.utils.JdbcUtil.countInvoiceEntity;
+import static org.junit.jupiter.api.Assertions.*;
 
 @PostgresqlSpringBootITest
 public class InvoiceBatchServiceTest {
@@ -25,6 +29,12 @@ public class InvoiceBatchServiceTest {
 
     @Autowired
     private InvoiceDao invoiceDao;
+    
+    @Autowired
+    private InvoiceStatusInfoDao invoiceStatusInfoDao;
+    
+    @Autowired
+    private InvoiceCartDao invoiceCartDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,49 +48,60 @@ public class InvoiceBatchServiceTest {
                         RandomBeans.randomListOf(3, InvoiceCart.class, "id", "invoiceId")))
                 .collect(Collectors.toList());
 
-        String invoiceIdFirst = invoiceWrappers.get(0).getInvoice().getInvoiceId();
-        String invoiceIdSecond = invoiceWrappers.get(1).getInvoice().getInvoiceId();
-        String invoiceIdThird = invoiceWrappers.get(2).getInvoice().getInvoiceId();
-        String invoiceIdFourth = invoiceWrappers.get(3).getInvoice().getInvoiceId();
         invoiceWrappers.forEach(iw -> {
             iw.getInvoiceStatusInfo().setInvoiceId(iw.getInvoice().getInvoiceId());
             iw.getCarts().forEach(cart ->
                     cart.setInvoiceId(iw.getInvoice().getInvoiceId()));
         });
         invoiceBatchService.process(invoiceWrappers);
-
-        Invoice invoiceFirstGet = invoiceDao.get(invoiceIdFirst);
-        Assertions.assertEquals(invoiceWrappers.get(0).getInvoice().getPartyId(), invoiceFirstGet.getPartyId());
-        Assertions.assertNotEquals(invoiceWrappers.get(1).getInvoice().getPartyId(), invoiceFirstGet.getPartyId());
-
-        Invoice invoiceThirdGet = invoiceDao.get(invoiceIdThird);
-        Assertions.assertEquals(invoiceWrappers.get(2).getInvoice().getShopId(), invoiceThirdGet.getShopId());
-        Assertions.assertNotEquals(invoiceWrappers.get(3).getInvoice().getShopId(), invoiceThirdGet.getShopId());
+        invoiceWrappers.forEach(this::assertInvoiceWrapper);
 
         //Duplication check
         invoiceBatchService.process(invoiceWrappers);
-        Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate
-                .queryForObject("SELECT count(*) FROM nw.invoice WHERE invoice_id = ? ", new Object[]{invoiceIdFirst},
-                        Integer.class)).intValue());
-        Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate
-                .queryForObject("SELECT count(*) FROM nw.invoice WHERE invoice_id = ? ", new Object[]{invoiceIdSecond},
-                        Integer.class)).intValue());
-        Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate
-                .queryForObject("SELECT count(*) FROM nw.invoice WHERE invoice_id = ? ", new Object[]{invoiceIdThird},
-                        Integer.class)).intValue());
-        Assertions.assertEquals(1, Objects.requireNonNull(jdbcTemplate
-                .queryForObject("SELECT count(*) FROM nw.invoice WHERE invoice_id = ? ", new Object[]{invoiceIdFourth},
-                        Integer.class)).intValue());
+        invoiceWrappers.forEach(wrapper -> assertDuplication(wrapper.getInvoice().getInvoiceId()));
+        assertTotal();
+    }
 
-        Assertions.assertEquals(
-                3,
-                Objects.requireNonNull(
-                        jdbcTemplate.queryForObject(
-                                "SELECT count(*) FROM nw.invoice_cart where invoice_id = ? ",
-                                new Object[]{invoiceFirstGet.getInvoiceId()},
-                                Integer.class
-                        ))
-        );
-        Assertions.assertEquals(12, Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT count(*) FROM nw.invoice_cart ", Integer.class)).intValue());
+    private void assertInvoiceWrapper(InvoiceWrapper invoiceWrapper) {
+        assertInvoice(invoiceWrapper.getInvoice());
+        assertInvoiceStatus(invoiceWrapper.getInvoiceStatusInfo());
+        assertInvoiceCart(invoiceWrapper.getCarts());
+    }
+
+    private void assertInvoice(Invoice expected) {
+        Invoice actual = invoiceDao.get(expected.getInvoiceId());
+        assertNotNull(actual.getId());
+        actual.setId(null);
+        assertEquals(expected, actual);
+    }
+
+    private void assertInvoiceStatus(InvoiceStatusInfo expected) {
+        InvoiceStatusInfo actual = invoiceStatusInfoDao.get(expected.getInvoiceId());
+        assertNotNull(actual.getId());
+        actual.setId(null);
+        assertTrue(actual.getCurrent());
+        actual.setCurrent(expected.getCurrent());
+        assertEquals(expected, actual);
+    }
+
+    private void assertInvoiceCart(List<InvoiceCart> expected) {
+        List<InvoiceCart> actual = invoiceCartDao.getByInvoiceId(expected.get(0).getInvoiceId());
+        actual.forEach(cart -> {
+            assertNotNull(cart.getId());
+            cart.setId(null);
+        });
+        assertEquals(expected, actual);
+    }
+
+    private void assertDuplication(String invoiceId) {
+        assertEquals(1, countInvoiceEntity(jdbcTemplate, "invoice", invoiceId, false));
+        assertEquals(1, countInvoiceEntity(jdbcTemplate, "invoice_status_info", invoiceId, false));
+        assertEquals(3, countInvoiceEntity(jdbcTemplate, "invoice_cart", invoiceId, false));
+    }
+
+    private void assertTotal() {
+        assertEquals(4, countEntities(jdbcTemplate, "invoice"));
+        assertEquals(4, countEntities(jdbcTemplate, "invoice_status_info"));
+        assertEquals(12, countEntities(jdbcTemplate, "invoice_cart"));
     }
 }

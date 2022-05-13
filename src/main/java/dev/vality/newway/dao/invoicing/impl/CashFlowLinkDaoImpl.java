@@ -6,17 +6,18 @@ import dev.vality.newway.dao.invoicing.iface.CashFlowLinkDao;
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
+import dev.vality.newway.model.InvoicePaymentEventId;
 import dev.vality.newway.model.InvoicingKey;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.beans.Transient;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static dev.vality.newway.domain.Tables.CASH_FLOW_LINK;
@@ -25,11 +26,13 @@ import static dev.vality.newway.domain.Tables.CASH_FLOW_LINK;
 public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowLinkDao {
 
     private final RowMapper<CashFlowLink> rowMapper;
+    private final RowMapper<InvoicePaymentEventId> invoicePaymentEventIdRowMapper;
 
 
     public CashFlowLinkDaoImpl(DataSource dataSource) {
         super(dataSource);
         rowMapper = new RecordRowMapper<>(CASH_FLOW_LINK, CashFlowLink.class);
+        invoicePaymentEventIdRowMapper = new DataClassRowMapper<>(InvoicePaymentEventId.class);
     }
 
     @Transient
@@ -74,5 +77,36 @@ public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowL
                     );
                 }
         );
+    }
+
+    @Override
+    public Set<InvoicePaymentEventId> getExistingEvents(List<CashFlowLink> links) {
+        Set<String> invoiceIds = new HashSet<>();
+        Set<String> paymentIds = new HashSet<>();
+        Set<LocalDateTime> eventsCreatedAt = new HashSet<>();
+        Set<Integer> changeIds = new HashSet<>();
+        Set<Long> sequenceIds = new HashSet<>();
+        links.forEach(link -> {
+            invoiceIds.add(link.getInvoiceId());
+            paymentIds.add(link.getPaymentId());
+            eventsCreatedAt.add(link.getEventCreatedAt());
+            changeIds.add(link.getChangeId());
+            sequenceIds.add(link.getSequenceId());
+        });
+
+        Query query = getDslContext()
+                .select(CASH_FLOW_LINK.INVOICE_ID,
+                        CASH_FLOW_LINK.PAYMENT_ID,
+                        CASH_FLOW_LINK.EVENT_CREATED_AT,
+                        CASH_FLOW_LINK.CHANGE_ID,
+                        CASH_FLOW_LINK.SEQUENCE_ID)
+                .from(CASH_FLOW_LINK)
+                .where(CASH_FLOW_LINK.INVOICE_ID.in(invoiceIds))
+                .and(CASH_FLOW_LINK.PAYMENT_ID.in(paymentIds))
+                .and(CASH_FLOW_LINK.EVENT_CREATED_AT.in(eventsCreatedAt))
+                .and(CASH_FLOW_LINK.CHANGE_ID.in(changeIds))
+                .and(CASH_FLOW_LINK.SEQUENCE_ID.in(sequenceIds));
+
+        return new HashSet<>(fetch(query, invoicePaymentEventIdRowMapper));
     }
 }

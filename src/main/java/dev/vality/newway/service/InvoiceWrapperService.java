@@ -59,7 +59,14 @@ public class InvoiceWrapperService {
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList());
         if (!carts.isEmpty()) {
-            invoiceCartDao.save(carts);
+            Set<String> invoiceIds = carts.stream()
+                    .map(InvoiceCart::getInvoiceId)
+                    .collect(Collectors.toSet());
+            Set<String> existingInvoiceIds = invoiceCartDao.getExistingInvoiceIds(invoiceIds);
+            carts.removeIf(cart -> existingInvoiceIds.contains(cart.getInvoiceId()));
+            if (!carts.isEmpty()) {
+                invoiceCartDao.save(carts);
+            }
         }
     }
 

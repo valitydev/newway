@@ -38,6 +38,7 @@ public class PaymentRecurrentInfoDaoImpl extends AbstractGenericDao implements P
                         .set(record)
                         .onConflict(
                                 PAYMENT_RECURRENT_INFO.INVOICE_ID,
+                                PAYMENT_RECURRENT_INFO.PAYMENT_ID,
                                 PAYMENT_RECURRENT_INFO.SEQUENCE_ID,
                                 PAYMENT_RECURRENT_INFO.CHANGE_ID
                         )

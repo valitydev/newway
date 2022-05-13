@@ -9,9 +9,11 @@ import org.jooq.Query;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,9 +33,7 @@ public class InvoiceCartDaoImpl extends AbstractGenericDao implements InvoiceCar
 
     @Override
     public void save(List<InvoiceCart> carts) throws DaoException {
-        Set<String> deduplicatedInvoiceIds = getDeduplicatedInvoiceIds(carts);
         List<Query> queries = carts.stream()
-                .filter(cart -> deduplicatedInvoiceIds.contains(cart.getInvoiceId()))
                 .map(cart -> getDslContext().newRecord(INVOICE_CART, cart))
                 .map(cartRecord -> getDslContext().insertInto(INVOICE_CART).set(cartRecord))
                 .collect(Collectors.toList());
@@ -50,18 +50,20 @@ public class InvoiceCartDaoImpl extends AbstractGenericDao implements InvoiceCar
     /**
      * Invoice cart can be written only once when Invoice is created.
      * Invoice cart cannot be changed, only way to change invoice cart is to cancel invoice and create new one.
-     * @param carts List of InvoiceCarts
-     * @return set of new invoice ids
+     *
+     * @param invoiceIds set of invoice ids to check for existence.
+     * @return List of invoice ids which haven't been saved already.
+     * @throws DaoException
      */
-    private Set<String> getDeduplicatedInvoiceIds(List<InvoiceCart> carts) {
-        Set<String> invoiceIds = carts.stream()
-                .map(InvoiceCart::getInvoiceId)
-                .collect(Collectors.toSet());
-        invoiceIds.removeIf(invoiceId -> fetchOne(getDslContext()
-                .select(DSL.count(INVOICE_CART.ID))
+    @Override
+    public Set<String> getExistingInvoiceIds(Set<String> invoiceIds) throws DaoException {
+        Query query = getDslContext()
+                .select(INVOICE_CART.INVOICE_ID)
                 .from(INVOICE_CART)
-                .where(INVOICE_CART.INVOICE_ID.eq(invoiceId)), Integer.class) > 0);
+                .groupBy(INVOICE_CART.INVOICE_ID)
+                .having(INVOICE_CART.INVOICE_ID.in(invoiceIds))
+                .and(DSL.count(INVOICE_CART.ID).greaterThan(0));
 
-        return invoiceIds;
+        return new HashSet<>(fetch(query, new SingleColumnRowMapper<>(String.class)));
     }
 }

@@ -32,9 +32,6 @@ public class InvoicePaymentCashFlowChangedMapper implements Mapper<PaymentWrappe
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_cash_flow_changed",
             new IsNullCondition().not()));
-    // TODO
-    //  adjustment - корректировка, чаще все корректируют комиссии
-    //  при приходе adjustment - приходит новый кешфлоу(првоерить) и нужно пересчитать fee?
 
     @Override
     public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {

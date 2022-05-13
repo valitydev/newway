@@ -35,6 +35,7 @@ public class PaymentPayerInfoDaoImpl extends AbstractGenericDao implements Payme
                         .set(record)
                         .onConflict(
                                 PAYMENT_PAYER_INFO.INVOICE_ID,
+                                PAYMENT_PAYER_INFO.PAYMENT_ID,
                                 PAYMENT_PAYER_INFO.SEQUENCE_ID,
                                 PAYMENT_PAYER_INFO.CHANGE_ID
                         )

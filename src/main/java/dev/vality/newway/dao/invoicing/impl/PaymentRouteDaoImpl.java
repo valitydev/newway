@@ -38,6 +38,7 @@ public class PaymentRouteDaoImpl extends AbstractGenericDao implements PaymentRo
                         .set(record)
                         .onConflict(
                                 PAYMENT_ROUTE.INVOICE_ID,
+                                PAYMENT_ROUTE.PAYMENT_ID,
                                 PAYMENT_ROUTE.SEQUENCE_ID,
                                 PAYMENT_ROUTE.CHANGE_ID
                         )
