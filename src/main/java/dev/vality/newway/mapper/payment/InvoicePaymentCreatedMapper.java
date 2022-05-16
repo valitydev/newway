@@ -10,7 +10,6 @@ import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
-import dev.vality.mamsel.*;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.domain.tables.pojos.PaymentPayerInfo;
@@ -26,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -199,7 +199,8 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
         if (paymentTool.isSetBankCard()) {
             BankCard bankCard = paymentTool.getBankCard();
             payerInfo.setBankCardToken(bankCard.getToken());
-            payerInfo.setBankCardPaymentSystem(PaymentSystemUtil.getPaymentSystemName(bankCard));
+            payerInfo.setBankCardPaymentSystem(Optional.ofNullable(bankCard.getPaymentSystem())
+                    .map(PaymentSystemRef::getId).orElse(null));
             payerInfo.setBankCardBin(bankCard.getBin());
             payerInfo.setBankCardMaskedPan(bankCard.getLastDigits());
             payerInfo.setBankName(bankCard.getBankName());
@@ -207,18 +208,22 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
             if (bankCard.isSetIssuerCountry()) {
                 payerInfo.setIssuerCountry(bankCard.getIssuerCountry().name());
             }
-            payerInfo.setBankCardTokenProvider(TokenProviderUtil.getTokenProviderName(bankCard));
+            payerInfo.setBankCardTokenProvider(Optional.ofNullable(bankCard.getPaymentToken())
+                    .map(BankCardTokenServiceRef::getId).orElse(null));
         } else if (paymentTool.isSetPaymentTerminal()) {
             payerInfo.setPaymentTerminalType(
-                    TerminalPaymentUtil.getTerminalPaymentProviderName(paymentTool.getPaymentTerminal()));
+                    Optional.ofNullable(paymentTool.getPaymentTerminal().getPaymentService())
+                            .map(PaymentServiceRef::getId).orElse(null));
         } else if (paymentTool.isSetDigitalWallet()) {
             payerInfo.setDigitalWalletId(paymentTool.getDigitalWallet().getId());
             payerInfo.setDigitalWalletProvider(
-                    DigitalWalletUtil.getDigitalWalletName(paymentTool.getDigitalWallet()));
-        } else if (CryptoCurrencyUtil.isSetCryptoCurrency(paymentTool)) {
-            payerInfo.setCryptoCurrencyType(CryptoCurrencyUtil.getCryptoCurrencyName(paymentTool));
+                    Optional.ofNullable(paymentTool.getDigitalWallet().getPaymentService())
+                            .map(PaymentServiceRef::getId).orElse(null));
+        } else if (paymentTool.isSetCryptoCurrency()) {
+            payerInfo.setCryptoCurrencyType(Optional.ofNullable(paymentTool.getCryptoCurrency())
+                    .map(CryptoCurrencyRef::getId).orElse(null));
         } else if (paymentTool.isSetMobileCommerce()) {
-            payerInfo.setMobileOperator(MobileOperatorUtil.getMobileOperatorName(paymentTool.getMobileCommerce()));
+            payerInfo.setMobileOperator(paymentTool.getMobileCommerce().getOperator().getId());
             payerInfo.setMobilePhoneCc(paymentTool.getMobileCommerce().getPhone().getCc());
             payerInfo.setMobilePhoneCtn(paymentTool.getMobileCommerce().getPhone().getCtn());
         }

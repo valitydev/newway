@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.vality</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.0.13</version>
+        <version>1.0.16</version>
     </parent>
 
     <artifactId>newway</artifactId>
@@ -63,6 +63,11 @@
 
         <!--Thrirdparty libs-->
         <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>2.6.6</version>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
@@ -79,14 +84,9 @@
             <artifactId>jooq</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-client</artifactId>
-            <version>2.6.2</version>
-        </dependency>
-        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>7.0.1</version>
+            <version>7.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -108,12 +108,12 @@
         <dependency>
             <groupId>net.javacrumbs.shedlock</groupId>
             <artifactId>shedlock-provider-jdbc-template</artifactId>
-            <version>4.33.0</version>
+            <version>4.34.0</version>
         </dependency>
         <dependency>
             <groupId>net.javacrumbs.shedlock</groupId>
             <artifactId>shedlock-spring</artifactId>
-            <version>4.33.0</version>
+            <version>4.34.0</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>payout-manager-proto</artifactId>
-            <version>1.30-cc9875f</version>
+            <version>1.36-063163d</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>machinegun-proto</artifactId>
-            <version>1.27-dec518d</version>
+            <version>1.31-b43d6fd</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -159,12 +159,12 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>fistful-proto</artifactId>
-            <version>1.141-fd4117f</version>
+            <version>1.145-c45166d</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>xrates-proto</artifactId>
-            <version>1.22-4adcd9c</version>
+            <version>1.23-bf0d62d</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -177,11 +177,6 @@
         <dependency>
             <groupId>dev.vality.geck</groupId>
             <artifactId>filter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>dev.vality</groupId>
-            <artifactId>mamsel</artifactId>
-            <version>0.2.1</version>
         </dependency>
 
         <!-- Test -->

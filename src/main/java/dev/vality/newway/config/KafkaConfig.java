@@ -1,6 +1,6 @@
 package dev.vality.newway.config;
 
-import dev.vality.kafka.common.exception.handler.SeekToCurrentWithSleepBatchErrorHandler;
+import dev.vality.kafka.common.util.ExponentialBackOffDefaultErrorHandlerFactory;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.config.properties.KafkaConsumerProperties;
 import dev.vality.newway.config.properties.KafkaSslProperties;
@@ -21,7 +21,6 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 
@@ -43,8 +42,6 @@ public class KafkaConfig {
     private String clientId;
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
-    @Value("${retry-policy.maxAttempts}")
-    int maxAttempts;
 
     @Bean
     public Map<String, Object> consumerConfigs(KafkaSslProperties kafkaSslProperties) {
@@ -182,12 +179,7 @@ public class KafkaConfig {
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-        factory.setBatchErrorHandler(kafkaErrorHandler());
+        factory.setCommonErrorHandler(ExponentialBackOffDefaultErrorHandlerFactory.create());
         factory.setConcurrency(threadsNumber);
     }
-
-    public BatchErrorHandler kafkaErrorHandler() {
-        return new SeekToCurrentWithSleepBatchErrorHandler();
-    }
-
 }

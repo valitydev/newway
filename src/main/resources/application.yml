@@ -41,9 +41,6 @@ management:
       exposure:
         include: health,info,prometheus
 
-retry-policy:
-  maxAttempts: -1
-
 kafka:
   bootstrap-servers: localhost:9092
   client-id: newway
