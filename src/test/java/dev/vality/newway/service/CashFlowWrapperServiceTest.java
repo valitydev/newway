@@ -1,6 +1,5 @@
 package dev.vality.newway.service;
 
-import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
 import dev.vality.newway.dao.invoicing.iface.CashFlowDao;
 import dev.vality.newway.dao.invoicing.iface.CashFlowLinkDao;
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +91,8 @@ public class CashFlowWrapperServiceTest {
         assertNotNull(actual.getWtime());
         assertTrue(actual.getCurrent());
         assertEquals(
-                TypeUtil.temporalToString(expected.getEventCreatedAt()),
-                TypeUtil.temporalToString(actual.getEventCreatedAt())
+                expected.getEventCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli(),
+                actual.getEventCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli()
         );
         assertEquals(expected.getInvoiceId(), actual.getInvoiceId());
         assertEquals(expected.getPaymentId(), actual.getPaymentId());
