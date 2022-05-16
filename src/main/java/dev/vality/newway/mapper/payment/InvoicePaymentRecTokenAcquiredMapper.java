@@ -31,8 +31,8 @@ public class InvoicePaymentRecTokenAcquiredMapper implements Mapper<PaymentWrapp
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();
         long sequenceId = event.getEventId();
-        log.info("Start handling payment recurrent token acquired, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Start handling payment recurrent token acquired, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         PaymentRecurrentInfo recurrentInfo = new PaymentRecurrentInfo();
         recurrentInfo.setEventCreatedAt(TypeUtil.stringToLocalDateTime(event.getCreatedAt()));
         recurrentInfo.setInvoiceId(invoiceId);
@@ -40,8 +40,8 @@ public class InvoicePaymentRecTokenAcquiredMapper implements Mapper<PaymentWrapp
         recurrentInfo.setSequenceId(sequenceId);
         recurrentInfo.setChangeId(changeId);
         recurrentInfo.setToken(invoicePaymentChange.getPayload().getInvoicePaymentRecTokenAcquired().getToken());
-        log.info("Payment recurrent token have been saved, sequenceId='{}', invoiceId='{}', paymentId='{}'", sequenceId,
-                invoiceId, paymentId);
+        log.info("Payment recurrent token have been saved, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentRecurrentInfo(recurrentInfo);

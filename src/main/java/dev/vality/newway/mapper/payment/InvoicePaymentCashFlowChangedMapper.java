@@ -40,8 +40,8 @@ public class InvoicePaymentCashFlowChangedMapper implements Mapper<PaymentWrappe
         String paymentId = invoicePaymentChange.getId();
         long sequenceId = event.getEventId();
         LocalDateTime eventCreatedAt = TypeUtil.stringToLocalDateTime(event.getCreatedAt());
-        log.info("Start mapping payment cashflow change, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Start mapping payment cashflow change, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         List<FinalCashFlowPosting> finalCashFlow =
                 invoicePaymentChange.getPayload().getInvoicePaymentCashFlowChanged().getCashFlow();
         PaymentWrapper paymentWrapper = new PaymentWrapper();
@@ -52,8 +52,8 @@ public class InvoicePaymentCashFlowChangedMapper implements Mapper<PaymentWrappe
         ));
         paymentWrapper.setPaymentFee(
                 PaymentFeeUtil.getPaymentFee(finalCashFlow, invoiceId, paymentId, eventCreatedAt, changeId, sequenceId));
-        log.info("Payment cashflow has been mapped, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Payment cashflow has been mapped, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         return paymentWrapper;
     }
 

@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static dev.vality.newway.utils.JdbcUtil.countInvoiceEntity;
-import static dev.vality.newway.utils.JdbcUtil.countPaymentEntity;
+import static dev.vality.newway.utils.JdbcUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -136,6 +135,7 @@ public class IntegrationTest {
         assertEquals(1, countPaymentEntity(jdbcTemplate, "payment_route", invoiceId, paymentId, true));
         assertEquals(2, countPaymentEntity(jdbcTemplate, "cash_flow_link", invoiceId, paymentId, false));
         assertEquals(1, countPaymentEntity(jdbcTemplate, "cash_flow_link", invoiceId, paymentId, true));
+        assertEquals(2, countEntities(jdbcTemplate, "cash_flow"));
 
         assertEquals(2, countInvoiceEntity(jdbcTemplate, "invoice_status_info", invoiceId, false));
         assertEquals(1, countInvoiceEntity(jdbcTemplate, "invoice_status_info", invoiceId, true));

@@ -32,8 +32,8 @@ public class InvoiceStatusChangedMapper implements Mapper<InvoiceWrapper> {
         long sequenceId = event.getEventId();
         String invoiceId = event.getSourceId();
 
-        log.info("Start invoice status changed mapping, sequenceId={}, invoiceId={}, changeId={}, status={}",
-                sequenceId, invoiceId, changeId, invoiceStatus.getSetField().getFieldName());
+        log.info("Start invoice status changed mapping, sequenceId={}, changeId={}, invoiceId={}, changeId={}, status={}",
+                sequenceId, changeId, invoiceId, changeId, invoiceStatus.getSetField().getFieldName());
 
         InvoiceStatusInfo statusRecord = new InvoiceStatusInfo();
         statusRecord.setInvoiceId(invoiceId);
@@ -50,8 +50,8 @@ public class InvoiceStatusChangedMapper implements Mapper<InvoiceWrapper> {
         statusRecord.setChangeId(changeId);
         statusRecord.setSequenceId(sequenceId);
 
-        log.info("Invoice has been mapped, sequenceId={}, invoiceId={}, changeId={}, status={}",
-                sequenceId, invoiceId, changeId, invoiceStatus.getSetField().getFieldName());
+        log.info("Invoice has been mapped, sequenceId={}, changeId={}, invoiceId={}, changeId={}, status={}",
+                sequenceId, changeId, invoiceId, changeId, invoiceStatus.getSetField().getFieldName());
         var invoiceWrapper = new InvoiceWrapper();
         invoiceWrapper.setInvoiceStatusInfo(statusRecord);
         return invoiceWrapper;

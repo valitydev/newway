@@ -29,8 +29,9 @@ public class InvoicePaymentCaptureStartedMapper implements Mapper<PaymentWrapper
 
     @Override
     public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {
-        log.info("Receive InvoicePaymentCaptureStarted sequenceId={}, invoiceId={}, paymentId={}, payload={}",
+        log.info("Receive InvoicePaymentCaptureStarted sequenceId={}, changeId={}, invoiceId={}, paymentId={}, payload={}",
                 event.getEventId(),
+                changeId,
                 change.getInvoicePaymentChange().getId(),
                 event.getSourceId(),
                 change.getInvoicePaymentChange().getPayload().getInvoicePaymentCaptureStarted()

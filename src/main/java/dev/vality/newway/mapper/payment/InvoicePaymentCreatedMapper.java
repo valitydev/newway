@@ -50,8 +50,8 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
         long sequenceId = event.getEventId();
         String invoiceId = event.getSourceId();
         String paymentId = invoicePayment.getId();
-        log.info("Start payment created mapping, sequenceId={}, invoiceId={}, paymentId={}", sequenceId, invoiceId,
-                paymentId);
+        log.info("Start payment created mapping, sequenceId={}, changeId={}, invoiceId={}, paymentId={}",
+                sequenceId, changeId, invoiceId, paymentId);
 
         PartyShop partyShop = partyShopService.get(invoiceId);
         if (partyShop == null) {
@@ -111,8 +111,8 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
                     sequenceId
             ));
         }
-        log.info("Payment has been mapped, sequenceId={}, invoiceId={}, paymentId={}", sequenceId, invoiceId,
-                paymentId);
+        log.info("Payment has been mapped, sequenceId={}, changeId={}, invoiceId={}, paymentId={}",
+                sequenceId, changeId, invoiceId, paymentId);
         return paymentWrapper;
     }
 

@@ -38,8 +38,8 @@ public class InvoicePaymentSessionChangeTransactionBoundMapper implements Mapper
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();
         long sequenceId = event.getEventId();
-        log.info("Start mapping session change transaction info, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Start mapping session change transaction info, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         InvoicePaymentSessionChange sessionChange = invoicePaymentChange.getPayload().getInvoicePaymentSessionChange();
         SessionChangePayload payload = sessionChange.getPayload();
         TransactionInfo transactionInfo = payload.getSessionTransactionBound().getTrx();
@@ -69,8 +69,8 @@ public class InvoicePaymentSessionChangeTransactionBoundMapper implements Mapper
         }
         additionalInfo.setSequenceId(sequenceId);
         additionalInfo.setChangeId(changeId);
-        log.info("Payment session transaction info has been mapped, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Payment session transaction info has been mapped, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentAdditionalInfo(additionalInfo);

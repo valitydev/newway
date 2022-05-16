@@ -32,8 +32,8 @@ public class InvoicePaymentRiskScoreChangedMapper implements Mapper<PaymentWrapp
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();
         long sequenceId = event.getEventId();
-        log.info("Start mapping payment risk score change, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Start mapping payment risk score change, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         RiskScore riskScore = invoicePaymentChange.getPayload().getInvoicePaymentRiskScoreChanged().getRiskScore();
         dev.vality.newway.domain.enums.RiskScore score =
                 TypeUtil.toEnumField(riskScore.name(), dev.vality.newway.domain.enums.RiskScore.class);
@@ -47,8 +47,8 @@ public class InvoicePaymentRiskScoreChangedMapper implements Mapper<PaymentWrapp
         paymentRiskData.setRiskScore(score);
         paymentRiskData.setSequenceId(sequenceId);
         paymentRiskData.setChangeId(changeId);
-        log.info("Payment risk score have been mapped, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        log.info("Payment risk score have been mapped, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentRiskData(paymentRiskData);

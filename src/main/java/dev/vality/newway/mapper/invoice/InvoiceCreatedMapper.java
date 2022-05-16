@@ -42,8 +42,8 @@ public class InvoiceCreatedMapper implements Mapper<InvoiceWrapper> {
         long sequenceId = event.getEventId();
         String invoiceId = event.getSourceId();
 
-        log.info("Start invoice created mapping, sequenceId={}, invoiceId={}, partyId={}, shopId={}",
-                sequenceId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
+        log.info("Start invoice created mapping, sequenceId={}, changeId={}, invoiceId={}, partyId={}, shopId={}",
+                sequenceId, changeId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
 
         InvoiceWrapper invoiceWrapper = new InvoiceWrapper();
         LocalDateTime eventCreatedAt = TypeUtil.stringToLocalDateTime(event.getCreatedAt());
@@ -52,8 +52,8 @@ public class InvoiceCreatedMapper implements Mapper<InvoiceWrapper> {
         if (invoice.getDetails().isSetCart()) {
             invoiceWrapper.setCarts(getInvoiceCarts(invoice, sequenceId, changeId, eventCreatedAt));
         }
-        log.info("Invoice has been mapped, sequenceId={}, invoiceId={}, partyId={}, shopId={}",
-                sequenceId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
+        log.info("Invoice has been mapped, sequenceId={}, changeId={}, invoiceId={}, partyId={}, shopId={}",
+                sequenceId, changeId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
         return invoiceWrapper;
     }
 

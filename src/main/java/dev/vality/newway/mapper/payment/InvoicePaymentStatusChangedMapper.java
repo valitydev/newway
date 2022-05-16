@@ -35,8 +35,8 @@ public class InvoicePaymentStatusChangedMapper implements Mapper<PaymentWrapper>
         String invoiceId = event.getSourceId();
         String paymentId = change.getInvoicePaymentChange().getId();
 
-        log.info("Start payment status changed mapping, sequenceId={}, invoiceId={}, paymentId={}, status={}",
-                sequenceId, invoiceId, paymentId, invoicePaymentStatus.getSetField().getFieldName());
+        log.info("Start payment status changed mapping, sequenceId={}, changeId={}, invoiceId={}, paymentId={}, status={}",
+                sequenceId, changeId, invoiceId, paymentId, invoicePaymentStatus.getSetField().getFieldName());
 
         PaymentStatusInfo statusInfo = PaymentStatusInfoUtil.getPaymentStatusInfo(
                 invoicePaymentStatus,
@@ -46,8 +46,8 @@ public class InvoicePaymentStatusChangedMapper implements Mapper<PaymentWrapper>
                 changeId,
                 sequenceId
         );
-        log.info("Payment status has been mapped, sequenceId={}, invoiceId={}, paymentId={}, status={}",
-                sequenceId, invoiceId, paymentId, invoicePaymentStatus.getSetField().getFieldName());
+        log.info("Payment status has been mapped, sequenceId={}, changeId={}, invoiceId={}, paymentId={}, status={}",
+                sequenceId, changeId, invoiceId, paymentId, invoicePaymentStatus.getSetField().getFieldName());
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentStatusInfo(statusInfo);

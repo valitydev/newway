@@ -34,8 +34,8 @@ public class InvoicePaymentRouteChangedMapper implements Mapper<PaymentWrapper> 
         dev.vality.damsel.domain.PaymentRoute paymentRouteSource =
                 invoicePaymentChange.getPayload().getInvoicePaymentRouteChanged().getRoute();
         long sequenceId = event.getEventId();
-        log.info("Start mapping payment route change, route='{}', sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                paymentRouteSource, sequenceId, invoiceId, paymentId);
+        log.info("Start mapping payment route change, route='{}', sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                paymentRouteSource, sequenceId, changeId, invoiceId, paymentId);
         PaymentRoute paymentRoute = PaymentRouteUtil.getPaymentRoute(
                 paymentRouteSource,
                 invoiceId,
@@ -44,8 +44,8 @@ public class InvoicePaymentRouteChangedMapper implements Mapper<PaymentWrapper> 
                 changeId,
                 sequenceId
         );
-        log.info("Payment route have been mapped, route='{}', sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                paymentRoute, sequenceId, invoiceId, paymentId);
+        log.info("Payment route have been mapped, route='{}', sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                paymentRoute, sequenceId, changeId, invoiceId, paymentId);
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setPaymentRoute(paymentRoute);
