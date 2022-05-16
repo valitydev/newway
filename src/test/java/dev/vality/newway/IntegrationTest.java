@@ -14,6 +14,7 @@ import dev.vality.newway.domain.tables.pojos.*;
 import dev.vality.newway.service.InvoicingService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.serialization.impl.PaymentEventPayloadSerializer;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static dev.vality.newway.utils.JdbcUtil.countInvoiceEntity;
 import static dev.vality.newway.utils.JdbcUtil.countPaymentEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Slf4j
 @PostgresqlSpringBootITest
 public class IntegrationTest {
 
@@ -69,6 +71,7 @@ public class IntegrationTest {
         String invoiceId = "invoiceId";
         String paymentId = "paymentId";
         List<MachineEvent> machineEventsFirst = getInitialInvoicePaymentEvents(invoiceId, paymentId);
+        log.info("Processing first batch of machine events");
         invoicingService.handleEvents(machineEventsFirst);
         assertEquals(1, Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT count(*) FROM nw.payment " +
                         "WHERE invoice_id = ? and payment_id = ? ",
@@ -82,8 +85,8 @@ public class IntegrationTest {
         List<CashFlow> cashFlows = cashFlowDao.getByObjId(cashFlowLink.getId(), PaymentChangeType.payment);
 
         //--- second changes - only update
-
         List<MachineEvent> machineEventsSecond = getInvoicePaymentChanges(invoiceId, paymentId);
+        log.info("Processing second batch of machine events");
         invoicingService.handleEvents(machineEventsSecond);
 
         assertEquals(1, Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT count(*) FROM nw.payment " +
@@ -98,8 +101,8 @@ public class IntegrationTest {
         assertEquals(paymentSecond.getId(), payment.getId());
 
         //--- third changes - insert
-
         List<MachineEvent> machineEventsThird = getInvoicePaymentFailedChange(invoiceId, paymentId);
+        log.info("Processing third batch of machine events");
         invoicingService.handleEvents(machineEventsThird);
 
         assertEquals(1, Objects.requireNonNull(jdbcTemplate.queryForObject("SELECT count(*) FROM nw.payment " +
@@ -111,8 +114,12 @@ public class IntegrationTest {
         assertEquals(3, statusInfoThird.getSequenceId().longValue());
 
         //--- duplication check
-
+        log.info("Duplication check first batch");
         invoicingService.handleEvents(machineEventsFirst);
+        log.info("Duplication check second batch");
+        invoicingService.handleEvents(machineEventsSecond);
+        log.info("Duplication check third batch");
+        invoicingService.handleEvents(machineEventsThird);
         assertEquals(1, countPaymentEntity(jdbcTemplate, "payment", invoiceId, paymentId, false));
         assertEquals(3, countPaymentEntity(jdbcTemplate, "payment_status_info", invoiceId, paymentId, false));
         assertEquals(1, countPaymentEntity(jdbcTemplate, "payment_status_info", invoiceId, paymentId, true));
