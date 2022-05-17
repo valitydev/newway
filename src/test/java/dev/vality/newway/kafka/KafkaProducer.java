@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @TestComponent
 @Import(KafkaProducerConfig.class)
@@ -31,7 +32,7 @@ public class KafkaProducer {
         MachineEvent message = new MachineEvent();
         dev.vality.machinegun.msgpack.Value data = new dev.vality.machinegun.msgpack.Value();
         data.setBin(new byte[0]);
-        message.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+        message.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS).format(DateTimeFormatter.ISO_DATE_TIME));
         message.setEventId(1L);
         message.setSourceNs("sad");
         message.setSourceId("sda");

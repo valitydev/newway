@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -147,7 +148,7 @@ public class IntegrationTest {
         return List.of(
                 new MachineEvent().setSourceId(invoiceId)
                         .setEventId(1)
-                        .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                        .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                         .setData(Value.bin(serializer.serialize(
                                 EventPayload.invoice_changes(
                                         List.of(InvoiceChange.invoice_created(new InvoiceCreated()
@@ -234,7 +235,7 @@ public class IntegrationTest {
         return List.of(
                 new MachineEvent().setSourceId(invoiceId)
                         .setEventId(2)
-                        .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                        .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                         .setData(Value.bin(serializer.serialize(
                                 EventPayload.invoice_changes(
                                         List.of(InvoiceChange.invoice_payment_change(new InvoicePaymentChange()
@@ -268,7 +269,7 @@ public class IntegrationTest {
         return List.of(
                 new MachineEvent().setSourceId(invoiceId)
                         .setEventId(3)
-                        .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                        .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                         .setData(Value.bin(serializer.serialize(
                                 EventPayload.invoice_changes(
                                         List.of(InvoiceChange.invoice_payment_change(new InvoicePaymentChange()

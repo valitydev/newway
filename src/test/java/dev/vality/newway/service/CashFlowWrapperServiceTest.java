@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,10 +89,7 @@ public class CashFlowWrapperServiceTest {
         assertNotNull(actual.getId());
         assertNotNull(actual.getWtime());
         assertTrue(actual.getCurrent());
-        assertEquals(
-                expected.getEventCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli(),
-                actual.getEventCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli()
-        );
+        assertEquals(expected.getEventCreatedAt(), actual.getEventCreatedAt());
         assertEquals(expected.getInvoiceId(), actual.getInvoiceId());
         assertEquals(expected.getPaymentId(), actual.getPaymentId());
         assertEquals(expected.getSequenceId(), actual.getSequenceId());

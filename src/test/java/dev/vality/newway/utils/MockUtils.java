@@ -10,6 +10,7 @@ import dev.vality.newway.model.CashFlowWrapper;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ public class MockUtils {
                 .setId(invoiceId)
                 .setOwnerId("party_1")
                 .setShopId("shop_id")
-                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                 .setStatus(InvoiceStatus.unpaid(new InvoiceUnpaid()))
                 .setDetails(new InvoiceDetails()
                         .setProduct("prod")
@@ -31,7 +32,7 @@ public class MockUtils {
                                         .setProduct("product")
                                         .setPrice(new Cash(12, new CurrencyRef("RUB")))
                                         .setMetadata(new HashMap<>())))))
-                .setDue(TypeUtil.temporalToString(LocalDateTime.now()))
+                .setDue(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                 .setCost(new Cash().setAmount(1).setCurrency(new CurrencyRef("RUB")))
                 .setContext(new Content("type", ByteBuffer.wrap(new byte[]{})));
     }
@@ -39,7 +40,7 @@ public class MockUtils {
     public static InvoicePayment buildPayment(String paymentId) {
         return new InvoicePayment()
                 .setId(paymentId)
-                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                 .setStatus(InvoicePaymentStatus.pending(new InvoicePaymentPending()))
                 .setCost(new Cash(11, new CurrencyRef("RUB")))
                 .setDomainRevision(1)
@@ -57,7 +58,7 @@ public class MockUtils {
         var link = new CashFlowLink();
         link.setInvoiceId(invoiceId);
         link.setPaymentId(paymentId);
-        link.setEventCreatedAt(LocalDateTime.now());
+        link.setEventCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS));
         link.setSequenceId(sequenceId);
         link.setChangeId(changeId);
 
