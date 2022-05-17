@@ -24,10 +24,12 @@ public class InvoiceWrapperService {
     private final InvoiceCartDao invoiceCartDao;
 
     public void save(List<InvoiceWrapper> invoiceWrappers) {
+        log.info("Start saving of invoice batch, size={}", invoiceWrappers.size());
         saveInvoices(invoiceWrappers);
         saveStatusInfos(invoiceWrappers);
         saveCarts(invoiceWrappers);
         switchCurrent(invoiceWrappers);
+        log.info("Saved invoice batch");
     }
 
     private void saveInvoices(List<InvoiceWrapper> invoiceWrappers) {

@@ -27,8 +27,8 @@ public class InvoicingService {
     private final List<Mapper<InvoiceWrapper>> invoiceMappers;
     private final List<Mapper<PaymentWrapper>> paymentMappers;
     private final PartyShopService partyShopService;
-    private final InvoiceBatchService invoiceBatchService;
-    private final PaymentBatchService paymentBatchService;
+    private final InvoiceWrapperService invoiceWrapperService;
+    private final PaymentWrapperService paymentWrapperService;
     private final MachineEventParser<EventPayload> parser;
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -69,10 +69,10 @@ public class InvoicingService {
             }
         });
         if (!invoices.isEmpty()) {
-            invoiceBatchService.process(invoices);
+            invoiceWrapperService.save(invoices);
         }
         if (!payments.isEmpty()) {
-            paymentBatchService.process(payments);
+            paymentWrapperService.save(payments);
         }
     }
 

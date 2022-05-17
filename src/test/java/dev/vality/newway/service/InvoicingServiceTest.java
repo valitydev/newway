@@ -37,9 +37,9 @@ public class InvoicingServiceTest {
     private final List<Mapper<InvoiceWrapper>> rightHandlers = new ArrayList<>();
 
     @MockBean
-    private InvoiceBatchService invoiceBatchService;
+    private InvoiceWrapperService invoiceWrapperService;
     @MockBean
-    private PaymentBatchService paymentBatchService;
+    private PaymentWrapperService paymentWrapperService;
     @MockBean
     private PartyShopService partyShopService;
     @Mock
@@ -74,8 +74,8 @@ public class InvoicingServiceTest {
                 rightHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser
         );
 
@@ -94,8 +94,8 @@ public class InvoicingServiceTest {
                 rightHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser
         );
 
@@ -118,8 +118,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser
         );
 
@@ -149,8 +149,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser);
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
@@ -174,8 +174,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser);
 
         MachineEvent machineEvent = buildMachineEvent();
@@ -202,8 +202,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser);
 
         MachineEvent machineEvent = buildMachineEvent();
@@ -229,8 +229,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser);
 
         MachineEvent machineEvent = buildMachineEvent();
@@ -256,8 +256,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser);
 
         MachineEvent machineEvent = buildMachineEvent();
@@ -284,8 +284,8 @@ public class InvoicingServiceTest {
                 wrongHandlers,
                 new ArrayList<>(),
                 partyShopService,
-                invoiceBatchService,
-                paymentBatchService,
+                invoiceWrapperService,
+                paymentWrapperService,
                 parser);
 
         MachineEvent machineEvent = buildMachineEvent();

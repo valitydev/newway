@@ -29,6 +29,7 @@ public class PaymentWrapperService {
     private final CashFlowWrapperService cashFlowWrapperService;
 
     public void save(List<PaymentWrapper> paymentWrappers) {
+        log.info("Start saving of payment batch, size={}", paymentWrappers.size());
         savePayments(paymentWrappers);
         savePaymentStatusInfo(paymentWrappers);
         savePaymentPayerInfo(paymentWrappers);
@@ -38,6 +39,7 @@ public class PaymentWrapperService {
         savePaymentFee(paymentWrappers);
         savePaymentRoute(paymentWrappers);
         saveCashFlow(paymentWrappers);
+        log.info("Saved payment batch");
     }
 
     private void savePayments(List<PaymentWrapper> paymentWrappers) {

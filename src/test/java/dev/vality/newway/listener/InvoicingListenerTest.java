@@ -9,10 +9,10 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.machinegun.eventsink.SinkEvent;
 import dev.vality.newway.exception.ParseException;
 import dev.vality.newway.mapper.invoice.InvoiceCreatedMapper;
-import dev.vality.newway.service.InvoiceBatchService;
+import dev.vality.newway.service.InvoiceWrapperService;
 import dev.vality.newway.service.InvoicingService;
 import dev.vality.newway.service.PartyShopService;
-import dev.vality.newway.service.PaymentBatchService;
+import dev.vality.newway.service.PaymentWrapperService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -39,9 +39,9 @@ public class InvoicingListenerTest {
     @Mock
     private PartyShopService partyShopService;
     @Mock
-    private InvoiceBatchService invoiceBatchService;
+    private InvoiceWrapperService invoiceBatchService;
     @Mock
-    private PaymentBatchService paymentBatchService;
+    private PaymentWrapperService paymentWrapperService;
     @Mock
     private MachineEventParser eventParser;
     @Mock
@@ -57,7 +57,7 @@ public class InvoicingListenerTest {
                 new ArrayList<>(),
                 partyShopService,
                 invoiceBatchService,
-                paymentBatchService,
+                paymentWrapperService,
                 eventParser
         ));
     }
@@ -77,7 +77,7 @@ public class InvoicingListenerTest {
 
         listener.handle(Collections.singletonList(new ConsumerRecord<>("topic", 1, 1, "kek", sinkEvent)), ack);
 
-        Mockito.verify(invoiceBatchService, Mockito.times(0)).process(anyList());
+        Mockito.verify(invoiceBatchService, Mockito.times(0)).save(anyList());
         Mockito.verify(ack, Mockito.times(1)).acknowledge();
     }
 
@@ -115,7 +115,7 @@ public class InvoicingListenerTest {
 
         listener.handle(Collections.singletonList(new ConsumerRecord<>("topic", 1, 1, "kek", sinkEvent)), ack);
 
-        Mockito.verify(invoiceBatchService, Mockito.times(1)).process(anyList());
+        Mockito.verify(invoiceBatchService, Mockito.times(1)).save(anyList());
         Mockito.verify(ack, Mockito.times(1)).acknowledge();
     }
 }

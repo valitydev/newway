@@ -21,10 +21,10 @@ import static dev.vality.newway.utils.JdbcUtil.countEntities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @PostgresqlSpringBootITest
-public class PaymentBatchServiceTest {
+public class PaymentWrapperServiceTest {
 
     @Autowired
-    private PaymentBatchService paymentBatchService;
+    private PaymentWrapperService paymentWrapperService;
 
     @Autowired
     private PaymentDaoImpl paymentDao;
@@ -70,12 +70,12 @@ public class PaymentBatchServiceTest {
         PaymentWrapperTestUtil.setInvoiceIdAndPaymentId(paymentWrappers.get(0), invoiceIdFirst, paymentIdFirst);
         PaymentWrapperTestUtil.setInvoiceIdAndPaymentId(paymentWrappers.get(1), invoiceIdSecond, paymentIdSecond);
         
-        paymentBatchService.process(paymentWrappers);
+        paymentWrapperService.save(paymentWrappers);
         assertPaymentWrapperFromDao(paymentWrappers.get(0), invoiceIdFirst, paymentIdFirst);
         assertPaymentWrapperFromDao(paymentWrappers.get(1), invoiceIdSecond, paymentIdSecond);
 
         //Duplication check
-        paymentBatchService.process(paymentWrappers);
+        paymentWrapperService.save(paymentWrappers);
         assertDuplication(invoiceIdFirst, paymentIdFirst);
         assertDuplication(invoiceIdSecond, paymentIdSecond);
         assertTotalDuplication();
