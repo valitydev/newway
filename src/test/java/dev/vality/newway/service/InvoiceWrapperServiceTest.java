@@ -41,6 +41,23 @@ public class InvoiceWrapperServiceTest {
 
     @Test
     public void processTest() {
+        List<InvoiceWrapper> invoiceWrappers = prepareInvoiceWrappers();
+        invoiceWrapperService.save(invoiceWrappers);
+        invoiceWrappers.forEach(this::assertInvoiceWrapper);
+    }
+
+    @Test
+    public void duplicationTest() {
+        List<InvoiceWrapper> invoiceWrappers = prepareInvoiceWrappers();
+        invoiceWrapperService.save(invoiceWrappers);
+
+        //Duplication check
+        invoiceWrapperService.save(invoiceWrappers);
+        invoiceWrappers.forEach(wrapper -> assertDuplication(wrapper.getInvoice().getInvoiceId()));
+        assertTotal();
+    }
+
+    private List<InvoiceWrapper> prepareInvoiceWrappers() {
         List<InvoiceWrapper> invoiceWrappers = IntStream.range(1, 5)
                 .mapToObj(x -> new InvoiceWrapper(
                         RandomBeans.random(Invoice.class, "id"),
@@ -53,13 +70,7 @@ public class InvoiceWrapperServiceTest {
             iw.getCarts().forEach(cart ->
                     cart.setInvoiceId(iw.getInvoice().getInvoiceId()));
         });
-        invoiceWrapperService.save(invoiceWrappers);
-        invoiceWrappers.forEach(this::assertInvoiceWrapper);
-
-        //Duplication check
-        invoiceWrapperService.save(invoiceWrappers);
-        invoiceWrappers.forEach(wrapper -> assertDuplication(wrapper.getInvoice().getInvoiceId()));
-        assertTotal();
+        return invoiceWrappers;
     }
 
     private void assertInvoiceWrapper(InvoiceWrapper invoiceWrapper) {

@@ -2,12 +2,13 @@ package dev.vality.newway.util;
 
 import dev.vality.damsel.domain.Contractor;
 import dev.vality.newway.TestData;
+import dev.vality.newway.factory.contractor.ContractorFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class ContractorUtilTest {
+class ContractorFactoryTest {
 
     public static final String CREATED_AT = "2021-05-18T16:46:22.405695Z";
     public static final long SEQ_ID = 1L;
@@ -24,8 +25,8 @@ class ContractorUtilTest {
         Integer changeId = 1;
         Integer claimEffectId = 2;
 
-        dev.vality.newway.domain.tables.pojos.Contractor actualContractor = ContractorUtil
-                .convertContractor(seqId, CREATED_AT, partyId, contractor, contractorId, changeId, claimEffectId);
+        dev.vality.newway.domain.tables.pojos.Contractor actualContractor = ContractorFactory
+                .build(seqId, CREATED_AT, partyId, contractor, contractorId, changeId, claimEffectId);
 
         assertNull(actualContractor.getInternationalLegalEntityCountryCode());
 
@@ -37,8 +38,8 @@ class ContractorUtilTest {
         String partyId = TestData.randomString();
         String contractorId = TestData.randomString();
 
-        dev.vality.newway.domain.tables.pojos.Contractor actualContractor = ContractorUtil
-                .convertContractor(SEQ_ID, CREATED_AT, partyId, contractor, contractorId, CHANGE_ID, CLAIM_EFFECT_ID);
+        dev.vality.newway.domain.tables.pojos.Contractor actualContractor = ContractorFactory
+                .build(SEQ_ID, CREATED_AT, partyId, contractor, contractorId, CHANGE_ID, CLAIM_EFFECT_ID);
 
         assertEquals(SEQ_ID, (long) actualContractor.getSequenceId());
         assertEquals(contractorId, actualContractor.getContractorId());

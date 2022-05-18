@@ -11,7 +11,7 @@ import dev.vality.newway.dao.invoicing.iface.PaymentDao;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.domain.tables.pojos.Chargeback;
 import dev.vality.newway.domain.tables.pojos.Payment;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.handler.event.stock.impl.invoicing.chargeback.*;
 import dev.vality.newway.mapper.Mapper;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -41,7 +40,7 @@ public class InvoicingServiceTest {
     @MockBean
     private PaymentWrapperService paymentWrapperService;
     @MockBean
-    private PartyShopService partyShopService;
+    private PartyShopCacheService partyShopCacheService;
     @Mock
     private MachineEventCopyFactory<Chargeback, Integer> machineEventCopyFactory;
     @Mock
@@ -73,7 +72,7 @@ public class InvoicingServiceTest {
                 new ArrayList<>(),
                 rightHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser
@@ -93,7 +92,7 @@ public class InvoicingServiceTest {
                 new ArrayList<>(),
                 rightHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser
@@ -117,7 +116,7 @@ public class InvoicingServiceTest {
                 new ArrayList<>(),
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser
@@ -148,14 +147,14 @@ public class InvoicingServiceTest {
                 handlers,
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser);
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
 
-        Mockito.verify(chargebackDao, only()).save(any(Chargeback.class));
+        verify(chargebackDao, only()).save(any(Chargeback.class));
     }
 
     @Test
@@ -173,7 +172,7 @@ public class InvoicingServiceTest {
                 handlers,
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser);
@@ -181,9 +180,9 @@ public class InvoicingServiceTest {
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
 
-        Mockito.verify(chargebackDao, times(1)).save(any(Chargeback.class));
-        Mockito.verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
-        Mockito.verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
+        verify(chargebackDao, times(1)).save(any(Chargeback.class));
+        verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
+        verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
     }
 
     @Test
@@ -201,7 +200,7 @@ public class InvoicingServiceTest {
                 handlers,
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser);
@@ -209,9 +208,9 @@ public class InvoicingServiceTest {
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
 
-        Mockito.verify(chargebackDao, times(1)).save(any(Chargeback.class));
-        Mockito.verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
-        Mockito.verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
+        verify(chargebackDao, times(1)).save(any(Chargeback.class));
+        verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
+        verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
     }
 
     @Test
@@ -228,7 +227,7 @@ public class InvoicingServiceTest {
                 handlers,
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser);
@@ -236,9 +235,9 @@ public class InvoicingServiceTest {
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
 
-        Mockito.verify(chargebackDao, times(1)).save(any(Chargeback.class));
-        Mockito.verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
-        Mockito.verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
+        verify(chargebackDao, times(1)).save(any(Chargeback.class));
+        verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
+        verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
     }
 
     @Test
@@ -255,7 +254,7 @@ public class InvoicingServiceTest {
                 handlers,
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser);
@@ -263,10 +262,10 @@ public class InvoicingServiceTest {
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
 
-        Mockito.verify(chargebackDao, times(1)).save(any(Chargeback.class));
-        Mockito.verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
-        Mockito.verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
-        Mockito.verify(cashFlowDao, times(1)).save(anyList());
+        verify(chargebackDao, times(1)).save(any(Chargeback.class));
+        verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
+        verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
+        verify(cashFlowDao, times(1)).save(anyList());
     }
 
     @Test
@@ -283,7 +282,7 @@ public class InvoicingServiceTest {
                 handlers,
                 wrongHandlers,
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceWrapperService,
                 paymentWrapperService,
                 parser);
@@ -291,9 +290,9 @@ public class InvoicingServiceTest {
         MachineEvent machineEvent = buildMachineEvent();
         invoicingService.handleEvents(Collections.singletonList(machineEvent));
 
-        Mockito.verify(chargebackDao, times(1)).save(any(Chargeback.class));
-        Mockito.verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
-        Mockito.verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
+        verify(chargebackDao, times(1)).save(any(Chargeback.class));
+        verify(chargebackDao, times(1)).updateNotCurrent(anyLong());
+        verify(cashFlowService, times(1)).save(anyLong(), anyLong(), any(PaymentChangeType.class));
     }
 
     private ChargebackDao mockChargebackDao() {

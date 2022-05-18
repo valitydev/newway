@@ -14,7 +14,7 @@ import dev.vality.newway.dao.invoicing.iface.ChargebackDao;
 import dev.vality.newway.domain.enums.ChargebackStage;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.domain.tables.pojos.Chargeback;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.service.CashFlowService;
 import lombok.Getter;

@@ -14,7 +14,7 @@ import dev.vality.newway.dao.invoicing.iface.RefundDao;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.domain.enums.RefundStatus;
 import dev.vality.newway.domain.tables.pojos.Refund;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.service.CashFlowService;
 import dev.vality.newway.util.JsonUtil;

@@ -3,7 +3,6 @@ package dev.vality.newway.service;
 import dev.vality.newway.dao.invoicing.iface.*;
 import dev.vality.newway.domain.tables.pojos.*;
 import dev.vality.newway.model.CashFlowWrapper;
-import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.util.PaymentWrapperUtil;
 import lombok.RequiredArgsConstructor;

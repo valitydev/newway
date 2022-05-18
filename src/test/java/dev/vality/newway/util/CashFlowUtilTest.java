@@ -1,6 +1,7 @@
 package dev.vality.newway.util;
 
 import dev.vality.damsel.domain.*;
+import dev.vality.newway.model.CashFlowType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

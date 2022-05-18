@@ -1,20 +1,20 @@
-package dev.vality.newway.factory;
+package dev.vality.newway.factory.machine.event;
 
 import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.machinegun.eventsink.MachineEvent;
-import dev.vality.newway.domain.tables.pojos.Chargeback;
+import dev.vality.newway.domain.tables.pojos.Adjustment;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ChargebackMachineEventCopyFactoryImpl implements MachineEventCopyFactory<Chargeback, Integer> {
+public class AdjustmentMachineEventCopyFactoryImpl implements MachineEventCopyFactory<Adjustment, Integer> {
 
     @Override
-    public Chargeback create(MachineEvent event, Long sequenceId, Integer id, Chargeback old, String occurredAt) {
-        Chargeback chargeback = null;
+    public Adjustment create(MachineEvent event, Long sequenceId, Integer id, Adjustment old, String occurredAt) {
+        Adjustment chargeback = null;
         if (old != null) {
-            chargeback = new Chargeback(old);
+            chargeback = new Adjustment(old);
         } else {
-            chargeback = new Chargeback();
+            chargeback = new Adjustment();
         }
         chargeback.setId(null);
         chargeback.setWtime(null);
@@ -25,7 +25,7 @@ public class ChargebackMachineEventCopyFactoryImpl implements MachineEventCopyFa
     }
 
     @Override
-    public Chargeback create(MachineEvent event, Long sequenceId, Integer id, String occurredAt) {
+    public Adjustment create(MachineEvent event, Long sequenceId, Integer id, String occurredAt) {
         return create(event, sequenceId, id, null, occurredAt);
     }
 

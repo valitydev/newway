@@ -12,7 +12,7 @@ import dev.vality.newway.domain.tables.pojos.PaymentStatusInfo;
 import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
-import dev.vality.newway.util.PaymentStatusInfoUtil;
+import dev.vality.newway.factory.invoice.payment.PaymentStatusInfoFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -38,7 +38,7 @@ public class InvoicePaymentStatusChangedMapper implements Mapper<PaymentWrapper>
         log.info("Start payment status changed mapping, sequenceId={}, changeId={}, invoiceId={}, paymentId={}, status={}",
                 sequenceId, changeId, invoiceId, paymentId, invoicePaymentStatus.getSetField().getFieldName());
 
-        PaymentStatusInfo statusInfo = PaymentStatusInfoUtil.getPaymentStatusInfo(
+        PaymentStatusInfo statusInfo = PaymentStatusInfoFactory.build(
                 invoicePaymentStatus,
                 invoiceId,
                 paymentId,

@@ -15,7 +15,7 @@ import dev.vality.newway.dao.destination.iface.DestinationDao;
 import dev.vality.newway.domain.enums.DestinationResourceType;
 import dev.vality.newway.domain.enums.DestinationStatus;
 import dev.vality.newway.domain.tables.pojos.Destination;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.util.JsonUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

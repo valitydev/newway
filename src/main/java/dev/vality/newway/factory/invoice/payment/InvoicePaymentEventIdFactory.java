@@ -1,4 +1,4 @@
-package dev.vality.newway.util;
+package dev.vality.newway.factory.invoice.payment;
 
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
 import dev.vality.newway.model.InvoicePaymentEventId;
@@ -6,9 +6,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class InvoicePaymentEventIdUtil {
+public class InvoicePaymentEventIdFactory {
 
-    public static InvoicePaymentEventId get(CashFlowLink link) {
+    public static InvoicePaymentEventId build(CashFlowLink link) {
         return new InvoicePaymentEventId(
                 link.getInvoiceId(),
                 link.getPaymentId(),

@@ -1,4 +1,4 @@
-package dev.vality.newway.util;
+package dev.vality.newway.factory.invoice.payment;
 
 import dev.vality.newway.domain.tables.pojos.PaymentRoute;
 import lombok.AccessLevel;
@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PaymentRouteUtil {
+public class PaymentRouteFactory {
 
-    public static PaymentRoute getPaymentRoute(dev.vality.damsel.domain.PaymentRoute paymentRouteSource,
-                                               String invoiceId,
-                                               String paymentId,
-                                               LocalDateTime eventCreatedAt,
-                                               Integer changeId,
-                                               Long sequenceId) {
+    public static PaymentRoute build(dev.vality.damsel.domain.PaymentRoute paymentRouteSource,
+                                     String invoiceId,
+                                     String paymentId,
+                                     LocalDateTime eventCreatedAt,
+                                     Integer changeId,
+                                     Long sequenceId) {
         PaymentRoute paymentRoute = new PaymentRoute();
         paymentRoute.setEventCreatedAt(eventCreatedAt);
         paymentRoute.setInvoiceId(invoiceId);

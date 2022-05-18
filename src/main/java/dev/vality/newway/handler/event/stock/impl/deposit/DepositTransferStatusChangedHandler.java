@@ -15,7 +15,7 @@ import dev.vality.newway.domain.enums.DepositTransferStatus;
 import dev.vality.newway.domain.enums.FistfulCashFlowChangeType;
 import dev.vality.newway.domain.tables.pojos.Deposit;
 import dev.vality.newway.domain.tables.pojos.FistfulCashFlow;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

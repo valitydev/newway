@@ -11,7 +11,7 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.deposit.iface.DepositDao;
 import dev.vality.newway.domain.enums.DepositStatus;
 import dev.vality.newway.domain.tables.pojos.Deposit;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

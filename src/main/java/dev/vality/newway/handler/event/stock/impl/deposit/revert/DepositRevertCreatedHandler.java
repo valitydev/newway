@@ -12,7 +12,7 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.deposit.revert.iface.DepositRevertDao;
 import dev.vality.newway.domain.enums.DepositRevertStatus;
 import dev.vality.newway.domain.tables.pojos.DepositRevert;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.deposit.DepositHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

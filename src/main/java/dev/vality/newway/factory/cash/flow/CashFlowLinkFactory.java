@@ -1,4 +1,4 @@
-package dev.vality.newway.util;
+package dev.vality.newway.factory.cash.flow;
 
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
 import lombok.AccessLevel;
@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CashFlowLinkUtil {
+public class CashFlowLinkFactory {
 
-    public static CashFlowLink getCashFlowLink(String paymentId,
-                                         String invoiceId,
-                                         LocalDateTime eventCreatedAt,
-                                         Integer changeId,
-                                         Long sequenceId) {
+    public static CashFlowLink build(String paymentId,
+                                     String invoiceId,
+                                     LocalDateTime eventCreatedAt,
+                                     Integer changeId,
+                                     Long sequenceId) {
         CashFlowLink link = new CashFlowLink();
         link.setPaymentId(paymentId);
         link.setInvoiceId(invoiceId);

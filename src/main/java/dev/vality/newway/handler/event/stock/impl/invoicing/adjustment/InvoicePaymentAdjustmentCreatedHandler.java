@@ -22,10 +22,10 @@ import dev.vality.newway.domain.enums.PaymentStatus;
 import dev.vality.newway.domain.tables.pojos.Adjustment;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.Payment;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.cash.flow.CashFlowFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.util.AdjustmentUtils;
-import dev.vality.newway.util.CashFlowUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -111,13 +111,13 @@ public class InvoicePaymentAdjustmentCreatedHandler implements InvoicingHandler 
 
         adjustmentDao.save(adjustment).ifPresentOrElse(
                 id -> {
-                    List<CashFlow> newCashFlowList = CashFlowUtil.convertCashFlows(
+                    List<CashFlow> newCashFlowList = CashFlowFactory.build(
                             invoicePaymentAdjustment.getNewCashFlow(),
                             id,
                             PaymentChangeType.adjustment,
                             AdjustmentCashFlowType.new_cash_flow);
                     cashFlowDao.save(newCashFlowList);
-                    List<CashFlow> oldCashFlowList = CashFlowUtil.convertCashFlows(
+                    List<CashFlow> oldCashFlowList = CashFlowFactory.build(
                             invoicePaymentAdjustment.getOldCashFlowInverse(),
                             id,
                             PaymentChangeType.adjustment,

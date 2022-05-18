@@ -10,13 +10,13 @@ import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.enums.PaymentChangeType;
+import dev.vality.newway.factory.cash.flow.CashFlowFactory;
 import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.CashFlowWrapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
-import dev.vality.newway.util.CashFlowLinkUtil;
-import dev.vality.newway.util.CashFlowUtil;
-import dev.vality.newway.util.PaymentFeeUtil;
+import dev.vality.newway.factory.cash.flow.CashFlowLinkFactory;
+import dev.vality.newway.factory.invoice.payment.PaymentFeeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -47,11 +47,11 @@ public class InvoicePaymentCashFlowChangedMapper implements Mapper<PaymentWrappe
         PaymentWrapper paymentWrapper = new PaymentWrapper();
         paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
         paymentWrapper.setCashFlowWrapper(new CashFlowWrapper(
-                CashFlowLinkUtil.getCashFlowLink(paymentId, invoiceId, eventCreatedAt, changeId, sequenceId),
-                CashFlowUtil.convertCashFlows(finalCashFlow, null, PaymentChangeType.payment)
+                CashFlowLinkFactory.build(paymentId, invoiceId, eventCreatedAt, changeId, sequenceId),
+                CashFlowFactory.build(finalCashFlow, null, PaymentChangeType.payment)
         ));
         paymentWrapper.setPaymentFee(
-                PaymentFeeUtil.getPaymentFee(finalCashFlow, invoiceId, paymentId, eventCreatedAt, changeId, sequenceId));
+                PaymentFeeFactory.build(finalCashFlow, invoiceId, paymentId, eventCreatedAt, changeId, sequenceId));
         log.info("Payment cashflow has been mapped, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
                 sequenceId, changeId, invoiceId, paymentId);
         return paymentWrapper;

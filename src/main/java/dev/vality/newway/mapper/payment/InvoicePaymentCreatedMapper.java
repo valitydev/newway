@@ -13,13 +13,15 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.domain.tables.pojos.PaymentPayerInfo;
+import dev.vality.newway.factory.cash.flow.CashFlowFactory;
+import dev.vality.newway.factory.cash.flow.CashFlowLinkFactory;
+import dev.vality.newway.factory.invoice.payment.*;
 import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.CashFlowWrapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PartyShop;
 import dev.vality.newway.model.PaymentWrapper;
-import dev.vality.newway.service.PartyShopService;
-import dev.vality.newway.util.*;
+import dev.vality.newway.service.PartyShopCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
 
-    private final PartyShopService partyShopService;
+    private final PartyShopCacheService partyShopCacheService;
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_started",
@@ -53,7 +55,7 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
         log.info("Start payment created mapping, sequenceId={}, changeId={}, invoiceId={}, paymentId={}",
                 sequenceId, changeId, invoiceId, paymentId);
 
-        PartyShop partyShop = partyShopService.get(invoiceId);
+        PartyShop partyShop = partyShopCacheService.get(invoiceId);
         if (partyShop == null) {
             log.info("PartyShop not found for invoiceId = {}", invoiceId);
             return null;
@@ -71,7 +73,7 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
                 changeId,
                 sequenceId
         ));
-        paymentWrapper.setPaymentStatusInfo(PaymentStatusInfoUtil.getPaymentStatusInfo(
+        paymentWrapper.setPaymentStatusInfo(PaymentStatusInfoFactory.build(
                 invoicePayment.getStatus(),
                 invoiceId,
                 paymentId,
@@ -88,7 +90,7 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
                 sequenceId
         ));
         if (invoicePaymentStarted.isSetRoute()) {
-            paymentWrapper.setPaymentRoute(PaymentRouteUtil.getPaymentRoute(
+            paymentWrapper.setPaymentRoute(PaymentRouteFactory.build(
                     invoicePaymentStarted.getRoute(),
                     invoiceId,
                     paymentId,
@@ -99,10 +101,10 @@ public class InvoicePaymentCreatedMapper implements Mapper<PaymentWrapper> {
         }
         if (invoicePaymentStarted.isSetCashFlow()) {
             paymentWrapper.setCashFlowWrapper(new CashFlowWrapper(
-                    CashFlowLinkUtil.getCashFlowLink(paymentId, invoiceId, eventCreatedAt, changeId, sequenceId),
-                    CashFlowUtil.convertCashFlows(invoicePaymentStarted.getCashFlow(), null, PaymentChangeType.payment)
+                    CashFlowLinkFactory.build(paymentId, invoiceId, eventCreatedAt, changeId, sequenceId),
+                    CashFlowFactory.build(invoicePaymentStarted.getCashFlow(), null, PaymentChangeType.payment)
             ));
-            paymentWrapper.setPaymentFee(PaymentFeeUtil.getPaymentFee(
+            paymentWrapper.setPaymentFee(PaymentFeeFactory.build(
                     invoicePaymentStarted.getCashFlow(),
                     invoiceId,
                     paymentId,

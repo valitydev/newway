@@ -1,24 +1,25 @@
-package dev.vality.newway.util;
+package dev.vality.newway.factory.invoice.payment;
 
 import dev.vality.damsel.domain.InvoicePaymentCaptured;
 import dev.vality.damsel.domain.InvoicePaymentStatus;
 import dev.vality.geck.common.util.TBaseUtil;
 import dev.vality.newway.domain.enums.PaymentStatus;
 import dev.vality.newway.domain.tables.pojos.PaymentStatusInfo;
+import dev.vality.newway.util.JsonUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PaymentStatusInfoUtil {
+public class PaymentStatusInfoFactory {
 
-    public static PaymentStatusInfo getPaymentStatusInfo(InvoicePaymentStatus status,
-                                                         String invoiceId,
-                                                         String paymentId,
-                                                         LocalDateTime eventCreatedAt,
-                                                         Integer changeId,
-                                                         Long sequenceId) {
+    public static PaymentStatusInfo build(InvoicePaymentStatus status,
+                                          String invoiceId,
+                                          String paymentId,
+                                          LocalDateTime eventCreatedAt,
+                                          Integer changeId,
+                                          Long sequenceId) {
         PaymentStatusInfo statusInfo = new PaymentStatusInfo();
         statusInfo.setInvoiceId(invoiceId);
         statusInfo.setPaymentId(paymentId);

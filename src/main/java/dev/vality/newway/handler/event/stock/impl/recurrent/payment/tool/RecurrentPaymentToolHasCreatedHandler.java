@@ -14,7 +14,7 @@ import dev.vality.newway.dao.recurrent.payment.tool.iface.RecurrentPaymentToolDa
 import dev.vality.newway.domain.enums.PaymentToolType;
 import dev.vality.newway.domain.enums.RecurrentPaymentToolStatus;
 import dev.vality.newway.domain.tables.pojos.RecurrentPaymentTool;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.util.JsonUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -57,26 +57,6 @@ public class InvoiceCreatedMapper implements Mapper<InvoiceWrapper> {
         return invoiceWrapper;
     }
 
-    private InvoiceStatusInfo getInvoiceStatusInfo(Invoice invoice,
-                                                   Long sequenceId,
-                                                   Integer changeId,
-                                                   LocalDateTime eventCreatedAt) {
-        InvoiceStatusInfo statusRecord = new InvoiceStatusInfo();
-        statusRecord.setInvoiceId(invoice.getId());
-        statusRecord.setStatus(TBaseUtil.unionFieldToEnum(invoice.getStatus(), InvoiceStatus.class));
-        if (invoice.getStatus().isSetCancelled()) {
-            statusRecord.setDetails(invoice.getStatus().getCancelled().getDetails());
-        } else if (invoice.getStatus().isSetFulfilled()) {
-            statusRecord.setDetails(invoice.getStatus().getFulfilled().getDetails());
-        }
-        statusRecord.setEventCreatedAt(eventCreatedAt);
-        statusRecord.setChangeId(changeId);
-        statusRecord.setSequenceId(sequenceId);
-        statusRecord.setExternalId(invoice.getExternalId());
-
-        return statusRecord;
-    }
-
     private dev.vality.newway.domain.tables.pojos.Invoice getInvoice(Invoice invoice,
                                                                      Long sequenceId,
                                                                      Integer changeId,
@@ -100,6 +80,26 @@ public class InvoiceCreatedMapper implements Mapper<InvoiceWrapper> {
         invoiceRecord.setTemplateId(invoice.getTemplateId());
 
         return invoiceRecord;
+    }
+
+    private InvoiceStatusInfo getInvoiceStatusInfo(Invoice invoice,
+                                                   Long sequenceId,
+                                                   Integer changeId,
+                                                   LocalDateTime eventCreatedAt) {
+        InvoiceStatusInfo statusRecord = new InvoiceStatusInfo();
+        statusRecord.setInvoiceId(invoice.getId());
+        statusRecord.setStatus(TBaseUtil.unionFieldToEnum(invoice.getStatus(), InvoiceStatus.class));
+        if (invoice.getStatus().isSetCancelled()) {
+            statusRecord.setDetails(invoice.getStatus().getCancelled().getDetails());
+        } else if (invoice.getStatus().isSetFulfilled()) {
+            statusRecord.setDetails(invoice.getStatus().getFulfilled().getDetails());
+        }
+        statusRecord.setEventCreatedAt(eventCreatedAt);
+        statusRecord.setChangeId(changeId);
+        statusRecord.setSequenceId(sequenceId);
+        statusRecord.setExternalId(invoice.getExternalId());
+
+        return statusRecord;
     }
 
     private List<InvoiceCart> getInvoiceCarts(Invoice invoice,

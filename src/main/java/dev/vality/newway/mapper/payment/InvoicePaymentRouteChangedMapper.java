@@ -12,7 +12,7 @@ import dev.vality.newway.domain.tables.pojos.PaymentRoute;
 import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
-import dev.vality.newway.util.PaymentRouteUtil;
+import dev.vality.newway.factory.invoice.payment.PaymentRouteFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class InvoicePaymentRouteChangedMapper implements Mapper<PaymentWrapper> 
         long sequenceId = event.getEventId();
         log.info("Start mapping payment route change, route='{}', sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
                 paymentRouteSource, sequenceId, changeId, invoiceId, paymentId);
-        PaymentRoute paymentRoute = PaymentRouteUtil.getPaymentRoute(
+        PaymentRoute paymentRoute = PaymentRouteFactory.build(
                 paymentRouteSource,
                 invoiceId,
                 paymentId,

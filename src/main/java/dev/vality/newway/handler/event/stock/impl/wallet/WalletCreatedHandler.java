@@ -9,7 +9,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.wallet.iface.WalletDao;
 import dev.vality.newway.domain.tables.pojos.Wallet;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

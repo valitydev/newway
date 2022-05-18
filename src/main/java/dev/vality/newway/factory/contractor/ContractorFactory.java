@@ -1,4 +1,4 @@
-package dev.vality.newway.util;
+package dev.vality.newway.factory.contractor;
 
 import dev.vality.damsel.domain.InternationalLegalEntity;
 import dev.vality.damsel.domain.RussianLegalEntity;
@@ -9,11 +9,15 @@ import dev.vality.newway.domain.enums.ContractorType;
 import dev.vality.newway.domain.enums.LegalEntity;
 import dev.vality.newway.domain.enums.PrivateEntity;
 import dev.vality.newway.domain.tables.pojos.Contractor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class ContractorUtil {
-    public static Contractor convertContractor(long sequenceId, String eventCreatedAt, String partyId,
-                                               dev.vality.damsel.domain.Contractor contractorSource,
-                                               String contractorId, Integer changeId, Integer claimEffectId) {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ContractorFactory {
+
+    public static Contractor build(long sequenceId, String eventCreatedAt, String partyId,
+                                   dev.vality.damsel.domain.Contractor contractorSource,
+                                   String contractorId, Integer changeId, Integer claimEffectId) {
         Contractor contractor = new Contractor();
         contractor.setSequenceId((int) sequenceId);
         contractor.setChangeId(changeId);

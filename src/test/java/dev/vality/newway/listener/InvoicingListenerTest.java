@@ -11,7 +11,7 @@ import dev.vality.newway.exception.ParseException;
 import dev.vality.newway.mapper.invoice.InvoiceCreatedMapper;
 import dev.vality.newway.service.InvoiceWrapperService;
 import dev.vality.newway.service.InvoicingService;
-import dev.vality.newway.service.PartyShopService;
+import dev.vality.newway.service.PartyShopCacheService;
 import dev.vality.newway.service.PaymentWrapperService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 public class InvoicingListenerTest {
 
     @Mock
-    private PartyShopService partyShopService;
+    private PartyShopCacheService partyShopCacheService;
     @Mock
     private InvoiceWrapperService invoiceBatchService;
     @Mock
@@ -55,7 +55,7 @@ public class InvoicingListenerTest {
                 new ArrayList<>(),
                 Collections.singletonList(new InvoiceCreatedMapper()),
                 new ArrayList<>(),
-                partyShopService,
+                partyShopCacheService,
                 invoiceBatchService,
                 paymentWrapperService,
                 eventParser

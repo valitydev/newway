@@ -17,7 +17,7 @@ import dev.vality.newway.domain.enums.AdjustmentCashFlowType;
 import dev.vality.newway.domain.enums.AdjustmentStatus;
 import dev.vality.newway.domain.tables.pojos.Adjustment;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

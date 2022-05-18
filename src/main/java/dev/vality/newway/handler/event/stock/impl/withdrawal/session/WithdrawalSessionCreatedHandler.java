@@ -16,7 +16,7 @@ import dev.vality.newway.domain.enums.BankCardPaymentSystem;
 import dev.vality.newway.domain.enums.DestinationResourceType;
 import dev.vality.newway.domain.enums.WithdrawalSessionStatus;
 import dev.vality.newway.domain.tables.pojos.WithdrawalSession;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

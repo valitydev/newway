@@ -8,7 +8,7 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.machinegun.msgpack.Value;
 import dev.vality.newway.config.SerializationConfig;
 import dev.vality.newway.dao.party.iface.PartyDao;
-import dev.vality.newway.factory.PartyMachineEventCopyFactoryImpl;
+import dev.vality.newway.factory.machine.event.PartyMachineEventCopyFactoryImpl;
 import dev.vality.newway.handler.event.stock.impl.partymngmnt.party.PartyCreatedHandler;
 import dev.vality.sink.common.serialization.impl.PartyEventDataSerializer;
 import org.junit.jupiter.api.BeforeEach;

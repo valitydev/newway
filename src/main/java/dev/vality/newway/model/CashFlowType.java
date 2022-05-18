@@ -1,4 +1,4 @@
-package dev.vality.newway.util;
+package dev.vality.newway.model;
 
 import dev.vality.damsel.domain.*;
 
@@ -41,9 +41,9 @@ public enum CashFlowType {
             CashFlowAccount.merchant(MerchantCashFlowAccount.guarantee)
     );
 
-    private List<CashFlowAccount> sources;
+    private final List<CashFlowAccount> sources;
 
-    private List<CashFlowAccount> destinations;
+    private final List<CashFlowAccount> destinations;
 
     CashFlowType(CashFlowAccount source, CashFlowAccount destination) {
         this(Collections.singletonList(source), Collections.singletonList(destination));

@@ -8,7 +8,7 @@ import dev.vality.newway.domain.tables.pojos.CashFlowLink;
 import dev.vality.newway.model.CashFlowWrapper;
 import dev.vality.newway.model.InvoicePaymentEventId;
 import dev.vality.newway.model.InvoicingKey;
-import dev.vality.newway.util.InvoicePaymentEventIdUtil;
+import dev.vality.newway.factory.invoice.payment.InvoicePaymentEventIdFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -35,7 +35,7 @@ public class CashFlowWrapperService {
                             .collect(Collectors.toList())
             );
             cashFlowWrappers.removeIf(wrapper ->
-                    existingEvents.contains(InvoicePaymentEventIdUtil.get(wrapper.getCashFlowLink())));
+                    existingEvents.contains(InvoicePaymentEventIdFactory.build(wrapper.getCashFlowLink())));
             if (!CollectionUtils.isEmpty(cashFlowWrappers)) {
                 setLinkIds(cashFlowWrappers);
                 List<CashFlowLink> links = cashFlowWrappers.stream()

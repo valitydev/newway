@@ -9,7 +9,7 @@ import dev.vality.newway.dao.party.iface.ContractorDao;
 import dev.vality.newway.dao.party.iface.PartyDao;
 import dev.vality.newway.domain.tables.pojos.Contractor;
 import dev.vality.newway.handler.event.stock.impl.partymngmnt.AbstractClaimChangedHandler;
-import dev.vality.newway.util.ContractorUtil;
+import dev.vality.newway.factory.contractor.ContractorFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -55,7 +55,7 @@ public class ContractorCreatedHandler extends AbstractClaimChangedHandler {
                 eventId, partyId, contractorId);
         partyDao.get(partyId); //check party is exist
 
-        Contractor contractor = ContractorUtil.convertContractor(
+        Contractor contractor = ContractorFactory.build(
                 eventId, event.getCreatedAt(), partyId, contractorCreated, contractorId, changeId, claimEffectId);
         contractor.setIdentificationalLevel(partyContractor.getStatus().name());
         contractorDao.save(contractor).ifPresentOrElse(

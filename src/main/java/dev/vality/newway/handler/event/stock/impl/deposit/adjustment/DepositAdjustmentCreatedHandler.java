@@ -16,7 +16,7 @@ import dev.vality.newway.domain.enums.DepositAdjustmentStatus;
 import dev.vality.newway.domain.enums.DepositStatus;
 import dev.vality.newway.domain.tables.pojos.Deposit;
 import dev.vality.newway.domain.tables.pojos.DepositAdjustment;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.deposit.DepositHandler;
 import dev.vality.newway.util.FistfulCashFlowUtil;
 import lombok.Getter;

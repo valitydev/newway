@@ -15,7 +15,7 @@ import dev.vality.newway.domain.tables.pojos.PayoutTool;
 import dev.vality.newway.factory.claim.effect.ClaimEffectCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.partymngmnt.AbstractClaimChangedHandler;
 import dev.vality.newway.util.ContractUtil;
-import dev.vality.newway.util.ContractorUtil;
+import dev.vality.newway.factory.contractor.ContractorFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -118,7 +118,7 @@ public class ContractCreatedHandler extends AbstractClaimChangedHandler {
                                          String contractId, String partyId, String contractorId, Long cntrctId,
                                          Integer claimEffectId) {
         if (contractCreated.isSetContractor()) {
-            Contractor contractor = ContractorUtil.convertContractor(sequenceId, event.getCreatedAt(),
+            Contractor contractor = ContractorFactory.build(sequenceId, event.getCreatedAt(),
                     partyId, contractCreated.getContractor(), contractorId, changeId, claimEffectId);
             contractorDao.save(contractor);
         }

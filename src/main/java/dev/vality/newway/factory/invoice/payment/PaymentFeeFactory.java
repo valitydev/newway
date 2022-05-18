@@ -1,7 +1,9 @@
-package dev.vality.newway.util;
+package dev.vality.newway.factory.invoice.payment;
 
 import dev.vality.damsel.domain.FinalCashFlowPosting;
 import dev.vality.newway.domain.tables.pojos.PaymentFee;
+import dev.vality.newway.model.CashFlowType;
+import dev.vality.newway.util.CashFlowUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -10,14 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PaymentFeeUtil {
+public class PaymentFeeFactory {
 
-    public static PaymentFee getPaymentFee(List<FinalCashFlowPosting> finalCashFlow,
-                                           String invoiceId,
-                                           String paymentId,
-                                           LocalDateTime eventCreatedAt,
-                                           Integer changeId,
-                                           Long sequenceId) {
+    public static PaymentFee build(List<FinalCashFlowPosting> finalCashFlow,
+                                   String invoiceId,
+                                   String paymentId,
+                                   LocalDateTime eventCreatedAt,
+                                   Integer changeId,
+                                   Long sequenceId) {
         PaymentFee paymentFee = new PaymentFee();
         paymentFee.setEventCreatedAt(eventCreatedAt);
         paymentFee.setInvoiceId(invoiceId);

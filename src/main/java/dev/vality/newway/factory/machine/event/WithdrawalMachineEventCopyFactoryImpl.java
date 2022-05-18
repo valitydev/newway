@@ -1,4 +1,4 @@
-package dev.vality.newway.factory;
+package dev.vality.newway.factory.machine.event;
 
 import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.machinegun.eventsink.MachineEvent;

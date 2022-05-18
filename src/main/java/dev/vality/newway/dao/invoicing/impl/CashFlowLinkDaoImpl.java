@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.beans.Transient;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +34,6 @@ public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowL
         invoicePaymentEventIdRowMapper = new DataClassRowMapper<>(InvoicePaymentEventId.class);
     }
 
-    @Transient
     @Override
     public void saveBatch(List<CashFlowLink> links) throws DaoException {
         batchExecute(links.stream()

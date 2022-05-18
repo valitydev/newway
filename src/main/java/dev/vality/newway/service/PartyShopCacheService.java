@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class PartyShopService {
+public class PartyShopCacheService {
 
     private final InvoiceDao invoiceDao;
     private final Cache<String, PartyShop> partyShopDataCache;
@@ -25,8 +25,10 @@ public class PartyShopService {
         if (partyShop != null) {
             return new PartyShop(partyShop.getPartyId(), partyShop.getShopId());
         }
+        log.info("Cache miss for invoiceId: {}", invoiceId);
         Invoice invoice = invoiceDao.get(invoiceId);
         if (invoice == null) {
+            log.warn("Invoice was not found for invoiceId: {}", invoiceId);
             return null;
         }
         partyShop = new PartyShop(invoice.getPartyId(), invoice.getShopId());

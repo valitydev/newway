@@ -50,35 +50,46 @@ public class PaymentWrapperServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private static final String invoiceIdFirst = "invoiceIdFirst";
+    private static final String invoiceIdSecond = "invoiceIdSecond";
+    private static final String paymentIdFirst = "paymentIdFirst";
+    private static final String paymentIdSecond = "paymentIdSecond";
+
     @Test
     public void processTest() {
-        List<PaymentWrapper> paymentWrappers = RandomBeans.randomListOf(2,PaymentWrapper.class);
-        String invoiceIdFirst = "invoiceIdFirst";
-        String invoiceIdSecond = "invoiceIdSecond";
-        String paymentIdFirst = "paymentIdFirst";
-        String paymentIdSecond = "paymentIdSecond";
-        paymentWrappers.forEach(pw -> {
-            pw.setCashFlowWrapper(new CashFlowWrapper(
-                    RandomBeans.random(CashFlowLink.class),
-                    RandomBeans.randomListOf(3, CashFlow.class)
-            ));
-            pw.getCashFlowWrapper().getCashFlows().forEach(cf -> {
-                cf.setObjType(PaymentChangeType.payment);
-            });
-            PaymentWrapperTestUtil.setCurrent(pw, true);
-        });
-        PaymentWrapperTestUtil.setInvoiceIdAndPaymentId(paymentWrappers.get(0), invoiceIdFirst, paymentIdFirst);
-        PaymentWrapperTestUtil.setInvoiceIdAndPaymentId(paymentWrappers.get(1), invoiceIdSecond, paymentIdSecond);
-        
+        List<PaymentWrapper> paymentWrappers = preparePaymentWrappers();
+
         paymentWrapperService.save(paymentWrappers);
         assertPaymentWrapperFromDao(paymentWrappers.get(0), invoiceIdFirst, paymentIdFirst);
         assertPaymentWrapperFromDao(paymentWrappers.get(1), invoiceIdSecond, paymentIdSecond);
+    }
+
+    @Test
+    public void duplicationTest() {
+        List<PaymentWrapper> paymentWrappers = preparePaymentWrappers();
+
+        paymentWrapperService.save(paymentWrappers);
 
         //Duplication check
         paymentWrapperService.save(paymentWrappers);
         assertDuplication(invoiceIdFirst, paymentIdFirst);
         assertDuplication(invoiceIdSecond, paymentIdSecond);
         assertTotalDuplication();
+    }
+
+    private List<PaymentWrapper> preparePaymentWrappers() {
+        List<PaymentWrapper> paymentWrappers = RandomBeans.randomListOf(2,PaymentWrapper.class);
+        paymentWrappers.forEach(pw -> {
+            pw.setCashFlowWrapper(new CashFlowWrapper(
+                    RandomBeans.random(CashFlowLink.class),
+                    RandomBeans.randomListOf(3, CashFlow.class)
+            ));
+            pw.getCashFlowWrapper().getCashFlows().forEach(cf -> cf.setObjType(PaymentChangeType.payment));
+            PaymentWrapperTestUtil.setCurrent(pw, true);
+        });
+        PaymentWrapperTestUtil.setInvoiceIdAndPaymentId(paymentWrappers.get(0), invoiceIdFirst, paymentIdFirst);
+        PaymentWrapperTestUtil.setInvoiceIdAndPaymentId(paymentWrappers.get(1), invoiceIdSecond, paymentIdSecond);
+        return paymentWrappers;
     }
 
     private void assertPaymentWrapperFromDao(PaymentWrapper expected, String invoiceId, String paymentId) {
