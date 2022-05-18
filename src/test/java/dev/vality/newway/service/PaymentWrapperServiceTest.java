@@ -70,7 +70,6 @@ public class PaymentWrapperServiceTest {
 
         paymentWrapperService.save(paymentWrappers);
 
-        //Duplication check
         paymentWrapperService.save(paymentWrappers);
         assertDuplication(invoiceIdFirst, paymentIdFirst);
         assertDuplication(invoiceIdSecond, paymentIdSecond);

@@ -51,7 +51,6 @@ public class InvoiceWrapperServiceTest {
         List<InvoiceWrapper> invoiceWrappers = prepareInvoiceWrappers();
         invoiceWrapperService.save(invoiceWrappers);
 
-        //Duplication check
         invoiceWrapperService.save(invoiceWrappers);
         invoiceWrappers.forEach(wrapper -> assertDuplication(wrapper.getInvoice().getInvoiceId()));
         assertTotal();

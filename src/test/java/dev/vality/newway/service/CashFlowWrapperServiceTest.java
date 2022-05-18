@@ -78,7 +78,6 @@ public class CashFlowWrapperServiceTest {
                 .collect(Collectors.toMap(CashFlow::getAmount, cashFlow -> cashFlow));
         assertCashFlows(second.getCashFlows(), actualCashFlowsMap, currentLink.getId());
 
-        // Duplication check
         service.saveBatch(wrappers);
         assertEquals(2, countPaymentEntity(jdbcTemplate, "cash_flow_link", invoiceId, paymentId, false));
         assertEquals(1, countPaymentEntity(jdbcTemplate, "cash_flow_link", invoiceId, paymentId, true));

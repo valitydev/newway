@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.beans.Transient;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +29,6 @@ public class InvoiceStatusInfoDaoImpl extends AbstractGenericDao implements Invo
         this.rowMapper = new RecordRowMapper<>(INVOICE_STATUS_INFO, InvoiceStatusInfo.class);
     }
 
-    @Transient
     @Override
     public void saveBatch(List<InvoiceStatusInfo> statuses) throws DaoException {
         batchExecute(statuses.stream()
