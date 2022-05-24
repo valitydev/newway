@@ -4,6 +4,7 @@ import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.PaymentDao;
 import dev.vality.newway.domain.tables.pojos.Payment;
+import dev.vality.newway.domain.tables.records.PaymentRecord;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
 import org.jooq.Query;
@@ -34,11 +35,7 @@ public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
     public void saveBatch(List<Payment> payments) throws DaoException {
         List<Query> queries = payments.stream()
                 .map(payment -> getDslContext().newRecord(PAYMENT, payment))
-                .map(paymentRecord -> getDslContext().insertInto(PAYMENT)
-                        .set(paymentRecord)
-                        .onConflict(PAYMENT.INVOICE_ID, PAYMENT.PAYMENT_ID, PAYMENT.SEQUENCE_ID, PAYMENT.CHANGE_ID)
-                        .doNothing()
-                )
+                .map(this::prepareInsertQuery)
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
@@ -52,6 +49,18 @@ public class PaymentDaoImpl extends AbstractGenericDao implements PaymentDao {
         return Optional.ofNullable(fetchOne(query, paymentRowMapper))
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Payment not found, invoiceId='%s', paymentId='%s'", invoiceId, paymentId)));
+    }
+
+    private Query prepareInsertQuery(PaymentRecord paymentRecord) {
+        return getDslContext().insertInto(PAYMENT)
+                .set(paymentRecord)
+                .onConflict(
+                        PAYMENT.INVOICE_ID,
+                        PAYMENT.PAYMENT_ID,
+                        PAYMENT.SEQUENCE_ID,
+                        PAYMENT.CHANGE_ID
+                )
+                .doNothing();
     }
 
 }

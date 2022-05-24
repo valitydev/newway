@@ -4,6 +4,7 @@ import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.InvoiceStatusInfoDao;
 import dev.vality.newway.domain.tables.pojos.InvoiceStatusInfo;
+import dev.vality.newway.domain.tables.records.InvoiceStatusInfoRecord;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
 import org.jooq.Query;
@@ -33,14 +34,7 @@ public class InvoiceStatusInfoDaoImpl extends AbstractGenericDao implements Invo
     public void saveBatch(List<InvoiceStatusInfo> statuses) throws DaoException {
         batchExecute(statuses.stream()
                 .map(status -> getDslContext().newRecord(INVOICE_STATUS_INFO, status))
-                .map(invoiceStatusInfoRecord -> getDslContext().insertInto(INVOICE_STATUS_INFO)
-                        .set(invoiceStatusInfoRecord)
-                        .onConflict(
-                                INVOICE_STATUS_INFO.INVOICE_ID,
-                                INVOICE_STATUS_INFO.SEQUENCE_ID,
-                                INVOICE_STATUS_INFO.CHANGE_ID)
-                        .doNothing()
-                )
+                .map(this::prepareInsertQuery)
                 .collect(Collectors.toList())
         );
     }
@@ -54,24 +48,40 @@ public class InvoiceStatusInfoDaoImpl extends AbstractGenericDao implements Invo
                 new NotFoundException(String.format("InvoiceStatusInfo not found, invoiceId='%s'", invoiceId)));
     }
 
-
     @Override
     public void switchCurrent(Set<String> invoiceIds) throws DaoException {
         invoiceIds.forEach(invoiceId -> {
-                    execute(getDslContext().update(INVOICE_STATUS_INFO)
-                            .set(INVOICE_STATUS_INFO.CURRENT, false)
-                            .where(INVOICE_STATUS_INFO.INVOICE_ID.eq(invoiceId)
-                                    .and(INVOICE_STATUS_INFO.CURRENT))
-                    );
-                    execute(getDslContext().update(INVOICE_STATUS_INFO)
-                            .set(INVOICE_STATUS_INFO.CURRENT, true)
-                            .where(INVOICE_STATUS_INFO.ID.eq(
-                                    DSL.select(DSL.max(INVOICE_STATUS_INFO.ID))
-                                            .from(INVOICE_STATUS_INFO)
-                                            .where(INVOICE_STATUS_INFO.INVOICE_ID.eq(invoiceId))
-                            ))
-                    );
-                }
+            setOldStatusInfoNotCurrent(invoiceId);
+            setLatestStatusInfoCurrent(invoiceId);
+        });
+    }
+
+    private Query prepareInsertQuery(InvoiceStatusInfoRecord invoiceStatusInfoRecord) {
+        return getDslContext().insertInto(INVOICE_STATUS_INFO)
+                .set(invoiceStatusInfoRecord)
+                .onConflict(
+                        INVOICE_STATUS_INFO.INVOICE_ID,
+                        INVOICE_STATUS_INFO.SEQUENCE_ID,
+                        INVOICE_STATUS_INFO.CHANGE_ID)
+                .doNothing();
+    }
+
+    private void setOldStatusInfoNotCurrent(String invoiceId) {
+        execute(getDslContext().update(INVOICE_STATUS_INFO)
+                .set(INVOICE_STATUS_INFO.CURRENT, false)
+                .where(INVOICE_STATUS_INFO.INVOICE_ID.eq(invoiceId)
+                        .and(INVOICE_STATUS_INFO.CURRENT))
+        );
+    }
+
+    private void setLatestStatusInfoCurrent(String invoiceId) {
+        execute(getDslContext().update(INVOICE_STATUS_INFO)
+                .set(INVOICE_STATUS_INFO.CURRENT, true)
+                .where(INVOICE_STATUS_INFO.ID.eq(
+                        DSL.select(DSL.max(INVOICE_STATUS_INFO.ID))
+                                .from(INVOICE_STATUS_INFO)
+                                .where(INVOICE_STATUS_INFO.INVOICE_ID.eq(invoiceId))
+                ))
         );
     }
 }

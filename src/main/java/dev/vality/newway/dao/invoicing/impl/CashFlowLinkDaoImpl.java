@@ -6,7 +6,7 @@ import dev.vality.newway.dao.invoicing.iface.CashFlowLinkDao;
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
-import dev.vality.newway.model.InvoicePaymentEventId;
+import dev.vality.newway.model.InvoicePaymentEventIdHolder;
 import dev.vality.newway.model.InvoicingKey;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
@@ -25,13 +25,13 @@ import static dev.vality.newway.domain.Tables.CASH_FLOW_LINK;
 public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowLinkDao {
 
     private final RowMapper<CashFlowLink> rowMapper;
-    private final RowMapper<InvoicePaymentEventId> invoicePaymentEventIdRowMapper;
+    private final RowMapper<InvoicePaymentEventIdHolder> invoicePaymentEventIdRowMapper;
 
 
     public CashFlowLinkDaoImpl(DataSource dataSource) {
         super(dataSource);
         rowMapper = new RecordRowMapper<>(CASH_FLOW_LINK, CashFlowLink.class);
-        invoicePaymentEventIdRowMapper = new DataClassRowMapper<>(InvoicePaymentEventId.class);
+        invoicePaymentEventIdRowMapper = new DataClassRowMapper<>(InvoicePaymentEventIdHolder.class);
     }
 
     @Override
@@ -58,27 +58,13 @@ public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowL
     @Override
     public void switchCurrent(Set<InvoicingKey> keys) throws DaoException {
         keys.forEach(key -> {
-                    execute(getDslContext().update(CASH_FLOW_LINK)
-                            .set(CASH_FLOW_LINK.CURRENT, false)
-                            .where(CASH_FLOW_LINK.INVOICE_ID.eq(key.getInvoiceId())
-                                    .and(CASH_FLOW_LINK.PAYMENT_ID.eq(key.getPaymentId()))
-                                    .and(CASH_FLOW_LINK.CURRENT))
-                    );
-                    execute(getDslContext().update(CASH_FLOW_LINK)
-                            .set(CASH_FLOW_LINK.CURRENT, true)
-                            .where(CASH_FLOW_LINK.ID.eq(
-                                    DSL.select(DSL.max(CASH_FLOW_LINK.ID))
-                                            .from(CASH_FLOW_LINK)
-                                            .where(CASH_FLOW_LINK.INVOICE_ID.eq(key.getInvoiceId())
-                                                    .and(CASH_FLOW_LINK.PAYMENT_ID.eq(key.getPaymentId())))
-                            ))
-                    );
-                }
-        );
+            setOldCashFlowLinkNotCurrent(key);
+            setLatestCashFlowLinkCurrent(key);
+        });
     }
 
     @Override
-    public Set<InvoicePaymentEventId> getExistingEvents(List<CashFlowLink> links) {
+    public Set<InvoicePaymentEventIdHolder> getExistingEvents(List<CashFlowLink> links) {
         Set<String> invoiceIds = new HashSet<>();
         Set<String> paymentIds = new HashSet<>();
         Set<LocalDateTime> eventsCreatedAt = new HashSet<>();
@@ -106,5 +92,26 @@ public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowL
                 .and(CASH_FLOW_LINK.SEQUENCE_ID.in(sequenceIds));
 
         return new HashSet<>(fetch(query, invoicePaymentEventIdRowMapper));
+    }
+
+    private void setOldCashFlowLinkNotCurrent(InvoicingKey key) {
+        execute(getDslContext().update(CASH_FLOW_LINK)
+                .set(CASH_FLOW_LINK.CURRENT, false)
+                .where(CASH_FLOW_LINK.INVOICE_ID.eq(key.getInvoiceId())
+                        .and(CASH_FLOW_LINK.PAYMENT_ID.eq(key.getPaymentId()))
+                        .and(CASH_FLOW_LINK.CURRENT))
+        );
+    }
+
+    private void setLatestCashFlowLinkCurrent(InvoicingKey key) {
+        execute(getDslContext().update(CASH_FLOW_LINK)
+                .set(CASH_FLOW_LINK.CURRENT, true)
+                .where(CASH_FLOW_LINK.ID.eq(
+                        DSL.select(DSL.max(CASH_FLOW_LINK.ID))
+                                .from(CASH_FLOW_LINK)
+                                .where(CASH_FLOW_LINK.INVOICE_ID.eq(key.getInvoiceId())
+                                        .and(CASH_FLOW_LINK.PAYMENT_ID.eq(key.getPaymentId())))
+                ))
+        );
     }
 }

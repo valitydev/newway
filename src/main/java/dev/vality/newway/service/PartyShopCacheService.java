@@ -3,6 +3,7 @@ package dev.vality.newway.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import dev.vality.newway.dao.invoicing.iface.InvoiceDao;
 import dev.vality.newway.domain.tables.pojos.Invoice;
+import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.newway.model.PartyShop;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,17 @@ public class PartyShopCacheService {
     private final InvoiceDao invoiceDao;
     private final Cache<String, PartyShop> partyShopDataCache;
 
-    public void put(String invoiceId, PartyShop partyShop) {
-        partyShopDataCache.put(invoiceId, partyShop);
+    public void put(InvoiceWrapper invoiceWrapper) {
+        if (invoiceWrapper.getInvoice() == null) {
+            return;
+        }
+        partyShopDataCache.put(
+                invoiceWrapper.getInvoice().getInvoiceId(),
+                new PartyShop(
+                        invoiceWrapper.getInvoice().getPartyId(),
+                        invoiceWrapper.getInvoice().getShopId()
+                )
+        );
     }
 
     public PartyShop get(String invoiceId) {

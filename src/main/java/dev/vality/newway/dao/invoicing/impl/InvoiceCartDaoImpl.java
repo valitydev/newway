@@ -60,9 +60,9 @@ public class InvoiceCartDaoImpl extends AbstractGenericDao implements InvoiceCar
         Query query = getDslContext()
                 .select(INVOICE_CART.INVOICE_ID)
                 .from(INVOICE_CART)
+                .where(INVOICE_CART.INVOICE_ID.in(invoiceIds))
                 .groupBy(INVOICE_CART.INVOICE_ID)
-                .having(INVOICE_CART.INVOICE_ID.in(invoiceIds))
-                .and(DSL.count(INVOICE_CART.ID).greaterThan(0));
+                .having(DSL.count(INVOICE_CART.ID).greaterThan(0));
 
         return new HashSet<>(fetch(query, new SingleColumnRowMapper<>(String.class)));
     }

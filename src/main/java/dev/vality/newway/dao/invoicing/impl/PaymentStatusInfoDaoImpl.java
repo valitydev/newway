@@ -4,6 +4,7 @@ import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.PaymentStatusInfoDao;
 import dev.vality.newway.domain.tables.pojos.PaymentStatusInfo;
+import dev.vality.newway.domain.tables.records.PaymentStatusInfoRecord;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
 import dev.vality.newway.model.InvoicingKey;
@@ -36,16 +37,7 @@ public class PaymentStatusInfoDaoImpl extends AbstractGenericDao implements Paym
     public void saveBatch(List<PaymentStatusInfo> paymentStatusInfos) throws DaoException {
         List<Query> queries = paymentStatusInfos.stream()
                 .map(statusInfo -> getDslContext().newRecord(PAYMENT_STATUS_INFO, statusInfo))
-                .map(record -> getDslContext().insertInto(PAYMENT_STATUS_INFO)
-                        .set(record)
-                        .onConflict(
-                                PAYMENT_STATUS_INFO.INVOICE_ID,
-                                PAYMENT_STATUS_INFO.PAYMENT_ID,
-                                PAYMENT_STATUS_INFO.SEQUENCE_ID,
-                                PAYMENT_STATUS_INFO.CHANGE_ID
-                        )
-                        .doNothing()
-                )
+                .map(this::prepareInsertQuery)
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
@@ -63,21 +55,41 @@ public class PaymentStatusInfoDaoImpl extends AbstractGenericDao implements Paym
     @Override
     public void switchCurrent(Set<InvoicingKey> invoicesSwitchIds) throws DaoException {
         invoicesSwitchIds.forEach(key -> {
-            execute(getDslContext().update(PAYMENT_STATUS_INFO)
-                    .set(PAYMENT_STATUS_INFO.CURRENT, false)
-                    .where(PAYMENT_STATUS_INFO.INVOICE_ID.eq(key.getInvoiceId())
-                            .and(PAYMENT_STATUS_INFO.PAYMENT_ID.eq(key.getPaymentId()))
-                            .and(PAYMENT_STATUS_INFO.CURRENT))
-            );
-            execute(getDslContext().update(PAYMENT_STATUS_INFO)
-                    .set(PAYMENT_STATUS_INFO.CURRENT, true)
-                    .where(PAYMENT_STATUS_INFO.ID.eq(
-                            DSL.select(DSL.max(PAYMENT_STATUS_INFO.ID))
-                                    .from(PAYMENT_STATUS_INFO)
-                                    .where(PAYMENT_STATUS_INFO.INVOICE_ID.eq(key.getInvoiceId())
-                                            .and(PAYMENT_STATUS_INFO.PAYMENT_ID.eq(key.getPaymentId())))
-                    ))
-            );
+            setOldStatusInfoNotCurrent(key);
+            setLatestStatusInfoCurrent(key);
         });
+    }
+
+    private Query prepareInsertQuery(PaymentStatusInfoRecord record) {
+        return getDslContext().insertInto(PAYMENT_STATUS_INFO)
+                .set(record)
+                .onConflict(
+                        PAYMENT_STATUS_INFO.INVOICE_ID,
+                        PAYMENT_STATUS_INFO.PAYMENT_ID,
+                        PAYMENT_STATUS_INFO.SEQUENCE_ID,
+                        PAYMENT_STATUS_INFO.CHANGE_ID
+                )
+                .doNothing();
+    }
+
+    private void setOldStatusInfoNotCurrent(InvoicingKey key) {
+        execute(getDslContext().update(PAYMENT_STATUS_INFO)
+                .set(PAYMENT_STATUS_INFO.CURRENT, false)
+                .where(PAYMENT_STATUS_INFO.INVOICE_ID.eq(key.getInvoiceId())
+                        .and(PAYMENT_STATUS_INFO.PAYMENT_ID.eq(key.getPaymentId()))
+                        .and(PAYMENT_STATUS_INFO.CURRENT))
+        );
+    }
+
+    private void setLatestStatusInfoCurrent(InvoicingKey key) {
+        execute(getDslContext().update(PAYMENT_STATUS_INFO)
+                .set(PAYMENT_STATUS_INFO.CURRENT, true)
+                .where(PAYMENT_STATUS_INFO.ID.eq(
+                        DSL.select(DSL.max(PAYMENT_STATUS_INFO.ID))
+                                .from(PAYMENT_STATUS_INFO)
+                                .where(PAYMENT_STATUS_INFO.INVOICE_ID.eq(key.getInvoiceId())
+                                        .and(PAYMENT_STATUS_INFO.PAYMENT_ID.eq(key.getPaymentId())))
+                ))
+        );
     }
 }

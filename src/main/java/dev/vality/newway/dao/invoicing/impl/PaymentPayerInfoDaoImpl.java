@@ -4,6 +4,7 @@ import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.PaymentPayerInfoDao;
 import dev.vality.newway.domain.tables.pojos.PaymentPayerInfo;
+import dev.vality.newway.domain.tables.records.PaymentPayerInfoRecord;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
 import org.jooq.Query;
@@ -31,16 +32,7 @@ public class PaymentPayerInfoDaoImpl extends AbstractGenericDao implements Payme
     public void saveBatch(List<PaymentPayerInfo> payerInfos) throws DaoException {
         List<Query> queries = payerInfos.stream()
                 .map(statusInfo -> getDslContext().newRecord(PAYMENT_PAYER_INFO, statusInfo))
-                .map(record -> getDslContext().insertInto(PAYMENT_PAYER_INFO)
-                        .set(record)
-                        .onConflict(
-                                PAYMENT_PAYER_INFO.INVOICE_ID,
-                                PAYMENT_PAYER_INFO.PAYMENT_ID,
-                                PAYMENT_PAYER_INFO.SEQUENCE_ID,
-                                PAYMENT_PAYER_INFO.CHANGE_ID
-                        )
-                        .doNothing()
-                )
+                .map(this::prepareInsertQuery)
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
@@ -52,5 +44,17 @@ public class PaymentPayerInfoDaoImpl extends AbstractGenericDao implements Payme
                         .and(PAYMENT_PAYER_INFO.PAYMENT_ID.eq(paymentId)));
         return Optional.ofNullable(fetchOne(query, rowMapper)).orElseThrow(() ->
                 new NotFoundException("PaymentPayerInfo not found, invoiceId=" + invoiceId + " paymentId=" + paymentId));
+    }
+
+    private Query prepareInsertQuery(PaymentPayerInfoRecord record) {
+        return getDslContext().insertInto(PAYMENT_PAYER_INFO)
+                .set(record)
+                .onConflict(
+                        PAYMENT_PAYER_INFO.INVOICE_ID,
+                        PAYMENT_PAYER_INFO.PAYMENT_ID,
+                        PAYMENT_PAYER_INFO.SEQUENCE_ID,
+                        PAYMENT_PAYER_INFO.CHANGE_ID
+                )
+                .doNothing();
     }
 }

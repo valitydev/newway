@@ -4,6 +4,7 @@ import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.PaymentFeeDao;
 import dev.vality.newway.domain.tables.pojos.PaymentFee;
+import dev.vality.newway.domain.tables.records.PaymentFeeRecord;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
 import dev.vality.newway.model.InvoicingKey;
@@ -34,16 +35,7 @@ public class PaymentFeeDaoImpl extends AbstractGenericDao implements PaymentFeeD
     public void saveBatch(List<PaymentFee> paymentFees) throws DaoException {
         List<Query> queries = paymentFees.stream()
                 .map(statusInfo -> getDslContext().newRecord(PAYMENT_FEE, statusInfo))
-                .map(record -> getDslContext().insertInto(PAYMENT_FEE)
-                        .set(record)
-                        .onConflict(
-                                PAYMENT_FEE.INVOICE_ID,
-                                PAYMENT_FEE.PAYMENT_ID,
-                                PAYMENT_FEE.SEQUENCE_ID,
-                                PAYMENT_FEE.CHANGE_ID
-                        )
-                        .doNothing()
-                )
+                .map(this::prepareInsertQuery)
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
@@ -62,21 +54,41 @@ public class PaymentFeeDaoImpl extends AbstractGenericDao implements PaymentFeeD
     @Override
     public void switchCurrent(Set<InvoicingKey> invoicingKeys) throws DaoException {
         invoicingKeys.forEach(key -> {
-            execute(getDslContext().update(PAYMENT_FEE)
-                    .set(PAYMENT_FEE.CURRENT, false)
-                    .where(PAYMENT_FEE.INVOICE_ID.eq(key.getInvoiceId())
-                            .and(PAYMENT_FEE.PAYMENT_ID.eq(key.getPaymentId()))
-                            .and(PAYMENT_FEE.CURRENT))
-            );
-            execute(getDslContext().update(PAYMENT_FEE)
-                    .set(PAYMENT_FEE.CURRENT, true)
-                    .where(PAYMENT_FEE.ID.eq(
-                            DSL.select(DSL.max(PAYMENT_FEE.ID))
-                                    .from(PAYMENT_FEE)
-                                    .where(PAYMENT_FEE.INVOICE_ID.eq(key.getInvoiceId())
-                                            .and(PAYMENT_FEE.PAYMENT_ID.eq(key.getPaymentId())))
-                    ))
-            );
+            setOldPaymentFeeNotCurrent(key);
+            setLatestPaymentFeeCurrent(key);
         });
+    }
+
+    private Query prepareInsertQuery(PaymentFeeRecord record) {
+        return getDslContext().insertInto(PAYMENT_FEE)
+                .set(record)
+                .onConflict(
+                        PAYMENT_FEE.INVOICE_ID,
+                        PAYMENT_FEE.PAYMENT_ID,
+                        PAYMENT_FEE.SEQUENCE_ID,
+                        PAYMENT_FEE.CHANGE_ID
+                )
+                .doNothing();
+    }
+
+    private void setOldPaymentFeeNotCurrent(InvoicingKey key) {
+        execute(getDslContext().update(PAYMENT_FEE)
+                .set(PAYMENT_FEE.CURRENT, false)
+                .where(PAYMENT_FEE.INVOICE_ID.eq(key.getInvoiceId())
+                        .and(PAYMENT_FEE.PAYMENT_ID.eq(key.getPaymentId()))
+                        .and(PAYMENT_FEE.CURRENT))
+        );
+    }
+
+    private void setLatestPaymentFeeCurrent(InvoicingKey key) {
+        execute(getDslContext().update(PAYMENT_FEE)
+                .set(PAYMENT_FEE.CURRENT, true)
+                .where(PAYMENT_FEE.ID.eq(
+                        DSL.select(DSL.max(PAYMENT_FEE.ID))
+                                .from(PAYMENT_FEE)
+                                .where(PAYMENT_FEE.INVOICE_ID.eq(key.getInvoiceId())
+                                        .and(PAYMENT_FEE.PAYMENT_ID.eq(key.getPaymentId())))
+                ))
+        );
     }
 }

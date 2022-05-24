@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class InvoicePaymentEventId {
+public class InvoicePaymentEventIdHolder {
     private final String invoiceId;
     private final String paymentId;
     private final LocalDateTime eventCreatedAt;

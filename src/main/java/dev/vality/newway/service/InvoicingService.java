@@ -6,7 +6,6 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoiceWrapper;
-import dev.vality.newway.model.PartyShop;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,35 +44,22 @@ public class InvoicingService {
         }
     }
 
-    private void processMachineEvents(List<InvoiceWrapper> invoices, List<PaymentWrapper> payments, MachineEvent me) {
-        EventPayload payload = parser.parse(me);
+    private void processMachineEvents(List<InvoiceWrapper> invoices,
+                                      List<PaymentWrapper> payments,
+                                      MachineEvent machineEvent) {
+        EventPayload payload = parser.parse(machineEvent);
         if (payload.isSetInvoiceChanges()) {
             try {
                 List<InvoiceChange> invoiceChanges = payload.getInvoiceChanges();
                 for (int changeId = 0; changeId < invoiceChanges.size(); changeId++) {
                     InvoiceChange change = invoiceChanges.get(changeId);
-                    InvoiceWrapper invoiceWrapper = mapInvoice(change, me, changeId);
-                    if (invoiceWrapper != null) {
-                        invoices.add(invoiceWrapper);
-                        if (invoiceWrapper.getInvoice() != null) {
-                            partyShopCacheService.put(
-                                    invoiceWrapper.getInvoice().getInvoiceId(),
-                                    new PartyShop(
-                                            invoiceWrapper.getInvoice().getPartyId(),
-                                            invoiceWrapper.getInvoice().getShopId()
-                                    )
-                            );
-                        }
-                    }
-                    PaymentWrapper paymentWrapper = mapPayment(change, me, changeId);
-                    if (paymentWrapper != null) {
-                        payments.add(paymentWrapper);
-                    }
-                    handleOtherEvent(change, me, changeId);
+                    handleInvoiceEvent(invoices, change, machineEvent, changeId);
+                    handlePaymentEvent(payments, change, machineEvent, changeId);
+                    handleOtherEvent(change, machineEvent, changeId);
                 }
             } catch (Throwable e) {
-                log.error("Unexpected error while handling events; machineId: {},  eventId: {}", me.getSourceId(),
-                        me.getEventId(), e);
+                log.error("Unexpected error while handling events; machineId: {},  eventId: {}",
+                        machineEvent.getSourceId(), machineEvent.getEventId(), e);
                 throw e;
             }
         }
@@ -85,19 +72,31 @@ public class InvoicingService {
                 .ifPresent(m -> m.handle(change, me, changeId));
     }
 
-    private PaymentWrapper mapPayment(InvoiceChange change, MachineEvent me, int changeId) {
-        return paymentMappers.stream()
-                .filter(m -> m.accept(change))
-                .findFirst()
-                .map(m -> m.map(change, me, changeId))
-                .orElse(null);
+    private void handlePaymentEvent(List<PaymentWrapper> payments,
+                                    InvoiceChange change,
+                                    MachineEvent machineEvent,
+                                    int changeId) {
+        mapEntity(paymentMappers, change, machineEvent, changeId).ifPresent(payments::add);
     }
 
-    private InvoiceWrapper mapInvoice(InvoiceChange change, MachineEvent me, int changeId) {
-        return invoiceMappers.stream()
+    private void handleInvoiceEvent(List<InvoiceWrapper> invoices,
+                                    InvoiceChange change,
+                                    MachineEvent machineEvent,
+                                    int changeId) {
+        mapEntity(invoiceMappers, change, machineEvent, changeId)
+                .ifPresent(wrapper -> {
+                    invoices.add(wrapper);
+                    partyShopCacheService.put(wrapper);
+                });
+    }
+
+    private <T> Optional<T> mapEntity(List<Mapper<T>> mappers,
+                                      InvoiceChange change,
+                                      MachineEvent machineEvent,
+                                      int changeId) {
+        return mappers.stream()
                 .filter(m -> m.accept(change))
                 .findFirst()
-                .map(m -> m.map(change, me, changeId))
-                .orElse(null);
+                .map(m -> m.map(change, machineEvent, changeId));
     }
 }
