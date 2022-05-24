@@ -1,24 +1,26 @@
-package dev.vality.newway.service;
+package dev.vality.newway.handler.wrapper.payment;
 
 import dev.vality.newway.dao.invoicing.iface.CashFlowDao;
 import dev.vality.newway.dao.invoicing.iface.CashFlowLinkDao;
 import dev.vality.newway.dao.invoicing.impl.CashFlowLinkIdsGeneratorDaoImpl;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
+import dev.vality.newway.handler.wrapper.WrapperHandler;
 import dev.vality.newway.model.CashFlowWrapper;
 import dev.vality.newway.model.InvoicePaymentEventIdHolder;
 import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.factory.invoice.payment.InvoicePaymentEventIdHolderFactory;
+import dev.vality.newway.model.PaymentWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Service
-public class CashFlowWrapperService {
+@Component
+public class CashFlowWrapperHandler implements WrapperHandler<PaymentWrapper> {
 
     private final CashFlowLinkDao cashFlowLinkDao;
 
@@ -26,13 +28,22 @@ public class CashFlowWrapperService {
 
     private final CashFlowLinkIdsGeneratorDaoImpl idsGenerator;
 
-    public void saveBatch(List<CashFlowWrapper> cashFlowWrappers) {
-        if (CollectionUtils.isEmpty(cashFlowWrappers)) {
-            return;
-        }
+    @Override
+    public boolean accept(List<PaymentWrapper> wrappers) {
+        return wrappers.stream()
+                .map(PaymentWrapper::getCashFlowWrapper)
+                .anyMatch(Objects::nonNull);
+    }
+
+    @Override
+    public void saveBatch(List<PaymentWrapper> wrappers) {
+        List<CashFlowWrapper> cashFlowWrappers = wrappers.stream()
+                .map(PaymentWrapper::getCashFlowWrapper)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         removeAlreadyProcessedWrappers(cashFlowWrappers);
-        if (CollectionUtils.isEmpty(cashFlowWrappers)) {
+        if (CollectionUtils.isEmpty(wrappers)) {
             return;
         }
         setLinkIds(cashFlowWrappers);

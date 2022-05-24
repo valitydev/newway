@@ -6,7 +6,9 @@ import dev.vality.newway.dao.invoicing.iface.CashFlowLinkDao;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.CashFlowLink;
+import dev.vality.newway.handler.wrapper.payment.CashFlowWrapperHandler;
 import dev.vality.newway.model.CashFlowWrapper;
+import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.utils.MockUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +25,10 @@ import static dev.vality.newway.utils.JdbcUtil.countPaymentEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
 @PostgresqlSpringBootITest
-public class CashFlowWrapperServiceTest {
+public class CashFlowWrapperHandlerTest {
 
     @Autowired
-    private CashFlowWrapperService service;
+    private CashFlowWrapperHandler service;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -49,8 +51,7 @@ public class CashFlowWrapperServiceTest {
     @Test
     void saveTest() {
         CashFlowWrapper first = MockUtils.buildCashFlowWrapper(invoiceId, paymentId, 1L, 1);
-        List<CashFlowWrapper> wrappers = new ArrayList<>();
-        wrappers.add(first);
+        List<PaymentWrapper> wrappers = createPaymentWrappers(first);
 
         service.saveBatch(wrappers);
         CashFlowLink cashFlowLink = cashFlowLinkDao.get(invoiceId, paymentId);
@@ -64,11 +65,9 @@ public class CashFlowWrapperServiceTest {
 
     @Test
     public void duplicationTest() {
-        List<CashFlowWrapper> wrappers = new ArrayList<>();
         CashFlowWrapper first = MockUtils.buildCashFlowWrapper(invoiceId, paymentId, 1L, 1);
         CashFlowWrapper second = MockUtils.buildCashFlowWrapper(invoiceId, paymentId, 2L, 1);
-        wrappers.add(first);
-        wrappers.add(second);
+        List<PaymentWrapper> wrappers = createPaymentWrappers(first, second);
 
         service.saveBatch(wrappers);
         CashFlowLink currentLink = cashFlowLinkDao.get(invoiceId, paymentId);
@@ -115,6 +114,16 @@ public class CashFlowWrapperServiceTest {
             assertEquals(expected.getCurrencyCode(), actual.getCurrencyCode());
             assertEquals(expected.getDetails(), actual.getDetails());
         });
+    }
+
+    private List<PaymentWrapper> createPaymentWrappers(CashFlowWrapper... wrappers) {
+        List<PaymentWrapper> paymentWrappers = new ArrayList<>();
+        for (CashFlowWrapper cashFlowWrapper : wrappers) {
+            var paymentWrapper = new PaymentWrapper();
+            paymentWrapper.setCashFlowWrapper(cashFlowWrapper);
+            paymentWrappers.add(paymentWrapper);
+        }
+        return paymentWrappers;
     }
 
 
