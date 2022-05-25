@@ -12,7 +12,6 @@ public class InvoicePaymentEventIdHolderFactory {
         return new InvoicePaymentEventIdHolder(
                 link.getInvoiceId(),
                 link.getPaymentId(),
-                link.getEventCreatedAt(),
                 link.getSequenceId(),
                 link.getChangeId()
         );

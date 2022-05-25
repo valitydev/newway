@@ -8,6 +8,7 @@ import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
 import dev.vality.newway.model.InvoicePaymentEventIdHolder;
 import dev.vality.newway.model.InvoicingKey;
+import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
 import org.springframework.jdbc.core.DataClassRowMapper;
@@ -15,7 +16,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +27,12 @@ public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowL
     private final RowMapper<CashFlowLink> rowMapper;
     private final RowMapper<InvoicePaymentEventIdHolder> invoicePaymentEventIdRowMapper;
 
+    private static final Field[] INVOICE_PAYMENT_EVENT_ID_HOLDER_FIELDS = new Field[]{
+            CASH_FLOW_LINK.INVOICE_ID,
+            CASH_FLOW_LINK.PAYMENT_ID,
+            CASH_FLOW_LINK.CHANGE_ID,
+            CASH_FLOW_LINK.SEQUENCE_ID
+    };
 
     public CashFlowLinkDaoImpl(DataSource dataSource) {
         super(dataSource);
@@ -67,29 +73,30 @@ public class CashFlowLinkDaoImpl extends AbstractGenericDao implements CashFlowL
     public Set<InvoicePaymentEventIdHolder> getExistingEvents(List<CashFlowLink> links) {
         Set<String> invoiceIds = new HashSet<>();
         Set<String> paymentIds = new HashSet<>();
-        Set<LocalDateTime> eventsCreatedAt = new HashSet<>();
         Set<Integer> changeIds = new HashSet<>();
         Set<Long> sequenceIds = new HashSet<>();
+        Set<String> concatenatedIds = new HashSet<>();
         links.forEach(link -> {
             invoiceIds.add(link.getInvoiceId());
             paymentIds.add(link.getPaymentId());
-            eventsCreatedAt.add(link.getEventCreatedAt());
             changeIds.add(link.getChangeId());
             sequenceIds.add(link.getSequenceId());
+            concatenatedIds.add(link.getInvoiceId() + link.getPaymentId() + link.getChangeId() + link.getSequenceId());
         });
 
+        // we have to use concatenated ids otherwise there is small probability of collision.
+        // some non-processed events might fall under "invoice_id/payment_id/change_id/sequence_id in()" conditiona.
+        // e.g. we will receive several cash_flow_change events within one batch
+        //  and there will be overlap in change ids.
+        // concat() is used as last step so there is minimal operation overhead.
         Query query = getDslContext()
-                .select(CASH_FLOW_LINK.INVOICE_ID,
-                        CASH_FLOW_LINK.PAYMENT_ID,
-                        CASH_FLOW_LINK.EVENT_CREATED_AT,
-                        CASH_FLOW_LINK.CHANGE_ID,
-                        CASH_FLOW_LINK.SEQUENCE_ID)
+                .select(INVOICE_PAYMENT_EVENT_ID_HOLDER_FIELDS)
                 .from(CASH_FLOW_LINK)
                 .where(CASH_FLOW_LINK.INVOICE_ID.in(invoiceIds))
                 .and(CASH_FLOW_LINK.PAYMENT_ID.in(paymentIds))
-                .and(CASH_FLOW_LINK.EVENT_CREATED_AT.in(eventsCreatedAt))
                 .and(CASH_FLOW_LINK.CHANGE_ID.in(changeIds))
-                .and(CASH_FLOW_LINK.SEQUENCE_ID.in(sequenceIds));
+                .and(CASH_FLOW_LINK.SEQUENCE_ID.in(sequenceIds))
+                .and(DSL.concat(INVOICE_PAYMENT_EVENT_ID_HOLDER_FIELDS).in(concatenatedIds));
 
         return new HashSet<>(fetch(query, invoicePaymentEventIdRowMapper));
     }
