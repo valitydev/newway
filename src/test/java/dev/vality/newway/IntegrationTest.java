@@ -395,19 +395,19 @@ public class IntegrationTest {
     }
 
     private void cleanUpTables() {
-        jdbcTemplate.execute("truncate table nw.invoice cascade");
-        jdbcTemplate.execute("truncate table nw.invoice_status_info cascade");
-        jdbcTemplate.execute("truncate table nw.invoice_cart cascade");
-        jdbcTemplate.execute("truncate table nw.payment cascade");
-        jdbcTemplate.execute("truncate table nw.payment_status_info cascade");
-        jdbcTemplate.execute("truncate table nw.payment_payer_info cascade");
-        jdbcTemplate.execute("truncate table nw.payment_additional_info cascade");
-        jdbcTemplate.execute("truncate table nw.payment_recurrent_info cascade");
-        jdbcTemplate.execute("truncate table nw.payment_risk_data cascade");
-        jdbcTemplate.execute("truncate table nw.payment_fee cascade");
-        jdbcTemplate.execute("truncate table nw.payment_route cascade");
-        jdbcTemplate.execute("truncate table nw.cash_flow_link cascade");
-        jdbcTemplate.execute("truncate table nw.cash_flow cascade");
+        jdbcTemplate.execute("truncate table dw.invoice cascade");
+        jdbcTemplate.execute("truncate table dw.invoice_status_info cascade");
+        jdbcTemplate.execute("truncate table dw.invoice_cart cascade");
+        jdbcTemplate.execute("truncate table dw.payment cascade");
+        jdbcTemplate.execute("truncate table dw.payment_status_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_payer_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_additional_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_recurrent_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_risk_data cascade");
+        jdbcTemplate.execute("truncate table dw.payment_fee cascade");
+        jdbcTemplate.execute("truncate table dw.payment_route cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow_link cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow cascade");
     }
 
     private void assertDuplication() {

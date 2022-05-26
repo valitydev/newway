@@ -44,8 +44,8 @@ public class CashFlowWrapperHandlerTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("truncate table nw.cash_flow_link cascade");
-        jdbcTemplate.execute("truncate table nw.cash_flow cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow_link cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow cascade");
     }
 
     @Test

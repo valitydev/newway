@@ -16,7 +16,7 @@ spring:
       data-source-properties:
         reWriteBatchedInserts: true
   flyway:
-    schemas: nw
+    schemas: dw
 
 management:
   server:
@@ -43,7 +43,7 @@ management:
 
 kafka:
   bootstrap-servers: localhost:9092
-  client-id: newway
+  client-id: daway
   ssl:
     enabled: false
     trust-store-location: "test"
@@ -54,7 +54,7 @@ kafka:
     key-store-type: PKCS12
     trust-store-type: PKCS12
   consumer:
-    group-id: "NewwayListener"
+    group-id: "DawayListener"
     enable-auto-commit: false
     auto-offset-reset: earliest
     max-poll-records: 20
@@ -82,7 +82,7 @@ kafka:
     party-management:
       id: mg-events-party
       enabled: false
-      consumer.group-id: "NewwayListenerPartyManagement"
+      consumer.group-id: "DawayListenerPartyManagement"
     rate:
       id: mg-events-rates
       enabled: false

@@ -24,7 +24,7 @@ public class DestinationCreatedCryptoWalletHandlerTest {
     private JdbcTemplate jdbcTemplate;
 
     Destination destination = dev.vality.testcontainers.annotations.util.RandomBeans.random(Destination.class);
-    String sqlStatement = "select * from nw.destination LIMIT 1;";
+    String sqlStatement = "select * from dw.destination LIMIT 1;";
 
     @BeforeEach
     public void setUp() {

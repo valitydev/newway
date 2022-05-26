@@ -11,7 +11,7 @@ public class JdbcUtil {
 
     public static int countEntities(JdbcTemplate jdbcTemplate,
                                     String table) {
-        String query = "SELECT count(*) FROM nw." + table;
+        String query = "SELECT count(*) FROM dw." + table;
         return Objects.requireNonNull(
                 jdbcTemplate.queryForObject(query, Integer.class));
     }
@@ -21,7 +21,7 @@ public class JdbcUtil {
                                    String invoiceId,
                                    String paymentId,
                                    boolean withCurrent) {
-        String query = "SELECT count(*) FROM nw." + table + "  WHERE invoice_id = ? AND payment_id = ?";
+        String query = "SELECT count(*) FROM dw." + table + "  WHERE invoice_id = ? AND payment_id = ?";
         if (withCurrent) {
             query += " AND current";
         }
@@ -33,7 +33,7 @@ public class JdbcUtil {
                                    String table,
                                    String invoiceId,
                                    boolean withCurrent) {
-        String query = "SELECT count(*) FROM nw." + table + "  WHERE invoice_id = ?";
+        String query = "SELECT count(*) FROM dw." + table + "  WHERE invoice_id = ?";
         if (withCurrent) {
             query += " AND current";
         }

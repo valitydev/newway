@@ -116,18 +116,18 @@ public class DaoTests {
 
     @Test
     public void dominantDaoTest() {
-        jdbcTemplate.execute("truncate table nw.calendar cascade");
-        jdbcTemplate.execute("truncate table nw.category cascade");
-        jdbcTemplate.execute("truncate table nw.currency cascade");
-        jdbcTemplate.execute("truncate table nw.inspector cascade");
-        jdbcTemplate.execute("truncate table nw.payment_institution cascade");
-        jdbcTemplate.execute("truncate table nw.payment_method cascade");
-        jdbcTemplate.execute("truncate table nw.payout_method cascade");
-        jdbcTemplate.execute("truncate table nw.provider cascade");
-        jdbcTemplate.execute("truncate table nw.withdrawal_provider cascade");
-        jdbcTemplate.execute("truncate table nw.proxy cascade");
-        jdbcTemplate.execute("truncate table nw.terminal cascade");
-        jdbcTemplate.execute("truncate table nw.term_set_hierarchy cascade");
+        jdbcTemplate.execute("truncate table dw.calendar cascade");
+        jdbcTemplate.execute("truncate table dw.category cascade");
+        jdbcTemplate.execute("truncate table dw.currency cascade");
+        jdbcTemplate.execute("truncate table dw.inspector cascade");
+        jdbcTemplate.execute("truncate table dw.payment_institution cascade");
+        jdbcTemplate.execute("truncate table dw.payment_method cascade");
+        jdbcTemplate.execute("truncate table dw.payout_method cascade");
+        jdbcTemplate.execute("truncate table dw.provider cascade");
+        jdbcTemplate.execute("truncate table dw.withdrawal_provider cascade");
+        jdbcTemplate.execute("truncate table dw.proxy cascade");
+        jdbcTemplate.execute("truncate table dw.terminal cascade");
+        jdbcTemplate.execute("truncate table dw.term_set_hierarchy cascade");
 
         var calendar = RandomBeans.random(Calendar.class);
         calendar.setCurrent(true);
@@ -210,8 +210,8 @@ public class DaoTests {
 
     @Test
     public void cashFlowDaoTest() {
-        jdbcTemplate.execute("truncate table nw.cash_flow_link cascade");
-        jdbcTemplate.execute("truncate table nw.cash_flow cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow_link cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow cascade");
         Long cashFlowLink = 123L;
         List<CashFlow> cashFlowList = RandomBeans.randomListOf(100, CashFlow.class);
         cashFlowList.forEach(cf -> {
@@ -233,7 +233,7 @@ public class DaoTests {
 
     @Test
     public void cashFlowDaoLinkTest() {
-        jdbcTemplate.execute("truncate table nw.cash_flow_link cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow_link cascade");
         List<CashFlowLink> cashFlowLinks = RandomBeans.randomListOf(2, CashFlowLink.class);
         for (int i = 0; i < cashFlowLinks.size(); i++) {
             cashFlowLinks.get(i).setId(i + 1L);
@@ -260,7 +260,7 @@ public class DaoTests {
 
     @Test
     public void adjustmentDaoTest() {
-        jdbcTemplate.execute("truncate table nw.adjustment cascade");
+        jdbcTemplate.execute("truncate table dw.adjustment cascade");
         Adjustment adjustment = RandomBeans.random(Adjustment.class);
         adjustment.setCurrent(true);
         adjustmentDao.save(adjustment);
@@ -273,7 +273,7 @@ public class DaoTests {
 
     @Test
     void invoiceDaoTest() {
-        jdbcTemplate.execute("truncate table nw.invoice cascade");
+        jdbcTemplate.execute("truncate table dw.invoice cascade");
         List<Invoice> invoices = RandomBeans.randomListOf(3, Invoice.class);
         invoiceDao.saveBatch(invoices);
         assertEquals(invoices.get(0), invoiceDao.get(invoices.get(0).getInvoiceId()));
@@ -284,7 +284,7 @@ public class DaoTests {
 
     @Test
     void invoiceStatusInfoDaoTest() {
-        jdbcTemplate.execute("truncate table nw.invoice_status_info cascade");
+        jdbcTemplate.execute("truncate table dw.invoice_status_info cascade");
         List<InvoiceStatusInfo> statusInfos =
                 RandomBeans.randomListOf(3, InvoiceStatusInfo.class);
         statusInfos.forEach(status -> status.setCurrent(true));
@@ -308,7 +308,7 @@ public class DaoTests {
 
     @Test
     public void invoiceCartDaoTest() {
-        jdbcTemplate.execute("truncate table nw.invoice_cart cascade");
+        jdbcTemplate.execute("truncate table dw.invoice_cart cascade");
         String invoiceId = UUID.randomUUID().toString();
         List<InvoiceCart> invoiceCarts = RandomBeans.randomListOf(10, InvoiceCart.class);
         invoiceCarts.forEach(ic -> ic.setInvoiceId(invoiceId));
@@ -318,7 +318,7 @@ public class DaoTests {
 
     @Test
     public void paymentDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment cascade");
+        jdbcTemplate.execute("truncate table dw.payment cascade");
         Payment first = RandomBeans.random(Payment.class);
         first.setId(1L);
         Payment second = RandomBeans.random(Payment.class);
@@ -330,7 +330,7 @@ public class DaoTests {
 
     @Test
     public void paymentStatusInfoDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_status_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_status_info cascade");
         List<PaymentStatusInfo> statusInfos = RandomBeans.randomListOf(2, PaymentStatusInfo.class);
         statusInfos.forEach(statusInfo -> statusInfo.setCurrent(true));
         paymentStatusInfoDao.saveBatch(statusInfos);
@@ -353,7 +353,7 @@ public class DaoTests {
 
     @Test
     public void paymentPayerInfoDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_payer_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_payer_info cascade");
         PaymentPayerInfo first = RandomBeans.random(PaymentPayerInfo.class);
         first.setId(1L);
         PaymentPayerInfo second = RandomBeans.random(PaymentPayerInfo.class);
@@ -365,7 +365,7 @@ public class DaoTests {
 
     @Test
     public void paymentAdditionalInfoDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_additional_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_additional_info cascade");
         List<PaymentAdditionalInfo> list = RandomBeans.randomListOf(2, PaymentAdditionalInfo.class);
         list.forEach(statusInfo -> statusInfo.setCurrent(true));
         paymentAdditionalInfoDao.saveBatch(list);
@@ -388,7 +388,7 @@ public class DaoTests {
 
     @Test
     public void paymentRecurrentInfoDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_recurrent_info cascade");
+        jdbcTemplate.execute("truncate table dw.payment_recurrent_info cascade");
         List<PaymentRecurrentInfo> list = RandomBeans.randomListOf(2, PaymentRecurrentInfo.class);
         list.forEach(statusInfo -> statusInfo.setCurrent(true));
         paymentRecurrentInfoDao.saveBatch(list);
@@ -411,7 +411,7 @@ public class DaoTests {
 
     @Test
     public void paymentRiskDataDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_risk_data cascade");
+        jdbcTemplate.execute("truncate table dw.payment_risk_data cascade");
         List<PaymentRiskData> list = RandomBeans.randomListOf(2, PaymentRiskData.class);
         list.forEach(statusInfo -> statusInfo.setCurrent(true));
         paymentRiskDataDao.saveBatch(list);
@@ -434,7 +434,7 @@ public class DaoTests {
 
     @Test
     public void paymentFeeDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_fee cascade");
+        jdbcTemplate.execute("truncate table dw.payment_fee cascade");
         List<PaymentFee> list = RandomBeans.randomListOf(2, PaymentFee.class);
         list.forEach(statusInfo -> statusInfo.setCurrent(true));
         paymentFeeDao.saveBatch(list);
@@ -457,7 +457,7 @@ public class DaoTests {
 
     @Test
     public void paymentRouteDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment_route cascade");
+        jdbcTemplate.execute("truncate table dw.payment_route cascade");
         List<PaymentRoute> list = RandomBeans.randomListOf(2, PaymentRoute.class);
         list.forEach(statusInfo -> statusInfo.setCurrent(true));
         paymentRouteDao.saveBatch(list);
@@ -480,7 +480,7 @@ public class DaoTests {
 
     @Test
     public void refundDaoTest() {
-        jdbcTemplate.execute("truncate table nw.refund cascade");
+        jdbcTemplate.execute("truncate table dw.refund cascade");
         Refund refund = RandomBeans.random(Refund.class);
         refund.setCurrent(true);
         refundDao.save(refund);
@@ -493,8 +493,8 @@ public class DaoTests {
 
     @Test
     public void contractAdjustmentDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contract_adjustment cascade");
-        jdbcTemplate.execute("truncate table nw.contract cascade");
+        jdbcTemplate.execute("truncate table dw.contract_adjustment cascade");
+        jdbcTemplate.execute("truncate table dw.contract cascade");
         Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         Long cntrctId = contractDao.save(contract).get();
@@ -507,7 +507,7 @@ public class DaoTests {
 
     @Test
     public void contractDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contract cascade");
+        jdbcTemplate.execute("truncate table dw.contract cascade");
         Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         contractDao.save(contract);
@@ -517,7 +517,7 @@ public class DaoTests {
 
     @Test
     public void contractorDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contractor cascade");
+        jdbcTemplate.execute("truncate table dw.contractor cascade");
         Contractor contractor = RandomBeans.random(Contractor.class);
         contractor.setCurrent(true);
         contractorDao.save(contractor);
@@ -533,7 +533,7 @@ public class DaoTests {
 
     @Test
     public void partyDaoTest() {
-        jdbcTemplate.execute("truncate table nw.party cascade");
+        jdbcTemplate.execute("truncate table dw.party cascade");
         Party party = RandomBeans.random(Party.class);
         party.setCurrent(true);
         partyDao.save(party);
@@ -553,8 +553,8 @@ public class DaoTests {
 
     @Test
     public void payoutToolDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contract cascade");
-        jdbcTemplate.execute("truncate table nw.payout_tool cascade");
+        jdbcTemplate.execute("truncate table dw.contract cascade");
+        jdbcTemplate.execute("truncate table dw.payout_tool cascade");
         Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         Long cntrctId = contractDao.save(contract).get();
@@ -567,7 +567,7 @@ public class DaoTests {
 
     @Test
     public void shopDaoTest() {
-        jdbcTemplate.execute("truncate table nw.shop cascade");
+        jdbcTemplate.execute("truncate table dw.shop cascade");
         Shop shop = RandomBeans.random(Shop.class);
         shop.setCurrent(true);
         shopDao.save(shop);
@@ -584,14 +584,14 @@ public class DaoTests {
 
     @Test
     public void rateDaoTest() {
-        jdbcTemplate.execute("truncate table nw.rate cascade");
+        jdbcTemplate.execute("truncate table dw.rate cascade");
         Rate rate = RandomBeans.random(Rate.class);
         rate.setCurrent(true);
 
         Long id = rateDao.save(rate);
         rate.setId(id);
         assertEquals(rate, jdbcTemplate.queryForObject(
-                "SELECT * FROM nw.rate WHERE id = ? ",
+                "SELECT * FROM dw.rate WHERE id = ? ",
                 new Object[]{id},
                 new BeanPropertyRowMapper(Rate.class)
         ));
@@ -604,7 +604,7 @@ public class DaoTests {
 
         rateDao.updateNotCurrent(Collections.singletonList(id));
         assertThrows(EmptyResultDataAccessException.class, () -> jdbcTemplate.queryForObject(
-                "SELECT * FROM nw.rate AS rate WHERE rate.id = ? AND rate.current",
+                "SELECT * FROM dw.rate AS rate WHERE rate.id = ? AND rate.current",
                 new Object[]{id},
                 new BeanPropertyRowMapper(Rate.class)
         ));
@@ -620,7 +620,7 @@ public class DaoTests {
 
     @Test
     public void constraintTests() {
-        jdbcTemplate.execute("truncate table nw.adjustment cascade");
+        jdbcTemplate.execute("truncate table dw.adjustment cascade");
         Adjustment adjustment = RandomBeans.random(Adjustment.class);
         adjustment.setChangeId(1);
         adjustment.setSequenceId(1L);
@@ -649,7 +649,7 @@ public class DaoTests {
 
     @Test
     public void recurrentPaymentToolDaoTest() {
-        jdbcTemplate.execute("truncate table nw.recurrent_payment_tool cascade");
+        jdbcTemplate.execute("truncate table dw.recurrent_payment_tool cascade");
         RecurrentPaymentTool recurrentPaymentTool = RandomBeans.random(RecurrentPaymentTool.class);
         recurrentPaymentTool.setCurrent(true);
         Optional<Long> id = recurrentPaymentToolDao.save(recurrentPaymentTool);

@@ -35,7 +35,7 @@ public class RecurrentPaymentToolServiceTest {
 
         String sql = """
                 select * 
-                from nw.recurrent_payment_tool
+                from dw.recurrent_payment_tool
                 where recurrent_payment_tool_id = :id
                 order by sequence_id, change_id asc
                 """;

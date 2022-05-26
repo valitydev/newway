@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 @EnableSchedulerLock(defaultLockAtMostFor = "PT5M")
 public class SchedulerConfig {
 
-    public static final String TABLE_NAME = "nw.shedlock";
+    public static final String TABLE_NAME = "dw.shedlock";
 
     @Bean
     public DominantPoller dominantPoller(RepositorySrv.Iface dominantClient,

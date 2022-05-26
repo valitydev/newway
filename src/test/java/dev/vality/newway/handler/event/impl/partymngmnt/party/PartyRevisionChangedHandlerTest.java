@@ -118,12 +118,12 @@ public class PartyRevisionChangedHandlerTest {
         partyRevisionChangedHandler.handle(change, message, 1);
 
         Assertions.assertEquals(Integer.valueOf(CNT), jdbcTemplate
-                .queryForObject("select count(1) from nw.shop_revision", new MapSqlParameterSource(), Integer.class));
+                .queryForObject("select count(1) from dw.shop_revision", new MapSqlParameterSource(), Integer.class));
         Assertions.assertEquals(Integer.valueOf(CNT), jdbcTemplate
-                .queryForObject("select count(1) from nw.contract_revision", new MapSqlParameterSource(),
+                .queryForObject("select count(1) from dw.contract_revision", new MapSqlParameterSource(),
                         Integer.class));
         Assertions.assertEquals(Integer.valueOf(CNT), jdbcTemplate
-                .queryForObject("select count(1) from nw.contractor_revision", new MapSqlParameterSource(),
+                .queryForObject("select count(1) from dw.contractor_revision", new MapSqlParameterSource(),
                         Integer.class));
 
     }

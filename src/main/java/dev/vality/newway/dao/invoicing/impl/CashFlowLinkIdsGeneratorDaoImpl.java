@@ -21,7 +21,7 @@ public class CashFlowLinkIdsGeneratorDaoImpl implements IdsGeneratorDao {
     @Override
     public List<Long> get(int size) throws DaoException {
         try {
-            String sql = "select nextval('nw.cash_flow_link_id_seq') from generate_series(1, :size)";
+            String sql = "select nextval('dw.cash_flow_link_id_seq') from generate_series(1, :size)";
             MapSqlParameterSource parameterSource = new MapSqlParameterSource().addValue("size", size);
             return jdbcTemplate.queryForList(sql, parameterSource, Long.class);
         } catch (NestedRuntimeException e) {

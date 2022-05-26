@@ -22,7 +22,7 @@ public class SourceDaoTest {
 
     @Test
     public void sourceDaoTest() {
-        jdbcTemplate.execute("truncate table nw.source cascade");
+        jdbcTemplate.execute("truncate table dw.source cascade");
         Source source = dev.vality.testcontainers.annotations.util.RandomBeans.random(Source.class);
         source.setCurrent(true);
         Long id = sourceDao.save(source).get();
