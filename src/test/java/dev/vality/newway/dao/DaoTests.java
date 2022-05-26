@@ -3,17 +3,13 @@ package dev.vality.newway.dao;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
 import dev.vality.newway.dao.dominant.iface.DominantDao;
 import dev.vality.newway.dao.dominant.impl.*;
-import dev.vality.newway.dao.invoicing.iface.AdjustmentDao;
-import dev.vality.newway.dao.invoicing.iface.CashFlowDao;
-import dev.vality.newway.dao.invoicing.iface.InvoiceCartDao;
-import dev.vality.newway.dao.invoicing.iface.RefundDao;
+import dev.vality.newway.dao.invoicing.iface.*;
+import dev.vality.newway.dao.invoicing.impl.CashFlowLinkIdsGeneratorDaoImpl;
 import dev.vality.newway.dao.invoicing.impl.InvoiceDaoImpl;
 import dev.vality.newway.dao.invoicing.impl.PaymentDaoImpl;
-import dev.vality.newway.dao.invoicing.impl.PaymentIdsGeneratorDaoImpl;
 import dev.vality.newway.dao.party.iface.*;
 import dev.vality.newway.dao.rate.iface.RateDao;
 import dev.vality.newway.dao.recurrent.payment.tool.iface.RecurrentPaymentToolDao;
-import dev.vality.newway.domain.enums.AdjustmentCashFlowType;
 import dev.vality.newway.domain.enums.CashFlowAccount;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.domain.tables.pojos.Calendar;
@@ -21,20 +17,21 @@ import dev.vality.newway.domain.tables.pojos.Currency;
 import dev.vality.newway.domain.tables.pojos.*;
 import dev.vality.newway.exception.NotFoundException;
 import dev.vality.newway.model.InvoicingKey;
-import dev.vality.newway.model.InvoicingType;
 import dev.vality.newway.utils.HashUtil;
+import dev.vality.testcontainers.annotations.util.RandomBeans;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 import java.util.*;
 import java.util.stream.LongStream;
 
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @PostgresqlSpringBootITest
 public class DaoTests {
@@ -68,15 +65,33 @@ public class DaoTests {
     @Autowired
     private DominantDao dominantDao;
     @Autowired
+    private CashFlowLinkDao cashFlowLinkDao;
+    @Autowired
     private CashFlowDao cashFlowDao;
     @Autowired
     private AdjustmentDao adjustmentDao;
     @Autowired
     private PaymentDaoImpl paymentDao;
     @Autowired
+    private PaymentStatusInfoDao paymentStatusInfoDao;
+    @Autowired
+    private PaymentPayerInfoDao paymentPayerInfoDao;
+    @Autowired
+    private PaymentAdditionalInfoDao paymentAdditionalInfoDao;
+    @Autowired
+    private PaymentRecurrentInfoDao paymentRecurrentInfoDao;
+    @Autowired
+    private PaymentRiskDataDao paymentRiskDataDao;
+    @Autowired
+    private PaymentFeeDao paymentFeeDao;
+    @Autowired
+    private PaymentRouteDao paymentRouteDao;
+    @Autowired
     private InvoiceCartDao invoiceCartDao;
     @Autowired
     private InvoiceDaoImpl invoiceDao;
+    @Autowired
+    private InvoiceStatusInfoDao invoiceStatusInfoDao;
     @Autowired
     private RefundDao refundDao;
     @Autowired
@@ -94,82 +109,82 @@ public class DaoTests {
     @Autowired
     private RateDao rateDao;
     @Autowired
-    private PaymentIdsGeneratorDaoImpl idsGeneratorDao;
+    private CashFlowLinkIdsGeneratorDaoImpl idsGeneratorDao;
     @Autowired
     private RecurrentPaymentToolDao recurrentPaymentToolDao;
 
 
     @Test
     public void dominantDaoTest() {
-        jdbcTemplate.execute("truncate table nw.calendar cascade");
-        jdbcTemplate.execute("truncate table nw.category cascade");
-        jdbcTemplate.execute("truncate table nw.currency cascade");
-        jdbcTemplate.execute("truncate table nw.inspector cascade");
-        jdbcTemplate.execute("truncate table nw.payment_institution cascade");
-        jdbcTemplate.execute("truncate table nw.payment_method cascade");
-        jdbcTemplate.execute("truncate table nw.payout_method cascade");
-        jdbcTemplate.execute("truncate table nw.provider cascade");
-        jdbcTemplate.execute("truncate table nw.withdrawal_provider cascade");
-        jdbcTemplate.execute("truncate table nw.proxy cascade");
-        jdbcTemplate.execute("truncate table nw.terminal cascade");
-        jdbcTemplate.execute("truncate table nw.term_set_hierarchy cascade");
+        jdbcTemplate.execute("truncate table dw.calendar cascade");
+        jdbcTemplate.execute("truncate table dw.category cascade");
+        jdbcTemplate.execute("truncate table dw.currency cascade");
+        jdbcTemplate.execute("truncate table dw.inspector cascade");
+        jdbcTemplate.execute("truncate table dw.payment_institution cascade");
+        jdbcTemplate.execute("truncate table dw.payment_method cascade");
+        jdbcTemplate.execute("truncate table dw.payout_method cascade");
+        jdbcTemplate.execute("truncate table dw.provider cascade");
+        jdbcTemplate.execute("truncate table dw.withdrawal_provider cascade");
+        jdbcTemplate.execute("truncate table dw.proxy cascade");
+        jdbcTemplate.execute("truncate table dw.terminal cascade");
+        jdbcTemplate.execute("truncate table dw.term_set_hierarchy cascade");
 
-        var calendar = dev.vality.testcontainers.annotations.util.RandomBeans.random(Calendar.class);
+        var calendar = RandomBeans.random(Calendar.class);
         calendar.setCurrent(true);
         calendarDao.save(calendar);
         calendarDao.updateNotCurrent(calendar.getCalendarRefId());
 
-        Category category = dev.vality.testcontainers.annotations.util.RandomBeans.random(Category.class);
+        Category category = RandomBeans.random(Category.class);
         category.setCurrent(true);
         categoryDao.save(category);
         categoryDao.updateNotCurrent(category.getCategoryRefId());
 
-        var currency = dev.vality.testcontainers.annotations.util.RandomBeans.random(Currency.class);
+        var currency = RandomBeans.random(Currency.class);
         currency.setCurrent(true);
         currencyDao.save(currency);
         currencyDao.updateNotCurrent(currency.getCurrencyRefId());
 
-        Inspector inspector = dev.vality.testcontainers.annotations.util.RandomBeans.random(Inspector.class);
+        Inspector inspector = RandomBeans.random(Inspector.class);
         inspector.setCurrent(true);
         inspectorDao.save(inspector);
         inspectorDao.updateNotCurrent(inspector.getInspectorRefId());
 
-        PaymentInstitution paymentInstitution = dev.vality.testcontainers.annotations.util.RandomBeans.random(PaymentInstitution.class);
+        PaymentInstitution paymentInstitution = RandomBeans.random(PaymentInstitution.class);
         paymentInstitution.setCurrent(true);
         paymentInstitutionDao.save(paymentInstitution);
         paymentInstitutionDao.updateNotCurrent(paymentInstitution.getPaymentInstitutionRefId());
 
-        PaymentMethod paymentMethod = dev.vality.testcontainers.annotations.util.RandomBeans.random(PaymentMethod.class);
+        PaymentMethod paymentMethod = RandomBeans.random(PaymentMethod.class);
         paymentMethod.setCurrent(true);
         paymentMethodDao.save(paymentMethod);
         paymentMethodDao.updateNotCurrent(paymentMethod.getPaymentMethodRefId());
 
-        PayoutMethod payoutMethod = dev.vality.testcontainers.annotations.util.RandomBeans.random(PayoutMethod.class);
+        PayoutMethod payoutMethod = RandomBeans.random(PayoutMethod.class);
         payoutMethod.setCurrent(true);
         payoutMethodDao.save(payoutMethod);
         payoutMethodDao.updateNotCurrent(payoutMethod.getPayoutMethodRefId());
 
-        Provider provider = dev.vality.testcontainers.annotations.util.RandomBeans.random(Provider.class);
+        Provider provider = RandomBeans.random(Provider.class);
         provider.setCurrent(true);
         providerDao.save(provider);
         providerDao.updateNotCurrent(provider.getProviderRefId());
 
-        WithdrawalProvider withdrawalProvider = dev.vality.testcontainers.annotations.util.RandomBeans.random(WithdrawalProvider.class);
+        WithdrawalProvider withdrawalProvider = RandomBeans.random(WithdrawalProvider.class);
         withdrawalProvider.setCurrent(true);
         withdrawalProviderDao.save(withdrawalProvider);
         withdrawalProviderDao.updateNotCurrent(withdrawalProvider.getWithdrawalProviderRefId());
 
-        Proxy proxy = dev.vality.testcontainers.annotations.util.RandomBeans.random(Proxy.class);
+        Proxy proxy = RandomBeans.random(Proxy.class);
         proxy.setCurrent(true);
         proxyDao.save(proxy);
         proxyDao.updateNotCurrent(proxy.getProxyRefId());
 
-        Terminal terminal = dev.vality.testcontainers.annotations.util.RandomBeans.random(Terminal.class);
+        Terminal terminal = RandomBeans.random(Terminal.class);
         terminal.setCurrent(true);
         terminalDao.save(terminal);
         terminalDao.updateNotCurrent(terminal.getTerminalRefId());
 
-        TermSetHierarchy termSetHierarchy = dev.vality.testcontainers.annotations.util.RandomBeans.random(TermSetHierarchy.class);
+        TermSetHierarchy termSetHierarchy = RandomBeans.random(TermSetHierarchy.class);
         termSetHierarchy.setCurrent(true);
         termSetHierarchyDao.save(termSetHierarchy);
         termSetHierarchyDao.updateNotCurrent(termSetHierarchy.getTermSetHierarchyRefId());
@@ -190,184 +205,17 @@ public class DaoTests {
                 terminal.getVersionId(),
                 termSetHierarchy.getVersionId()).max();
 
-        Assertions.assertEquals(maxVersionId.getAsLong(), lastVersionId.longValue());
-    }
-
-    @Test
-    public void differentCashFlowAggregateFunctionTest() {
-        jdbcTemplate.execute("truncate table nw.cash_flow cascade");
-        List<CashFlow> cashFlows = new ArrayList<>();
-
-        CashFlow cashFlowPaymentAmount =
-                DaoUtils.createCashFlow(1L, 1000L, "RUB", 1L, CashFlowAccount.provider, "settlement", 2L,
-                        CashFlowAccount.merchant, "settlement", PaymentChangeType.payment);
-        cashFlows.add(cashFlowPaymentAmount);
-        CashFlow cashFlowPaymentFee =
-                DaoUtils.createCashFlow(1L, 10L, "RUB", 2L, CashFlowAccount.merchant, "settlement", 2L, CashFlowAccount.system,
-                        "settlement", PaymentChangeType.payment);
-        cashFlows.add(cashFlowPaymentFee);
-        CashFlow cashFlowPaymentExternalIncomeFee =
-                DaoUtils.createCashFlow(1L, 3L, "RUB", 2L, CashFlowAccount.system, "settlement", 3L, CashFlowAccount.external,
-                        "income", PaymentChangeType.payment);
-        cashFlows.add(cashFlowPaymentExternalIncomeFee);
-        CashFlow cashFlowPaymentExternalOutcomeFee =
-                DaoUtils.createCashFlow(1L, 3L, "RUB", 2L, CashFlowAccount.system, "settlement", 4L, CashFlowAccount.external,
-                        "outcome", PaymentChangeType.payment);
-        cashFlows.add(cashFlowPaymentExternalOutcomeFee);
-        CashFlow cashFlowPaymentProviderFee =
-                DaoUtils.createCashFlow(1L, 3L, "RUB", 2L, CashFlowAccount.system, "settlement", 5L, CashFlowAccount.provider,
-                        "settlement", PaymentChangeType.payment);
-        cashFlows.add(cashFlowPaymentProviderFee);
-        CashFlow cashFlowPaymentGuaranteeDeposit =
-                DaoUtils.createCashFlow(1L, 30L, "RUB", 2L, CashFlowAccount.merchant, "settlement", 5L, CashFlowAccount.merchant,
-                        "guarantee", PaymentChangeType.payment);
-        cashFlows.add(cashFlowPaymentGuaranteeDeposit);
-        CashFlow cashFlowRefundAmount = DaoUtils.createCashFlow(1L, 1000L, "RUB", 2L, CashFlowAccount.merchant, "settlement", 5L,
-                CashFlowAccount.provider, "settlement", PaymentChangeType.refund);
-        cashFlows.add(cashFlowRefundAmount);
-        CashFlow cashFlowRefundFee =
-                DaoUtils.createCashFlow(1L, 10L, "RUB", 2L, CashFlowAccount.merchant, "settlement", 2L, CashFlowAccount.system,
-                        "settlement", PaymentChangeType.refund);
-        cashFlows.add(cashFlowRefundFee);
-        CashFlow cashFlowRefundExternalIncomeFee =
-                DaoUtils.createCashFlow(1L, 3L, "RUB", 2L, CashFlowAccount.system, "settlement", 3L, CashFlowAccount.external,
-                        "income", PaymentChangeType.refund);
-        cashFlows.add(cashFlowRefundExternalIncomeFee);
-        CashFlow cashFlowRefundExternalOutcomeFee =
-                DaoUtils.createCashFlow(1L, 3L, "RUB", 2L, CashFlowAccount.system, "settlement", 4L, CashFlowAccount.external,
-                        "outcome", PaymentChangeType.refund);
-        cashFlows.add(cashFlowRefundExternalOutcomeFee);
-        CashFlow cashFlowRefundProviderFee =
-                DaoUtils.createCashFlow(1L, 3L, "RUB", 2L, CashFlowAccount.system, "settlement", 5L, CashFlowAccount.provider,
-                        "settlement", PaymentChangeType.refund);
-        cashFlows.add(cashFlowRefundProviderFee);
-        CashFlow cashFlowPayoutAmount = DaoUtils.createCashFlow(1L, 1000L, "RUB", 2L, CashFlowAccount.merchant, "settlement", 7L,
-                CashFlowAccount.merchant, "payout", PaymentChangeType.payout);
-        cashFlows.add(cashFlowPayoutAmount);
-        CashFlow cashFlowPayoutFee =
-                DaoUtils.createCashFlow(1L, 10L, "RUB", 1L, CashFlowAccount.merchant, "settlement", 2L, CashFlowAccount.system,
-                        "settlement", PaymentChangeType.payout);
-        cashFlows.add(cashFlowPayoutFee);
-        CashFlow cashFlowPayoutFixedFee =
-                DaoUtils.createCashFlow(1L, 100L, "RUB", 7L, CashFlowAccount.merchant, "payout", 2L, CashFlowAccount.system,
-                        "settlement", PaymentChangeType.payout);
-        cashFlows.add(cashFlowPayoutFixedFee);
-        CashFlow cashFlowAdjustmentAmount =
-                DaoUtils.createCashFlow(1L, 1000L, "RUB", 1L, CashFlowAccount.provider, "settlement", 2L,
-                        CashFlowAccount.merchant, "settlement", PaymentChangeType.adjustment);
-        cashFlowAdjustmentAmount.setAdjFlowType(AdjustmentCashFlowType.new_cash_flow);
-        cashFlows.add(cashFlowAdjustmentAmount);
-
-        cashFlowDao.save(cashFlows);
-
-        Assertions.assertEquals(cashFlowPaymentAmount.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentFee.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentExternalIncomeFee.getAmount() + cashFlowPaymentExternalOutcomeFee.getAmount(), (long) jdbcTemplate.queryForObject(
-                "SELECT nw.get_payment_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentProviderFee.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPaymentGuaranteeDeposit.getAmount(), jdbcTemplate.queryForObject(
-                "SELECT nw.get_payment_guarantee_deposit(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                new SingleColumnRowMapper<>(Long.class)));
-
-        Assertions.assertEquals(cashFlowRefundAmount.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowRefundFee.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowRefundExternalIncomeFee.getAmount() + cashFlowRefundExternalOutcomeFee.getAmount(), (long) jdbcTemplate.queryForObject(
-                "SELECT nw.get_refund_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowRefundProviderFee.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-
-        Assertions.assertEquals(cashFlowPayoutAmount.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_payout_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPayoutFixedFee.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_payout_fixed_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(cashFlowPayoutFee.getAmount(), jdbcTemplate
-                .queryForObject("SELECT nw.get_payout_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-    }
-
-    @Test
-    public void whenDataNotFoundCashFlowAggregateFunctionTest() {
-        jdbcTemplate.execute("truncate table nw.cash_flow cascade");
-        CashFlow notCashFlow = dev.vality.testcontainers.annotations.util.RandomBeans.random(CashFlow.class, "objId");
-        notCashFlow.setObjId(1L);
-        cashFlowDao.save(Collections.singletonList(notCashFlow));
-
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payment_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate.queryForObject(
-                "SELECT nw.get_payment_guarantee_deposit(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                new SingleColumnRowMapper<>(Long.class)));
-
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_refund_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payout_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payout_fixed_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_payout_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_adjustment_amount(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate
-                .queryForObject("SELECT nw.get_adjustment_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                        new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate.queryForObject(
-                "SELECT nw.get_adjustment_external_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                new SingleColumnRowMapper<>(Long.class)));
-        Assertions.assertEquals(0L, (long) jdbcTemplate.queryForObject(
-                "SELECT nw.get_adjustment_provider_fee(nw.cash_flow.*) FROM nw.cash_flow WHERE obj_id = 1",
-                new SingleColumnRowMapper<>(Long.class)));
+        assertEquals(maxVersionId.getAsLong(), lastVersionId.longValue());
     }
 
     @Test
     public void cashFlowDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment cascade");
-        jdbcTemplate.execute("truncate table nw.cash_flow cascade");
-        Long pmntId = 123L;
-        List<CashFlow> cashFlowList = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(100, CashFlow.class);
+        jdbcTemplate.execute("truncate table dw.cash_flow_link cascade");
+        jdbcTemplate.execute("truncate table dw.cash_flow cascade");
+        Long cashFlowLink = 123L;
+        List<CashFlow> cashFlowList = RandomBeans.randomListOf(100, CashFlow.class);
         cashFlowList.forEach(cf -> {
-            cf.setObjId(pmntId);
+            cf.setObjId(cashFlowLink);
             cf.setAmount((long) new Random().nextInt(100));
             cf.setObjType(PaymentChangeType.payment);
             cf.setAdjFlowType(null);
@@ -379,18 +227,44 @@ public class DaoTests {
             }
         });
         cashFlowDao.save(cashFlowList);
-        List<CashFlow> byObjId = cashFlowDao.getByObjId(pmntId, PaymentChangeType.payment);
-        Assertions.assertEquals(new HashSet(byObjId), new HashSet(cashFlowList));
+        List<CashFlow> byObjId = cashFlowDao.getByObjId(cashFlowLink, PaymentChangeType.payment);
+        assertEquals(new HashSet(byObjId), new HashSet(cashFlowList));
+    }
+
+    @Test
+    public void cashFlowDaoLinkTest() {
+        jdbcTemplate.execute("truncate table dw.cash_flow_link cascade");
+        List<CashFlowLink> cashFlowLinks = RandomBeans.randomListOf(2, CashFlowLink.class);
+        for (int i = 0; i < cashFlowLinks.size(); i++) {
+            cashFlowLinks.get(i).setId(i + 1L);
+            cashFlowLinks.get(i).setCurrent(true);
+        }
+        cashFlowLinkDao.saveBatch(cashFlowLinks);
+        CashFlowLink first = cashFlowLinks.get(0);
+        assertEquals(first, cashFlowLinkDao.get(first.getInvoiceId(), first.getPaymentId()));
+        CashFlowLink second = cashFlowLinks.get(1);
+        assertEquals(second, cashFlowLinkDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        CashFlowLink third = RandomBeans.random(CashFlowLink.class, "id", "current", "invoiceId", "paymentId");
+        third.setId(3L);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        cashFlowLinkDao.saveBatch(List.of(third));
+        assertEquals(first, cashFlowLinkDao.get(third.getInvoiceId(), third.getPaymentId()));
+        cashFlowLinkDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, cashFlowLinkDao.get(third.getInvoiceId(), third.getPaymentId()));
     }
 
 
     @Test
     public void adjustmentDaoTest() {
-        jdbcTemplate.execute("truncate table nw.adjustment cascade");
-        Adjustment adjustment = dev.vality.testcontainers.annotations.util.RandomBeans.random(Adjustment.class);
+        jdbcTemplate.execute("truncate table dw.adjustment cascade");
+        Adjustment adjustment = RandomBeans.random(Adjustment.class);
         adjustment.setCurrent(true);
         adjustmentDao.save(adjustment);
-        Assertions.assertEquals(adjustment.getPartyId(), adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
+        assertEquals(adjustment.getPartyId(), adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
                 .getPartyId());
         adjustmentDao.updateNotCurrent(adjustment.getId());
 
@@ -398,52 +272,220 @@ public class DaoTests {
     }
 
     @Test
-    public void invoiceCartDaoTest() {
-        jdbcTemplate.execute("truncate table nw.invoice cascade");
-        jdbcTemplate.execute("truncate table nw.invoice_cart cascade");
-        Invoice invoice = dev.vality.testcontainers.annotations.util.RandomBeans.random(Invoice.class);
-        invoice.setCurrent(true);
-        Long invId = invoice.getId();
-        invoiceDao.saveBatch(Collections.singletonList(invoice));
-        List<InvoiceCart> invoiceCarts = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(10, InvoiceCart.class);
-        invoiceCarts.forEach(ic -> ic.setInvId(invId));
-        invoiceCartDao.save(invoiceCarts);
-        List<InvoiceCart> byInvId = invoiceCartDao.getByInvId(invId);
-        Assertions.assertEquals(new HashSet(invoiceCarts), new HashSet(byInvId));
+    void invoiceDaoTest() {
+        jdbcTemplate.execute("truncate table dw.invoice cascade");
+        List<Invoice> invoices = RandomBeans.randomListOf(3, Invoice.class);
+        invoiceDao.saveBatch(invoices);
+        assertEquals(invoices.get(0), invoiceDao.get(invoices.get(0).getInvoiceId()));
+        assertEquals(invoices.get(1), invoiceDao.get(invoices.get(1).getInvoiceId()));
+        assertEquals(invoices.get(2), invoiceDao.get(invoices.get(2).getInvoiceId()));
+    }
 
+
+    @Test
+    void invoiceStatusInfoDaoTest() {
+        jdbcTemplate.execute("truncate table dw.invoice_status_info cascade");
+        List<InvoiceStatusInfo> statusInfos =
+                RandomBeans.randomListOf(3, InvoiceStatusInfo.class);
+        statusInfos.forEach(status -> status.setCurrent(true));
+        invoiceStatusInfoDao.saveBatch(statusInfos);
+        assertEquals(statusInfos.get(0), invoiceStatusInfoDao.get(statusInfos.get(0).getInvoiceId()));
+        assertEquals(statusInfos.get(1), invoiceStatusInfoDao.get(statusInfos.get(1).getInvoiceId()));
+        assertEquals(statusInfos.get(2), invoiceStatusInfoDao.get(statusInfos.get(2).getInvoiceId()));
+
+        InvoiceStatusInfo statusInfo = RandomBeans.random(InvoiceStatusInfo.class);
+        InvoiceStatusInfo initialStatusInfo = statusInfos.get(0);
+        statusInfo.setInvoiceId(initialStatusInfo.getInvoiceId());
+        statusInfo.setCurrent(false);
+        statusInfo.setId(initialStatusInfo.getId() + 1);
+        invoiceStatusInfoDao.saveBatch(List.of(statusInfo));
+        assertNotEquals(statusInfo, initialStatusInfo);
+        assertEquals(initialStatusInfo, invoiceStatusInfoDao.get(initialStatusInfo.getInvoiceId()));
+        invoiceStatusInfoDao.switchCurrent(Set.of(statusInfo.getInvoiceId()));
+        statusInfo.setCurrent(true);
+        assertEquals(statusInfo, invoiceStatusInfoDao.get(initialStatusInfo.getInvoiceId()));
+    }
+
+    @Test
+    public void invoiceCartDaoTest() {
+        jdbcTemplate.execute("truncate table dw.invoice_cart cascade");
+        String invoiceId = UUID.randomUUID().toString();
+        List<InvoiceCart> invoiceCarts = RandomBeans.randomListOf(10, InvoiceCart.class);
+        invoiceCarts.forEach(ic -> ic.setInvoiceId(invoiceId));
+        invoiceCartDao.save(invoiceCarts);
+        assertEquals(invoiceCarts, invoiceCartDao.getByInvoiceId(invoiceId));
     }
 
     @Test
     public void paymentDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payment cascade");
-        Payment payment = dev.vality.testcontainers.annotations.util.RandomBeans.random(Payment.class);
-        payment.setId(1L);
-        payment.setCurrent(false);
-        Payment paymentTwo = dev.vality.testcontainers.annotations.util.RandomBeans.random(Payment.class);
-        paymentTwo.setId(2L);
-        paymentTwo.setCurrent(false);
-        paymentTwo.setInvoiceId(payment.getInvoiceId());
-        paymentTwo.setPaymentId(payment.getPaymentId());
-        paymentDao.saveBatch(Arrays.asList(payment, paymentTwo));
-        paymentDao.switchCurrent(Collections.singletonList(
-                new InvoicingKey(payment.getInvoiceId(), payment.getPaymentId(), InvoicingType.PAYMENT)));
-        Payment paymentGet = paymentDao.get(payment.getInvoiceId(), payment.getPaymentId());
-        paymentTwo.setCurrent(true);
-        Assertions.assertEquals(paymentTwo, paymentGet);
-        paymentTwo.setPartyRevision(1111L);
-        paymentDao.updateBatch(Collections.singletonList(paymentTwo));
-        Payment paymentGet2 = paymentDao.get(payment.getInvoiceId(), payment.getPaymentId());
-        Assertions.assertEquals(paymentTwo, paymentGet2);
+        jdbcTemplate.execute("truncate table dw.payment cascade");
+        Payment first = RandomBeans.random(Payment.class);
+        first.setId(1L);
+        Payment second = RandomBeans.random(Payment.class);
+        second.setId(2L);
+        paymentDao.saveBatch(Arrays.asList(first, second));
+        assertEquals(first, paymentDao.get(first.getInvoiceId(), first.getPaymentId()));
+        assertEquals(second, paymentDao.get(second.getInvoiceId(), second.getPaymentId()));
+    }
+
+    @Test
+    public void paymentStatusInfoDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_status_info cascade");
+        List<PaymentStatusInfo> statusInfos = RandomBeans.randomListOf(2, PaymentStatusInfo.class);
+        statusInfos.forEach(statusInfo -> statusInfo.setCurrent(true));
+        paymentStatusInfoDao.saveBatch(statusInfos);
+        PaymentStatusInfo first = statusInfos.get(0);
+        assertEquals(first, paymentStatusInfoDao.get(first.getInvoiceId(), first.getPaymentId()));
+        PaymentStatusInfo second = statusInfos.get(1);
+        assertEquals(second, paymentStatusInfoDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        PaymentStatusInfo third = RandomBeans.random(PaymentStatusInfo.class);
+        third.setId(first.getId() + 1);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        paymentStatusInfoDao.saveBatch(List.of(third));
+        assertEquals(first, paymentStatusInfoDao.get(third.getInvoiceId(), third.getPaymentId()));
+        paymentStatusInfoDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, paymentStatusInfoDao.get(third.getInvoiceId(), third.getPaymentId()));
+    }
+
+    @Test
+    public void paymentPayerInfoDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_payer_info cascade");
+        PaymentPayerInfo first = RandomBeans.random(PaymentPayerInfo.class);
+        first.setId(1L);
+        PaymentPayerInfo second = RandomBeans.random(PaymentPayerInfo.class);
+        second.setId(2L);
+        paymentPayerInfoDao.saveBatch(Arrays.asList(first, second));
+        assertEquals(first, paymentPayerInfoDao.get(first.getInvoiceId(), first.getPaymentId()));
+        assertEquals(second, paymentPayerInfoDao.get(second.getInvoiceId(), second.getPaymentId()));
+    }
+
+    @Test
+    public void paymentAdditionalInfoDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_additional_info cascade");
+        List<PaymentAdditionalInfo> list = RandomBeans.randomListOf(2, PaymentAdditionalInfo.class);
+        list.forEach(statusInfo -> statusInfo.setCurrent(true));
+        paymentAdditionalInfoDao.saveBatch(list);
+        PaymentAdditionalInfo first = list.get(0);
+        assertEquals(first, paymentAdditionalInfoDao.get(first.getInvoiceId(), first.getPaymentId()));
+        PaymentAdditionalInfo second = list.get(1);
+        assertEquals(second, paymentAdditionalInfoDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        PaymentAdditionalInfo third = RandomBeans.random(PaymentAdditionalInfo.class);
+        third.setId(first.getId() + 1);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        paymentAdditionalInfoDao.saveBatch(List.of(third));
+        assertEquals(first, paymentAdditionalInfoDao.get(third.getInvoiceId(), third.getPaymentId()));
+        paymentAdditionalInfoDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, paymentAdditionalInfoDao.get(third.getInvoiceId(), third.getPaymentId()));
+    }
+
+    @Test
+    public void paymentRecurrentInfoDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_recurrent_info cascade");
+        List<PaymentRecurrentInfo> list = RandomBeans.randomListOf(2, PaymentRecurrentInfo.class);
+        list.forEach(statusInfo -> statusInfo.setCurrent(true));
+        paymentRecurrentInfoDao.saveBatch(list);
+        PaymentRecurrentInfo first = list.get(0);
+        assertEquals(first, paymentRecurrentInfoDao.get(first.getInvoiceId(), first.getPaymentId()));
+        PaymentRecurrentInfo second = list.get(1);
+        assertEquals(second, paymentRecurrentInfoDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        PaymentRecurrentInfo third = RandomBeans.random(PaymentRecurrentInfo.class);
+        third.setId(first.getId() + 1);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        paymentRecurrentInfoDao.saveBatch(List.of(third));
+        assertEquals(first, paymentRecurrentInfoDao.get(third.getInvoiceId(), third.getPaymentId()));
+        paymentRecurrentInfoDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, paymentRecurrentInfoDao.get(third.getInvoiceId(), third.getPaymentId()));
+    }
+
+    @Test
+    public void paymentRiskDataDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_risk_data cascade");
+        List<PaymentRiskData> list = RandomBeans.randomListOf(2, PaymentRiskData.class);
+        list.forEach(statusInfo -> statusInfo.setCurrent(true));
+        paymentRiskDataDao.saveBatch(list);
+        PaymentRiskData first = list.get(0);
+        assertEquals(first, paymentRiskDataDao.get(first.getInvoiceId(), first.getPaymentId()));
+        PaymentRiskData second = list.get(1);
+        assertEquals(second, paymentRiskDataDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        PaymentRiskData third = RandomBeans.random(PaymentRiskData.class);
+        third.setId(first.getId() + 1);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        paymentRiskDataDao.saveBatch(List.of(third));
+        assertEquals(first, paymentRiskDataDao.get(third.getInvoiceId(), third.getPaymentId()));
+        paymentRiskDataDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, paymentRiskDataDao.get(third.getInvoiceId(), third.getPaymentId()));
+    }
+
+    @Test
+    public void paymentFeeDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_fee cascade");
+        List<PaymentFee> list = RandomBeans.randomListOf(2, PaymentFee.class);
+        list.forEach(statusInfo -> statusInfo.setCurrent(true));
+        paymentFeeDao.saveBatch(list);
+        PaymentFee first = list.get(0);
+        assertEquals(first, paymentFeeDao.get(first.getInvoiceId(), first.getPaymentId()));
+        PaymentFee second = list.get(1);
+        assertEquals(second, paymentFeeDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        PaymentFee third = RandomBeans.random(PaymentFee.class);
+        third.setId(first.getId() + 1);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        paymentFeeDao.saveBatch(List.of(third));
+        assertEquals(first, paymentFeeDao.get(third.getInvoiceId(), third.getPaymentId()));
+        paymentFeeDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, paymentFeeDao.get(third.getInvoiceId(), third.getPaymentId()));
+    }
+
+    @Test
+    public void paymentRouteDaoTest() {
+        jdbcTemplate.execute("truncate table dw.payment_route cascade");
+        List<PaymentRoute> list = RandomBeans.randomListOf(2, PaymentRoute.class);
+        list.forEach(statusInfo -> statusInfo.setCurrent(true));
+        paymentRouteDao.saveBatch(list);
+        PaymentRoute first = list.get(0);
+        assertEquals(first, paymentRouteDao.get(first.getInvoiceId(), first.getPaymentId()));
+        PaymentRoute second = list.get(1);
+        assertEquals(second, paymentRouteDao.get(second.getInvoiceId(), second.getPaymentId()));
+
+        PaymentRoute third = RandomBeans.random(PaymentRoute.class);
+        third.setId(first.getId() + 1);
+        third.setCurrent(false);
+        third.setInvoiceId(first.getInvoiceId());
+        third.setPaymentId(first.getPaymentId());
+        paymentRouteDao.saveBatch(List.of(third));
+        assertEquals(first, paymentRouteDao.get(third.getInvoiceId(), third.getPaymentId()));
+        paymentRouteDao.switchCurrent(Set.of(InvoicingKey.buildKey(third.getInvoiceId(), third.getPaymentId())));
+        third.setCurrent(true);
+        assertEquals(third, paymentRouteDao.get(third.getInvoiceId(), third.getPaymentId()));
     }
 
     @Test
     public void refundDaoTest() {
-        jdbcTemplate.execute("truncate table nw.refund cascade");
-        Refund refund = dev.vality.testcontainers.annotations.util.RandomBeans.random(Refund.class);
+        jdbcTemplate.execute("truncate table dw.refund cascade");
+        Refund refund = RandomBeans.random(Refund.class);
         refund.setCurrent(true);
         refundDao.save(refund);
         Refund refundGet = refundDao.get(refund.getInvoiceId(), refund.getPaymentId(), refund.getRefundId());
-        Assertions.assertEquals(refund, refundGet);
+        assertEquals(refund, refundGet);
         refundDao.updateNotCurrent(refund.getId());
 
         assertThrows(NotFoundException.class, () -> refundDao.get(refund.getInvoiceId(), refund.getPaymentId(), refund.getRefundId()));
@@ -451,36 +493,36 @@ public class DaoTests {
 
     @Test
     public void contractAdjustmentDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contract_adjustment cascade");
-        jdbcTemplate.execute("truncate table nw.contract cascade");
-        Contract contract = dev.vality.testcontainers.annotations.util.RandomBeans.random(Contract.class);
+        jdbcTemplate.execute("truncate table dw.contract_adjustment cascade");
+        jdbcTemplate.execute("truncate table dw.contract cascade");
+        Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         Long cntrctId = contractDao.save(contract).get();
-        List<ContractAdjustment> contractAdjustments = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(10, ContractAdjustment.class);
+        List<ContractAdjustment> contractAdjustments = RandomBeans.randomListOf(10, ContractAdjustment.class);
         contractAdjustments.forEach(ca -> ca.setCntrctId(cntrctId));
         contractAdjustmentDao.save(contractAdjustments);
         List<ContractAdjustment> byCntrctId = contractAdjustmentDao.getByCntrctId(cntrctId);
-        Assertions.assertEquals(new HashSet(contractAdjustments), new HashSet(byCntrctId));
+        assertEquals(new HashSet(contractAdjustments), new HashSet(byCntrctId));
     }
 
     @Test
     public void contractDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contract cascade");
-        Contract contract = dev.vality.testcontainers.annotations.util.RandomBeans.random(Contract.class);
+        jdbcTemplate.execute("truncate table dw.contract cascade");
+        Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         contractDao.save(contract);
         Contract contractGet = contractDao.get(contract.getPartyId(), contract.getContractId());
-        Assertions.assertEquals(contract, contractGet);
+        assertEquals(contract, contractGet);
     }
 
     @Test
     public void contractorDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contractor cascade");
-        Contractor contractor = dev.vality.testcontainers.annotations.util.RandomBeans.random(Contractor.class);
+        jdbcTemplate.execute("truncate table dw.contractor cascade");
+        Contractor contractor = RandomBeans.random(Contractor.class);
         contractor.setCurrent(true);
         contractorDao.save(contractor);
         Contractor contractorGet = contractorDao.get(contractor.getPartyId(), contractor.getContractorId());
-        Assertions.assertEquals(contractor, contractorGet);
+        assertEquals(contractor, contractorGet);
         Integer changeId = contractor.getChangeId() + 1;
         contractor.setChangeId(changeId);
         Long oldId = contractor.getId();
@@ -491,12 +533,12 @@ public class DaoTests {
 
     @Test
     public void partyDaoTest() {
-        jdbcTemplate.execute("truncate table nw.party cascade");
-        Party party = dev.vality.testcontainers.annotations.util.RandomBeans.random(Party.class);
+        jdbcTemplate.execute("truncate table dw.party cascade");
+        Party party = RandomBeans.random(Party.class);
         party.setCurrent(true);
         partyDao.save(party);
         Party partyGet = partyDao.get(party.getPartyId());
-        Assertions.assertEquals(party, partyGet);
+        assertEquals(party, partyGet);
         Long oldId = party.getId();
 
         Integer changeId = party.getChangeId() + 1;
@@ -506,31 +548,31 @@ public class DaoTests {
         partyDao.updateNotCurrent(oldId);
 
         partyGet = partyDao.get(party.getPartyId());
-        Assertions.assertEquals(changeId, partyGet.getChangeId());
+        assertEquals(changeId, partyGet.getChangeId());
     }
 
     @Test
     public void payoutToolDaoTest() {
-        jdbcTemplate.execute("truncate table nw.contract cascade");
-        jdbcTemplate.execute("truncate table nw.payout_tool cascade");
-        Contract contract = dev.vality.testcontainers.annotations.util.RandomBeans.random(Contract.class);
+        jdbcTemplate.execute("truncate table dw.contract cascade");
+        jdbcTemplate.execute("truncate table dw.payout_tool cascade");
+        Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         Long cntrctId = contractDao.save(contract).get();
-        List<PayoutTool> payoutTools = dev.vality.testcontainers.annotations.util.RandomBeans.randomListOf(10, PayoutTool.class);
+        List<PayoutTool> payoutTools = RandomBeans.randomListOf(10, PayoutTool.class);
         payoutTools.forEach(pt -> pt.setCntrctId(cntrctId));
         payoutToolDao.save(payoutTools);
         List<PayoutTool> byCntrctId = payoutToolDao.getByCntrctId(cntrctId);
-        Assertions.assertEquals(new HashSet(payoutTools), new HashSet(byCntrctId));
+        assertEquals(new HashSet(payoutTools), new HashSet(byCntrctId));
     }
 
     @Test
     public void shopDaoTest() {
-        jdbcTemplate.execute("truncate table nw.shop cascade");
-        Shop shop = dev.vality.testcontainers.annotations.util.RandomBeans.random(Shop.class);
+        jdbcTemplate.execute("truncate table dw.shop cascade");
+        Shop shop = RandomBeans.random(Shop.class);
         shop.setCurrent(true);
         shopDao.save(shop);
         Shop shopGet = shopDao.get(shop.getPartyId(), shop.getShopId());
-        Assertions.assertEquals(shop, shopGet);
+        assertEquals(shop, shopGet);
 
         Integer changeId = shop.getChangeId() + 1;
         shop.setChangeId(changeId);
@@ -542,14 +584,14 @@ public class DaoTests {
 
     @Test
     public void rateDaoTest() {
-        jdbcTemplate.execute("truncate table nw.rate cascade");
-        Rate rate = dev.vality.testcontainers.annotations.util.RandomBeans.random(Rate.class);
+        jdbcTemplate.execute("truncate table dw.rate cascade");
+        Rate rate = RandomBeans.random(Rate.class);
         rate.setCurrent(true);
 
         Long id = rateDao.save(rate);
         rate.setId(id);
-        Assertions.assertEquals(rate, jdbcTemplate.queryForObject(
-                "SELECT * FROM nw.rate WHERE id = ? ",
+        assertEquals(rate, jdbcTemplate.queryForObject(
+                "SELECT * FROM dw.rate WHERE id = ? ",
                 new Object[]{id},
                 new BeanPropertyRowMapper(Rate.class)
         ));
@@ -557,12 +599,12 @@ public class DaoTests {
         List<Long> ids = rateDao.getIds(rate.getSourceId());
         Assertions.assertNotNull(ids);
         Assertions.assertFalse(ids.isEmpty());
-        Assertions.assertEquals(1, ids.size());
-        Assertions.assertEquals(id, ids.get(0));
+        assertEquals(1, ids.size());
+        assertEquals(id, ids.get(0));
 
         rateDao.updateNotCurrent(Collections.singletonList(id));
         assertThrows(EmptyResultDataAccessException.class, () -> jdbcTemplate.queryForObject(
-                "SELECT * FROM nw.rate AS rate WHERE rate.id = ? AND rate.current",
+                "SELECT * FROM dw.rate AS rate WHERE rate.id = ? AND rate.current",
                 new Object[]{id},
                 new BeanPropertyRowMapper(Rate.class)
         ));
@@ -573,13 +615,13 @@ public class DaoTests {
         Integer javaHash = HashUtil.getIntHash("kek");
         Integer postgresHash =
                 jdbcTemplate.queryForObject("select ('x0'||substr(md5('kek'), 1, 7))::bit(32)::int", Integer.class);
-        Assertions.assertEquals(javaHash, postgresHash);
+        assertEquals(javaHash, postgresHash);
     }
 
     @Test
     public void constraintTests() {
-        jdbcTemplate.execute("truncate table nw.adjustment cascade");
-        Adjustment adjustment = dev.vality.testcontainers.annotations.util.RandomBeans.random(Adjustment.class);
+        jdbcTemplate.execute("truncate table dw.adjustment cascade");
+        Adjustment adjustment = RandomBeans.random(Adjustment.class);
         adjustment.setChangeId(1);
         adjustment.setSequenceId(1L);
         adjustment.setInvoiceId("1");
@@ -587,33 +629,33 @@ public class DaoTests {
         adjustment.setCurrent(true);
         adjustmentDao.save(adjustment);
 
-        Assertions.assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
+        assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
                 .getPartyId());
 
         adjustment.setPartyId("2");
 
         adjustmentDao.save(adjustment);
 
-        Assertions.assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
+        assertEquals("1", adjustmentDao.get(adjustment.getInvoiceId(), adjustment.getPaymentId(), adjustment.getAdjustmentId())
                 .getPartyId());
     }
 
     @Test
     public void idsGeneratorTest() {
         List<Long> list = idsGeneratorDao.get(100);
-        Assertions.assertEquals(100, list.size());
-        Assertions.assertEquals(99, list.get(99) - list.get(0));
+        assertEquals(100, list.size());
+        assertEquals(99, list.get(99) - list.get(0));
     }
 
     @Test
     public void recurrentPaymentToolDaoTest() {
-        jdbcTemplate.execute("truncate table nw.recurrent_payment_tool cascade");
-        RecurrentPaymentTool recurrentPaymentTool = dev.vality.testcontainers.annotations.util.RandomBeans.random(RecurrentPaymentTool.class);
+        jdbcTemplate.execute("truncate table dw.recurrent_payment_tool cascade");
+        RecurrentPaymentTool recurrentPaymentTool = RandomBeans.random(RecurrentPaymentTool.class);
         recurrentPaymentTool.setCurrent(true);
         Optional<Long> id = recurrentPaymentToolDao.save(recurrentPaymentTool);
         Assertions.assertTrue(id.isPresent());
         recurrentPaymentTool.setId(id.get());
-        Assertions.assertEquals(recurrentPaymentTool, recurrentPaymentToolDao.get(recurrentPaymentTool.getRecurrentPaymentToolId()));
+        assertEquals(recurrentPaymentTool, recurrentPaymentToolDao.get(recurrentPaymentTool.getRecurrentPaymentToolId()));
         recurrentPaymentToolDao.updateNotCurrent(recurrentPaymentTool.getId());
 
         assertThrows(NotFoundException.class, () -> recurrentPaymentToolDao.get(recurrentPaymentTool.getRecurrentPaymentToolId()));

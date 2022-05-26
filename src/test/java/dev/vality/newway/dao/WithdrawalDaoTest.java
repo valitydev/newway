@@ -22,7 +22,7 @@ public class WithdrawalDaoTest {
 
     @Test
     public void withdrawalDaoTest() {
-        jdbcTemplate.execute("truncate table nw.withdrawal cascade");
+        jdbcTemplate.execute("truncate table dw.withdrawal cascade");
         Withdrawal withdrawal = dev.vality.testcontainers.annotations.util.RandomBeans.random(Withdrawal.class);
         withdrawal.setCurrent(true);
         Long id = withdrawalDao.save(withdrawal).get();

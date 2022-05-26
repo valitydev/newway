@@ -23,13 +23,13 @@ public class RateServiceTests {
 
     @Test
     public void rateServiceTest() {
-        jdbcTemplate.execute("truncate table nw.rate cascade");
+        jdbcTemplate.execute("truncate table dw.rate cascade");
         String sourceId = "CBR";
 
         rateService.handleEvents(RateSinkEventTestUtils.create(sourceId));
 
         List<Rate> rates = jdbcTemplate.query(
-                "SELECT * FROM nw.rate AS rate WHERE rate.source_id = ? AND rate.current",
+                "SELECT * FROM dw.rate AS rate WHERE rate.source_id = ? AND rate.current",
                 new Object[]{sourceId},
                 new BeanPropertyRowMapper(Rate.class)
         );
@@ -38,7 +38,7 @@ public class RateServiceTests {
 
     @Test
     public void rateServiceDuplicationTest() {
-        jdbcTemplate.execute("truncate table nw.rate cascade");
+        jdbcTemplate.execute("truncate table dw.rate cascade");
         String sourceId = "CBR";
 
         List<SinkEvent> sinkEvents = RateSinkEventTestUtils.create(sourceId);
@@ -46,7 +46,7 @@ public class RateServiceTests {
         rateService.handleEvents(sinkEvents);
 
         List<Rate> rates = jdbcTemplate.query(
-                "SELECT * FROM nw.rate AS rate WHERE rate.source_id = ? AND rate.current",
+                "SELECT * FROM dw.rate AS rate WHERE rate.source_id = ? AND rate.current",
                 new Object[]{sourceId},
                 new BeanPropertyRowMapper(Rate.class)
         );
@@ -55,7 +55,7 @@ public class RateServiceTests {
 
     @Test
     public void rateServiceDuplicationWhenPaymentSystemIsNullTest() {
-        jdbcTemplate.execute("truncate table nw.rate cascade");
+        jdbcTemplate.execute("truncate table dw.rate cascade");
         String sourceId = "CBR";
 
         List<SinkEvent> sinkEvents = RateSinkEventTestUtils.create(sourceId, "payment_system");
@@ -63,7 +63,7 @@ public class RateServiceTests {
         rateService.handleEvents(sinkEvents);
 
         List<Rate> rates = jdbcTemplate.query(
-                "SELECT * FROM nw.rate AS rate WHERE rate.source_id = ? AND rate.current",
+                "SELECT * FROM dw.rate AS rate WHERE rate.source_id = ? AND rate.current",
                 new Object[]{sourceId},
                 new BeanPropertyRowMapper(Rate.class)
         );

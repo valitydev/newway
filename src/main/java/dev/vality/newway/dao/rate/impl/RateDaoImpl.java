@@ -42,7 +42,7 @@ public class RateDaoImpl extends AbstractGenericDao implements RateDao {
     @Override
     public List<Long> getIds(String sourceId) throws DaoException {
         return this.getNamedParameterJdbcTemplate()
-                .queryForList("select id from nw.rate where source_id=:source_id and current",
+                .queryForList("select id from dw.rate where source_id=:source_id and current",
                         new MapSqlParameterSource("source_id", sourceId), Long.class);
     }
 
@@ -50,7 +50,7 @@ public class RateDaoImpl extends AbstractGenericDao implements RateDao {
     public void updateNotCurrent(List<Long> ids) throws DaoException {
         if (ids != null && !ids.isEmpty()) {
             this.getNamedParameterJdbcTemplate()
-                    .update("update nw.rate set current=false where id in (:ids)",
+                    .update("update dw.rate set current=false where id in (:ids)",
                             new MapSqlParameterSource("ids", ids));
         }
     }

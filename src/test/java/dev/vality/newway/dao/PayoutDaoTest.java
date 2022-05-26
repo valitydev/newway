@@ -24,7 +24,7 @@ public class PayoutDaoTest {
 
     @Test
     public void payoutDaoTest() {
-        jdbcTemplate.execute("truncate table nw.payout cascade");
+        jdbcTemplate.execute("truncate table dw.payout cascade");
         Payout payout = dev.vality.testcontainers.annotations.util.RandomBeans.random(Payout.class);
         payout.setCurrent(true);
         Optional<Long> save = payoutDao.save(payout);

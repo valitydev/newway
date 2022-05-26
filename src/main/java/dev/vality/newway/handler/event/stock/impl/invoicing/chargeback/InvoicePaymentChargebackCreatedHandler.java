@@ -19,7 +19,7 @@ import dev.vality.newway.domain.enums.ChargebackStage;
 import dev.vality.newway.domain.enums.ChargebackStatus;
 import dev.vality.newway.domain.tables.pojos.Chargeback;
 import dev.vality.newway.domain.tables.pojos.Payment;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

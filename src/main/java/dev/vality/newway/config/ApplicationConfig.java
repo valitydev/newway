@@ -1,7 +1,7 @@
 package dev.vality.newway.config;
 
 import dev.vality.damsel.domain_config.RepositorySrv;
-import dev.vality.newway.domain.Nw;
+import dev.vality.newway.domain.Dw;
 import dev.vality.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.jooq.Schema;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +25,6 @@ public class ApplicationConfig {
 
     @Bean
     public Schema schema() {
-        return Nw.NW;
+        return Dw.DW;
     }
 }

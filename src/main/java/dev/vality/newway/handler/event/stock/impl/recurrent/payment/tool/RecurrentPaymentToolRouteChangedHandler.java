@@ -8,7 +8,7 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.recurrent.payment.tool.iface.RecurrentPaymentToolDao;
 import dev.vality.newway.domain.tables.pojos.RecurrentPaymentTool;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

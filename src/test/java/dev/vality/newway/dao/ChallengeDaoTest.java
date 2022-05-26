@@ -19,7 +19,7 @@ public class ChallengeDaoTest {
 
     @Test
     public void challengeDaoTest() {
-        jdbcTemplate.execute("truncate table nw.challenge cascade");
+        jdbcTemplate.execute("truncate table dw.challenge cascade");
         Challenge challenge = dev.vality.testcontainers.annotations.util.RandomBeans.random(Challenge.class);
         challenge.setCurrent(true);
         Long id = challengeDao.save(challenge).get();

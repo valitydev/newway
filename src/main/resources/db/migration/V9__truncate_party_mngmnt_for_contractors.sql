@@ -1,1 +1,0 @@
-TRUNCATE nw.party, nw.contract, nw.contractor, nw.shop CASCADE;

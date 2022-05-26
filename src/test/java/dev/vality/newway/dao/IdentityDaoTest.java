@@ -22,7 +22,7 @@ public class IdentityDaoTest {
 
     @Test
     public void identityDaoTest() {
-        jdbcTemplate.execute("truncate table nw.identity cascade");
+        jdbcTemplate.execute("truncate table dw.identity cascade");
         Identity identity = dev.vality.testcontainers.annotations.util.RandomBeans.random(Identity.class);
         identity.setCurrent(true);
         Long id = identityDao.save(identity).get();

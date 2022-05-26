@@ -20,9 +20,9 @@ import dev.vality.newway.domain.enums.RefundStatus;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.Payment;
 import dev.vality.newway.domain.tables.pojos.Refund;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.cash.flow.CashFlowFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
-import dev.vality.newway.util.CashFlowUtil;
 import dev.vality.newway.util.JsonUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -99,8 +99,8 @@ public class InvoicePaymentRefundCreatedHandler implements InvoicingHandler {
 
         refundDao.save(refund).ifPresentOrElse(
                 id -> {
-                    List<CashFlow> cashFlowList = CashFlowUtil
-                            .convertCashFlows(invoicePaymentRefundCreated.getCashFlow(), id, PaymentChangeType.refund);
+                    List<CashFlow> cashFlowList = CashFlowFactory.build(
+                            invoicePaymentRefundCreated.getCashFlow(), id, PaymentChangeType.refund);
                     cashFlowDao.save(cashFlowList);
                     refundDao.updateCommissions(id);
                     log.info("Refund has been saved, sequenceId={}, invoiceId={}, paymentId={}, refundId={}",

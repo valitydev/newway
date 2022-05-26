@@ -26,7 +26,7 @@ public class WithdrawalSessionCreatedBankCardHandlerTest {
     private JdbcTemplate jdbcTemplate;
 
     Destination destination = dev.vality.testcontainers.annotations.util.RandomBeans.random(Destination.class);
-    String sqlStatement = "select * from nw.withdrawal_session LIMIT 1;";
+    String sqlStatement = "select * from dw.withdrawal_session LIMIT 1;";
 
     @BeforeEach
     public void setUp() {

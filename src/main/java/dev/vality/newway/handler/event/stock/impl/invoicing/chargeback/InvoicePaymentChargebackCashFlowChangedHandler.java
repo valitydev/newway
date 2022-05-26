@@ -14,10 +14,10 @@ import dev.vality.newway.dao.invoicing.iface.ChargebackDao;
 import dev.vality.newway.domain.enums.PaymentChangeType;
 import dev.vality.newway.domain.tables.pojos.CashFlow;
 import dev.vality.newway.domain.tables.pojos.Chargeback;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.cash.flow.CashFlowFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.invoicing.InvoicingHandler;
 import dev.vality.newway.service.CashFlowService;
-import dev.vality.newway.util.CashFlowUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +65,7 @@ public class InvoicePaymentChargebackCashFlowChangedHandler implements Invoicing
                     Long oldId = chargebackOld.getId();
                     chargebackDao.updateNotCurrent(oldId);
                     cashFlowService.save(oldId, id, PaymentChangeType.chargeback);
-                    List<CashFlow> cashFlows = CashFlowUtil.convertCashFlows(
+                    List<CashFlow> cashFlows = CashFlowFactory.build(
                             invoicePaymentChargebackCashFlowChanged.getCashFlow(),
                             id,
                             PaymentChangeType.chargeback);

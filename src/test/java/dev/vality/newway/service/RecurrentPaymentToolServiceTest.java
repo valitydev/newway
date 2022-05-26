@@ -33,7 +33,12 @@ public class RecurrentPaymentToolServiceTest {
         List<MachineEvent> events = buildEvent(recurrentId);
         recurrentPaymentToolService.handleEvents(events);
 
-        String sql = "select * from nw.recurrent_payment_tool where recurrent_payment_tool_id = :id";
+        String sql = """
+                select * 
+                from dw.recurrent_payment_tool
+                where recurrent_payment_tool_id = :id
+                order by sequence_id, change_id asc
+                """;
         List<dev.vality.newway.domain.tables.pojos.RecurrentPaymentTool> recurrentPaymentTools =
                 jdbcTemplate.query(sql, new MapSqlParameterSource("id", recurrentId),
                         new BeanPropertyRowMapper<>(

@@ -12,7 +12,7 @@ import dev.vality.newway.dao.party.iface.PartyDao;
 import dev.vality.newway.domain.enums.Blocking;
 import dev.vality.newway.domain.enums.Suspension;
 import dev.vality.newway.domain.tables.pojos.Party;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.handler.event.stock.impl.partymngmnt.PartyManagementHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

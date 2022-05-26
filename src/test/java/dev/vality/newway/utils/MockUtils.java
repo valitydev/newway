@@ -3,9 +3,15 @@ package dev.vality.newway.utils;
 import dev.vality.damsel.base.Content;
 import dev.vality.damsel.domain.*;
 import dev.vality.geck.common.util.TypeUtil;
+import dev.vality.newway.domain.enums.PaymentChangeType;
+import dev.vality.newway.domain.tables.pojos.CashFlow;
+import dev.vality.newway.domain.tables.pojos.CashFlowLink;
+import dev.vality.newway.model.CashFlowWrapper;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,7 +22,7 @@ public class MockUtils {
                 .setId(invoiceId)
                 .setOwnerId("party_1")
                 .setShopId("shop_id")
-                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                 .setStatus(InvoiceStatus.unpaid(new InvoiceUnpaid()))
                 .setDetails(new InvoiceDetails()
                         .setProduct("prod")
@@ -26,7 +32,7 @@ public class MockUtils {
                                         .setProduct("product")
                                         .setPrice(new Cash(12, new CurrencyRef("RUB")))
                                         .setMetadata(new HashMap<>())))))
-                .setDue(TypeUtil.temporalToString(LocalDateTime.now()))
+                .setDue(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                 .setCost(new Cash().setAmount(1).setCurrency(new CurrencyRef("RUB")))
                 .setContext(new Content("type", ByteBuffer.wrap(new byte[]{})));
     }
@@ -34,7 +40,7 @@ public class MockUtils {
     public static InvoicePayment buildPayment(String paymentId) {
         return new InvoicePayment()
                 .setId(paymentId)
-                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()))
+                .setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)))
                 .setStatus(InvoicePaymentStatus.pending(new InvoicePaymentPending()))
                 .setCost(new Cash(11, new CurrencyRef("RUB")))
                 .setDomainRevision(1)
@@ -46,5 +52,32 @@ public class MockUtils {
                                                 .setTerminalTypeDeprecated(LegacyTerminalPaymentProvider.alipay)))
                                 .setRecurrentParent(new RecurrentParentPayment("1", "2"))
                                 .setContactInfo(new ContactInfo())));
+    }
+
+    public static CashFlowWrapper buildCashFlowWrapper(String invoiceId, String paymentId, Long sequenceId, Integer changeId) {
+        var link = new CashFlowLink();
+        link.setInvoiceId(invoiceId);
+        link.setPaymentId(paymentId);
+        link.setEventCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS));
+        link.setSequenceId(sequenceId);
+        link.setChangeId(changeId);
+
+        List<CashFlow> cashFlows = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            var cashFlow = new CashFlow();
+            cashFlow.setAmount((long) i);
+            cashFlow.setObjType(PaymentChangeType.payment);
+            cashFlow.setCurrencyCode("RUB");
+            cashFlow.setDetails("details " + i);
+            cashFlow.setSourceAccountId((long) i);
+            cashFlow.setSourceAccountType(dev.vality.newway.domain.enums.CashFlowAccount.merchant);
+            cashFlow.setSourceAccountTypeValue("source_account_type_value");
+            cashFlow.setDestinationAccountId((long) i + sequenceId);
+            cashFlow.setDestinationAccountType(dev.vality.newway.domain.enums.CashFlowAccount.external);
+            cashFlow.setDestinationAccountTypeValue("destination_account_type_value");
+            cashFlows.add(cashFlow);
+        }
+
+        return new CashFlowWrapper(link, cashFlows);
     }
 }

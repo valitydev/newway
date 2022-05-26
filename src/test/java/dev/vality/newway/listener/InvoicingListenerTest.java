@@ -9,9 +9,10 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.machinegun.eventsink.SinkEvent;
 import dev.vality.newway.exception.ParseException;
 import dev.vality.newway.mapper.invoice.InvoiceCreatedMapper;
-import dev.vality.newway.service.InvoiceBatchService;
+import dev.vality.newway.service.InvoiceWrapperService;
 import dev.vality.newway.service.InvoicingService;
-import dev.vality.newway.service.PaymentBatchService;
+import dev.vality.newway.service.PartyShopCacheService;
+import dev.vality.newway.service.PaymentWrapperService;
 import dev.vality.newway.utils.MockUtils;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -25,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.Acknowledgment;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,9 +37,11 @@ import static org.mockito.ArgumentMatchers.anyList;
 public class InvoicingListenerTest {
 
     @Mock
-    private InvoiceBatchService invoiceBatchService;
+    private PartyShopCacheService partyShopCacheService;
     @Mock
-    private PaymentBatchService paymentBatchService;
+    private InvoiceWrapperService invoiceBatchService;
+    @Mock
+    private PaymentWrapperService paymentWrapperService;
     @Mock
     private MachineEventParser eventParser;
     @Mock
@@ -47,9 +51,15 @@ public class InvoicingListenerTest {
 
     @BeforeEach
     public void init() {
-        listener = new InvoicingKafkaListener(
-                new InvoicingService(new ArrayList<>(), Collections.singletonList(new InvoiceCreatedMapper()),
-                        new ArrayList<>(), invoiceBatchService, paymentBatchService, eventParser));
+        listener = new InvoicingKafkaListener(new InvoicingService(
+                new ArrayList<>(),
+                Collections.singletonList(new InvoiceCreatedMapper()),
+                new ArrayList<>(),
+                partyShopCacheService,
+                invoiceBatchService,
+                paymentWrapperService,
+                eventParser
+        ));
     }
 
     @Test
@@ -67,7 +77,7 @@ public class InvoicingListenerTest {
 
         listener.handle(Collections.singletonList(new ConsumerRecord<>("topic", 1, 1, "kek", sinkEvent)), ack);
 
-        Mockito.verify(invoiceBatchService, Mockito.times(0)).process(anyList());
+        Mockito.verify(invoiceBatchService, Mockito.times(0)).save(anyList());
         Mockito.verify(ack, Mockito.times(1)).acknowledge();
     }
 
@@ -88,7 +98,7 @@ public class InvoicingListenerTest {
     @Test
     public void listenChanges() {
         MachineEvent message = new MachineEvent();
-        message.setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now()));
+        message.setCreatedAt(TypeUtil.temporalToString(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)));
         EventPayload payload = new EventPayload();
         ArrayList<InvoiceChange> invoiceChanges = new ArrayList<>();
         InvoiceChange invoiceChange = new InvoiceChange();
@@ -105,7 +115,7 @@ public class InvoicingListenerTest {
 
         listener.handle(Collections.singletonList(new ConsumerRecord<>("topic", 1, 1, "kek", sinkEvent)), ack);
 
-        Mockito.verify(invoiceBatchService, Mockito.times(1)).process(anyList());
+        Mockito.verify(invoiceBatchService, Mockito.times(1)).save(anyList());
         Mockito.verify(ack, Mockito.times(1)).acknowledge();
     }
 }

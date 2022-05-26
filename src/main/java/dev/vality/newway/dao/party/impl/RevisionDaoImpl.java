@@ -17,8 +17,8 @@ public class RevisionDaoImpl extends AbstractGenericDao implements RevisionDao {
 
     @Override
     public void saveShopsRevision(String partyId, long revision) throws DaoException {
-        getNamedParameterJdbcTemplate().update("insert into nw.shop_revision(obj_id, revision) " +
-                        "select id, :revision from nw.shop where party_id = :party_id and current",
+        getNamedParameterJdbcTemplate().update("insert into dw.shop_revision(obj_id, revision) " +
+                        "select id, :revision from dw.shop where party_id = :party_id and current",
                 new MapSqlParameterSource()
                         .addValue("party_id", partyId)
                         .addValue("revision", revision));
@@ -26,8 +26,8 @@ public class RevisionDaoImpl extends AbstractGenericDao implements RevisionDao {
 
     @Override
     public void saveContractsRevision(String partyId, long revision) throws DaoException {
-        getNamedParameterJdbcTemplate().update("insert into nw.contract_revision(obj_id, revision) " +
-                        "select id, :revision from nw.contract where party_id = :party_id and current",
+        getNamedParameterJdbcTemplate().update("insert into dw.contract_revision(obj_id, revision) " +
+                        "select id, :revision from dw.contract where party_id = :party_id and current",
                 new MapSqlParameterSource()
                         .addValue("party_id", partyId)
                         .addValue("revision", revision));
@@ -35,8 +35,8 @@ public class RevisionDaoImpl extends AbstractGenericDao implements RevisionDao {
 
     @Override
     public void saveContractorsRevision(String partyId, long revision) throws DaoException {
-        getNamedParameterJdbcTemplate().update("insert into nw.contractor_revision(obj_id, revision) " +
-                        "select id, :revision from nw.contractor where party_id = :party_id and current",
+        getNamedParameterJdbcTemplate().update("insert into dw.contractor_revision(obj_id, revision) " +
+                        "select id, :revision from dw.contractor where party_id = :party_id and current",
                 new MapSqlParameterSource()
                         .addValue("party_id", partyId)
                         .addValue("revision", revision));

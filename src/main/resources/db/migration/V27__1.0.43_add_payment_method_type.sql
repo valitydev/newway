@@ -1,1 +1,0 @@
-ALTER TYPE nw.payment_method_type ADD VALUE 'empty_cvv_bank_card';

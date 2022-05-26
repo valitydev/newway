@@ -12,14 +12,16 @@ import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.domain.enums.InvoiceStatus;
 import dev.vality.newway.domain.tables.pojos.InvoiceCart;
+import dev.vality.newway.domain.tables.pojos.InvoiceStatusInfo;
 import dev.vality.newway.exception.DaoException;
-import dev.vality.newway.handler.event.stock.LocalStorage;
+import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoiceWrapper;
 import dev.vality.newway.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,38 +29,48 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoiceCreatedMapper extends AbstractInvoicingInvoiceMapper {
+public class InvoiceCreatedMapper implements Mapper<InvoiceWrapper> {
 
-    private Filter filter = new PathConditionFilter(
+    private final Filter filter = new PathConditionFilter(
             new PathConditionRule("invoice_created", new IsNullCondition().not())
     );
 
     @Override
-    public InvoiceWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId, LocalStorage storage)
+    public InvoiceWrapper map(InvoiceChange invoiceChange, MachineEvent event, Integer changeId)
             throws DaoException {
         Invoice invoice = invoiceChange.getInvoiceCreated().getInvoice();
         long sequenceId = event.getEventId();
         String invoiceId = event.getSourceId();
 
-        log.info("Start invoice created mapping, sequenceId={}, invoiceId={}, partyId={}, shopId={}",
-                sequenceId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
+        log.info("Start invoice created mapping, sequenceId={}, changeId={}, invoiceId={}, partyId={}, shopId={}",
+                sequenceId, changeId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
 
-        dev.vality.newway.domain.tables.pojos.Invoice invoiceRecord =
-                new dev.vality.newway.domain.tables.pojos.Invoice();
-        setDefaultProperties(invoiceRecord, sequenceId, changeId, event.getCreatedAt());
+        InvoiceWrapper invoiceWrapper = new InvoiceWrapper();
+        LocalDateTime eventCreatedAt = TypeUtil.stringToLocalDateTime(event.getCreatedAt());
+        invoiceWrapper.setInvoice(getInvoice(invoice, sequenceId, changeId, eventCreatedAt));
+        invoiceWrapper.setInvoiceStatusInfo(getInvoiceStatusInfo(invoice, sequenceId, changeId, eventCreatedAt));
+        if (invoice.getDetails().isSetCart()) {
+            invoiceWrapper.setCarts(getInvoiceCarts(invoice, sequenceId, changeId, eventCreatedAt));
+        }
+        log.info("Invoice has been mapped, sequenceId={}, changeId={}, invoiceId={}, partyId={}, shopId={}",
+                sequenceId, changeId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
+        return invoiceWrapper;
+    }
+
+    private dev.vality.newway.domain.tables.pojos.Invoice getInvoice(Invoice invoice,
+                                                                     Long sequenceId,
+                                                                     Integer changeId,
+                                                                     LocalDateTime eventCreatedAt) {
+        var invoiceRecord = new dev.vality.newway.domain.tables.pojos.Invoice();
+        invoiceRecord.setChangeId(changeId);
+        invoiceRecord.setSequenceId(sequenceId);
+        invoiceRecord.setEventCreatedAt(eventCreatedAt);
         invoiceRecord.setInvoiceId(invoice.getId());
         invoiceRecord.setExternalId(invoice.getExternalId());
         invoiceRecord.setPartyId(invoice.getOwnerId());
         invoiceRecord.setShopId(invoice.getShopId());
         invoiceRecord.setPartyRevision(invoice.getPartyRevision());
         invoiceRecord.setCreatedAt(TypeUtil.stringToLocalDateTime(invoice.getCreatedAt()));
-        InvoiceStatus status = TBaseUtil.unionFieldToEnum(invoice.getStatus(), InvoiceStatus.class);
-        invoiceRecord.setStatus(status);
-        if (invoice.getStatus().isSetCancelled()) {
-            invoiceRecord.setStatusCancelledDetails(invoice.getStatus().getCancelled().getDetails());
-        } else if (invoice.getStatus().isSetFulfilled()) {
-            invoiceRecord.setStatusFulfilledDetails(invoice.getStatus().getFulfilled().getDetails());
-        }
         invoiceRecord.setDetailsProduct(invoice.getDetails().getProduct());
         invoiceRecord.setDetailsDescription(invoice.getDetails().getDescription());
         invoiceRecord.setDue(TypeUtil.stringToLocalDateTime(invoice.getDue()));
@@ -67,25 +79,49 @@ public class InvoiceCreatedMapper extends AbstractInvoicingInvoiceMapper {
         invoiceRecord.setContext(invoice.getContext().getData());
         invoiceRecord.setTemplateId(invoice.getTemplateId());
 
-        InvoiceWrapper invoiceWrapper = new InvoiceWrapper();
-        invoiceWrapper.setInvoice(invoiceRecord);
-        if (invoice.getDetails().isSetCart()) {
-            List<InvoiceCart> invoiceCarts = invoice.getDetails().getCart().getLines().stream().map(il -> {
-                InvoiceCart ic = new InvoiceCart();
-                ic.setProduct(il.getProduct());
-                ic.setQuantity(il.getQuantity());
-                ic.setAmount(il.getPrice().getAmount());
-                ic.setCurrencyCode(il.getPrice().getCurrency().getSymbolicCode());
-                Map<String, JsonNode> jsonNodeMap = il.getMetadata().entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> JsonUtil.thriftBaseToJsonNode(e.getValue())));
-                ic.setMetadataJson(JsonUtil.objectToJsonString(jsonNodeMap));
-                return ic;
-            }).collect(Collectors.toList());
-            invoiceWrapper.setCarts(invoiceCarts);
+        return invoiceRecord;
+    }
+
+    private InvoiceStatusInfo getInvoiceStatusInfo(Invoice invoice,
+                                                   Long sequenceId,
+                                                   Integer changeId,
+                                                   LocalDateTime eventCreatedAt) {
+        InvoiceStatusInfo statusRecord = new InvoiceStatusInfo();
+        statusRecord.setInvoiceId(invoice.getId());
+        statusRecord.setStatus(TBaseUtil.unionFieldToEnum(invoice.getStatus(), InvoiceStatus.class));
+        if (invoice.getStatus().isSetCancelled()) {
+            statusRecord.setDetails(invoice.getStatus().getCancelled().getDetails());
+        } else if (invoice.getStatus().isSetFulfilled()) {
+            statusRecord.setDetails(invoice.getStatus().getFulfilled().getDetails());
         }
-        log.info("Invoice has been mapped, sequenceId={}, invoiceId={}, partyId={}, shopId={}",
-                sequenceId, invoiceId, invoice.getOwnerId(), invoice.getShopId());
-        return invoiceWrapper;
+        statusRecord.setEventCreatedAt(eventCreatedAt);
+        statusRecord.setChangeId(changeId);
+        statusRecord.setSequenceId(sequenceId);
+        statusRecord.setExternalId(invoice.getExternalId());
+
+        return statusRecord;
+    }
+
+    private List<InvoiceCart> getInvoiceCarts(Invoice invoice,
+                                              Long sequenceId,
+                                              Integer changeId,
+                                              LocalDateTime eventCreatedAt) {
+        return invoice.getDetails().getCart().getLines().stream().map(il -> {
+                    InvoiceCart ic = new InvoiceCart();
+                    ic.setEventCreatedAt(eventCreatedAt);
+                    ic.setInvoiceId(invoice.getId());
+                    ic.setProduct(il.getProduct());
+                    ic.setQuantity(il.getQuantity());
+                    ic.setAmount(il.getPrice().getAmount());
+                    ic.setCurrencyCode(il.getPrice().getCurrency().getSymbolicCode());
+                    Map<String, JsonNode> jsonNodeMap = il.getMetadata().entrySet().stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, e -> JsonUtil.thriftBaseToJsonNode(e.getValue())));
+                    ic.setMetadataJson(JsonUtil.objectToJsonString(jsonNodeMap));
+                    ic.setSequenceId(sequenceId);
+                    ic.setChangeId(changeId);
+                    return ic;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

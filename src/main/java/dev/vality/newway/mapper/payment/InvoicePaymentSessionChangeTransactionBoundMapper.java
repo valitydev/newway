@@ -6,15 +6,16 @@ import dev.vality.damsel.payment_processing.InvoiceChange;
 import dev.vality.damsel.payment_processing.InvoicePaymentChange;
 import dev.vality.damsel.payment_processing.InvoicePaymentSessionChange;
 import dev.vality.damsel.payment_processing.SessionChangePayload;
+import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.geck.filter.Filter;
 import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
-import dev.vality.newway.domain.tables.pojos.Payment;
-import dev.vality.newway.handler.event.stock.LocalStorage;
+import dev.vality.newway.domain.tables.pojos.PaymentAdditionalInfo;
+import dev.vality.newway.mapper.Mapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
-import dev.vality.newway.service.PaymentWrapperService;
 import dev.vality.newway.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,60 +26,54 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InvoicePaymentSessionChangeTransactionBoundMapper extends AbstractInvoicingPaymentMapper {
-
-    private final PaymentWrapperService paymentWrapperService;
+public class InvoicePaymentSessionChangeTransactionBoundMapper implements Mapper<PaymentWrapper> {
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_session_change.payload.session_transaction_bound",
             new IsNullCondition().not()));
 
     @Override
-    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId, LocalStorage storage) {
+    public PaymentWrapper map(InvoiceChange change, MachineEvent event, Integer changeId) {
         InvoicePaymentChange invoicePaymentChange = change.getInvoicePaymentChange();
         String invoiceId = event.getSourceId();
         String paymentId = invoicePaymentChange.getId();
         long sequenceId = event.getEventId();
-        log.info("Start mapping session change transaction info, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
-
-        PaymentWrapper paymentWrapper = paymentWrapperService.get(invoiceId, paymentId, sequenceId, changeId, storage);
-        if (paymentWrapper == null) {
-            return null;
-        }
-        Payment paymentSource = paymentWrapper.getPayment();
-        setUpdateProperties(paymentSource, event.getCreatedAt());
+        log.info("Start mapping session change transaction info, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
         InvoicePaymentSessionChange sessionChange = invoicePaymentChange.getPayload().getInvoicePaymentSessionChange();
         SessionChangePayload payload = sessionChange.getPayload();
         TransactionInfo transactionInfo = payload.getSessionTransactionBound().getTrx();
-        paymentSource.setSessionPayloadTransactionBoundTrxId(transactionInfo.getId());
+
+        PaymentAdditionalInfo additionalInfo = new PaymentAdditionalInfo();
+        additionalInfo.setEventCreatedAt(TypeUtil.stringToLocalDateTime(event.getCreatedAt()));
+        additionalInfo.setInvoiceId(invoiceId);
+        additionalInfo.setPaymentId(paymentId);
+        additionalInfo.setTransactionId(transactionInfo.getId());
         Map<String, String> extra = transactionInfo.getExtra();
-        if (extra.get("PaRes") != null) {
-            extra.put("PaRes", null);
-        }
-        paymentSource.setSessionPayloadTransactionBoundTrxExtraJson(JsonUtil.objectToJsonString(extra));
-
+        extra.replace("PaRes", null);
+        additionalInfo.setExtraJson(JsonUtil.objectToJsonString(extra));
         if (transactionInfo.isSetAdditionalInfo()) {
-            AdditionalTransactionInfo additionalTransactionInfo = transactionInfo.getAdditionalInfo();
-            paymentSource.setTrxAdditionalInfoRrn(additionalTransactionInfo.getRrn());
-            paymentSource.setTrxAdditionalInfoApprovalCode(additionalTransactionInfo.getApprovalCode());
-            paymentSource.setTrxAdditionalInfoAcsUrl(additionalTransactionInfo.getAcsUrl());
-            //paymentSource.setTrxAdditionalInfoPareq(additionalTransactionInfo.getPareq());
-            paymentSource.setTrxAdditionalInfoMd(additionalTransactionInfo.getMd());
-            paymentSource.setTrxAdditionalInfoTermUrl(additionalTransactionInfo.getTermUrl());
-            //paymentSource.setTrxAdditionalInfoPares(additionalTransactionInfo.getPares());
-            paymentSource.setTrxAdditionalInfoEci(additionalTransactionInfo.getEci());
-            paymentSource.setTrxAdditionalInfoCavv(additionalTransactionInfo.getCavv());
-            paymentSource.setTrxAdditionalInfoXid(additionalTransactionInfo.getXid());
-            paymentSource.setTrxAdditionalInfoCavvAlgorithm(additionalTransactionInfo.getCavvAlgorithm());
-
-            if (additionalTransactionInfo.isSetThreeDsVerification()) {
-                paymentSource.setTrxAdditionalInfoThreeDsVerification(
-                        additionalTransactionInfo.getThreeDsVerification().name());
+            AdditionalTransactionInfo additionalInfoSource = transactionInfo.getAdditionalInfo();
+            additionalInfo.setRrn(additionalInfoSource.getRrn());
+            additionalInfo.setApprovalCode(additionalInfoSource.getApprovalCode());
+            additionalInfo.setAcsUrl(additionalInfoSource.getAcsUrl());
+            additionalInfo.setMd(additionalInfoSource.getMd());
+            additionalInfo.setTermUrl(additionalInfoSource.getTermUrl());
+            additionalInfo.setEci(additionalInfoSource.getEci());
+            additionalInfo.setCavv(additionalInfoSource.getCavv());
+            additionalInfo.setXid(additionalInfoSource.getXid());
+            additionalInfo.setCavvAlgorithm(additionalInfoSource.getCavvAlgorithm());
+            if (additionalInfoSource.isSetThreeDsVerification()) {
+                additionalInfo.setThreeDsVerification(additionalInfoSource.getThreeDsVerification().name());
             }
         }
-        log.info("Payment session transaction info has been mapped, sequenceId='{}', invoiceId='{}', paymentId='{}'",
-                sequenceId, invoiceId, paymentId);
+        additionalInfo.setSequenceId(sequenceId);
+        additionalInfo.setChangeId(changeId);
+        log.info("Payment session transaction info has been mapped, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
+                sequenceId, changeId, invoiceId, paymentId);
+        PaymentWrapper paymentWrapper = new PaymentWrapper();
+        paymentWrapper.setKey(InvoicingKey.buildKey(invoiceId, paymentId));
+        paymentWrapper.setPaymentAdditionalInfo(additionalInfo);
         return paymentWrapper;
     }
 

@@ -1,1 +1,0 @@
-ALTER TYPE nw.payer_type ADD VALUE 'recurrent';
