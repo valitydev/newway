@@ -488,6 +488,8 @@ public class DaoTests {
         assertEquals(refund, refundGet);
         refundDao.updateNotCurrent(refund.getId());
 
+        refundDao.updateCommissions(refund.getId());
+
         assertThrows(NotFoundException.class, () -> refundDao.get(refund.getInvoiceId(), refund.getPaymentId(), refund.getRefundId()));
     }
 
