@@ -64,16 +64,28 @@ public class RefundDaoImpl extends AbstractGenericDao implements RefundDao {
         MapSqlParameterSource params =
                 new MapSqlParameterSource("rfndId", rfndId).addValue("objType", PaymentChangeType.refund.name());
         this.getNamedParameterJdbcTemplate().update(
-                "UPDATE dw.refund SET fee = (SELECT dw.get_refund_fee(dw.cash_flow.*) " +
-                        "FROM dw.cash_flow WHERE obj_id = :rfndId " +
-                        "AND obj_type = CAST(:objType as dw.payment_change_type)), " +
-                        "provider_fee = (SELECT dw.get_refund_provider_fee(dw.cash_flow.*) " +
-                        "FROM dw.cash_flow WHERE obj_id = :rfndId " +
-                        "AND obj_type = CAST(:objType as dw.payment_change_type)), " +
-                        "external_fee = (SELECT dw.get_refund_external_fee(dw.cash_flow.*) " +
-                        "FROM dw.cash_flow WHERE obj_id = :rfndId " +
-                        "AND obj_type = CAST(:objType as dw.payment_change_type)) " +
-                        "WHERE  id = :rfndId",
+                """
+                        UPDATE dw.refund 
+                        SET 
+                            fee = (
+                                SELECT dw.get_refund_fee(dw.cash_flow.*)
+                                FROM dw.cash_flow 
+                                WHERE obj_id = :rfndId
+                                    AND obj_type = CAST(:objType as dw.payment_change_type)
+                                ),
+                            provider_fee = (
+                                SELECT dw.get_refund_provider_fee(dw.cash_flow.*)
+                                FROM dw.cash_flow
+                                WHERE obj_id = :rfndId
+                                    AND obj_type = CAST(:objType as dw.payment_change_type)
+                                ),
+                            external_fee = (
+                                SELECT dw.get_refund_external_fee(dw.cash_flow.*)
+                                FROM dw.cash_flow
+                                WHERE obj_id = :rfndId
+                                    AND obj_type = CAST(:objType as dw.payment_change_type)
+                                )
+                        WHERE id = :rfndId""",
                 params);
     }
 

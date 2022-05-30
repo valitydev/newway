@@ -1678,3 +1678,133 @@ CREATE TABLE dw.withdrawal_session
 CREATE INDEX withdrawal_session_event_created_at_idx ON dw.withdrawal_session USING btree (event_created_at);
 CREATE INDEX withdrawal_session_event_occured_at_idx ON dw.withdrawal_session USING btree (event_occured_at);
 CREATE INDEX withdrawal_session_id_idx ON dw.withdrawal_session USING btree (withdrawal_session_id);
+
+
+-- FUNCTION
+
+CREATE FUNCTION dw.get_cashflow_sum(_cash_flow dw.cash_flow, obj_type dw.payment_change_type,
+                                    source_account_type dw.cash_flow_account,
+                                    source_account_type_values character varying[],
+                                    destination_account_type dw.cash_flow_account,
+                                    destination_account_type_values character varying[]) RETURNS bigint
+    LANGUAGE plpgsql
+    IMMUTABLE PARALLEL SAFE
+AS
+$_$
+begin
+    return (
+        coalesce(
+                (
+                    select amount
+                    from (select ($1).*) as cash_flow
+                    where cash_flow.obj_type = $2
+                      and cash_flow.source_account_type = $3
+                      and cash_flow.source_account_type_value = ANY ($4)
+                      and cash_flow.destination_account_type = $5
+                      and cash_flow.destination_account_type_value = ANY ($6)
+                      and (
+                            (cash_flow.obj_type = 'adjustment' and cash_flow.adj_flow_type = 'new_cash_flow')
+                            or (cash_flow.obj_type != 'adjustment' and cash_flow.adj_flow_type is null)
+                        )
+                ), 0)
+        );
+end;
+$_$;
+
+
+CREATE FUNCTION dw.cashflow_sum_finalfunc(amount bigint) RETURNS bigint
+    LANGUAGE plpgsql
+    IMMUTABLE PARALLEL SAFE
+AS
+$$
+begin
+    return amount;
+end;
+$$;
+
+
+CREATE FUNCTION dw.get_refund_fee_sfunc(amount bigint, cash_flow dw.cash_flow) RETURNS bigint
+    LANGUAGE plpgsql
+    IMMUTABLE PARALLEL SAFE
+AS
+$_$
+begin
+    return $1 + (
+        dw.get_cashflow_sum(
+                $2,
+                'refund'::dw.payment_change_type,
+                'merchant'::dw.cash_flow_account,
+                '{"settlement"}',
+                'system'::dw.cash_flow_account,
+                '{"settlement"}'
+            )
+        );
+end;
+$_$;
+
+
+CREATE FUNCTION dw.get_refund_external_fee_sfunc(amount bigint, cash_flow dw.cash_flow) RETURNS bigint
+    LANGUAGE plpgsql
+    IMMUTABLE PARALLEL SAFE
+AS
+$_$
+begin
+    return $1 + (
+        dw.get_cashflow_sum(
+                $2,
+                'refund'::dw.payment_change_type,
+                'system'::dw.cash_flow_account,
+                '{"settlement"}',
+                'external'::dw.cash_flow_account,
+                '{"income", "outcome"}'
+            )
+        );
+end;
+$_$;
+
+
+CREATE FUNCTION dw.get_refund_provider_fee_sfunc(amount bigint, cash_flow dw.cash_flow) RETURNS bigint
+    LANGUAGE plpgsql
+    IMMUTABLE PARALLEL SAFE
+AS
+$_$
+begin
+    return $1 + (
+        dw.get_cashflow_sum(
+                $2,
+                'refund'::dw.payment_change_type,
+                'system'::dw.cash_flow_account,
+                '{"settlement"}',
+                'provider'::dw.cash_flow_account,
+                '{"settlement"}'
+            )
+        );
+end;
+$_$;
+
+
+-- AGGREGATE
+
+CREATE AGGREGATE dw.get_refund_external_fee(dw.cash_flow) (
+    SFUNC = dw.get_refund_external_fee_sfunc,
+    STYPE = bigint,
+    INITCOND = '0',
+    FINALFUNC = dw.cashflow_sum_finalfunc,
+    PARALLEL = safe
+    );
+
+CREATE AGGREGATE dw.get_refund_fee(dw.cash_flow) (
+    SFUNC = dw.get_refund_fee_sfunc,
+    STYPE = bigint,
+    INITCOND = '0',
+    FINALFUNC = dw.cashflow_sum_finalfunc,
+    PARALLEL = safe
+    );
+
+CREATE AGGREGATE dw.get_refund_provider_fee(dw.cash_flow) (
+    SFUNC = dw.get_refund_provider_fee_sfunc,
+    STYPE = bigint,
+    INITCOND = '0',
+    FINALFUNC = dw.cashflow_sum_finalfunc,
+    PARALLEL = safe
+    );
