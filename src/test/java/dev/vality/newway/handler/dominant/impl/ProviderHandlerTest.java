@@ -77,7 +77,7 @@ public class ProviderHandlerTest {
         PaymentMethodSelector paymentMethodSelector = new PaymentMethodSelector();
         paymentMethodSelector.setValue(Set.of(new PaymentMethodRef(
                 PaymentMethod.bank_card(new BankCardPaymentMethod()
-                        .setPaymentSystemDeprecated(LegacyBankCardPaymentSystem.visa)))));
+                                .setPaymentSystem(new PaymentSystemRef("visa"))))));
         recurrentPaytoolsProvisionTerms.setPaymentMethods(paymentMethodSelector);
         CashValueSelector cashValueSelector = new CashValueSelector();
         cashValueSelector.setValue(buildCash());
