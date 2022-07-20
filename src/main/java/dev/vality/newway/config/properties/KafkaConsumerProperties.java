@@ -11,12 +11,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "kafka.consumer")
 public class KafkaConsumerProperties {
 
-    private String autoOffsetReset;
-    private boolean enableAutoCommit;
     private String groupId;
-    private int maxPollRecords;
-    private int maxPollIntervalMs;
-    private int sessionTimeoutMs;
     private int invoicingConcurrency;
     private int recurrentPaymentToolConcurrency;
     private int partyManagementConcurrency;

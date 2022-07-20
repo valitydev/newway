@@ -15,32 +15,7 @@ public class PaymentMethodUtils {
         return paymentMethod.get()
                 .filter(PaymentMethod::isSetBankCard)
                 .map(PaymentMethod::getBankCard)
-                .flatMap(bankCard -> Optional.ofNullable(bankCard.getPaymentSystem()).map(PaymentSystemRef::getId))
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetBankCardDeprecated)
-                        .map(PaymentMethod::getBankCardDeprecated)
-                        .map(Enum::name))
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetEmptyCvvBankCardDeprecated)
-                        .map(PaymentMethod::getEmptyCvvBankCardDeprecated)
-                        .map(legacyBankCardPaymentSystem -> EMPTY_CVV + legacyBankCardPaymentSystem.name()))
-                .or(() -> paymentMethod.get()
-                        .filter(PaymentMethod::isSetTokenizedBankCardDeprecated)
-                        .map(PaymentMethod::getTokenizedBankCardDeprecated)
-                        .flatMap(PaymentMethodUtils::getTokenizedBankCardId));
-    }
-
-    private static Optional<String> getTokenizedBankCardId(TokenizedBankCard tokenizedBankCard) {
-        Optional<String> paymentSystemName = Optional.ofNullable(tokenizedBankCard.getPaymentSystem())
-                .map(PaymentSystemRef::getId);
-        Optional<String> paymentToken = Optional.ofNullable(tokenizedBankCard.getPaymentToken())
-                .map(BankCardTokenServiceRef::getId);
-
-        return paymentSystemName
-                .flatMap(name -> paymentToken
-                        .map(tokenProviderName -> name +
-                                TOKENIZED_BANK_CARD_SEPARATOR +
-                                tokenProviderName));
+                .flatMap(bankCard -> Optional.ofNullable(bankCard.getPaymentSystem()).map(PaymentSystemRef::getId));
     }
 
     public static Optional<String> getPaymentMethodRefIdByPaymentTerminal(

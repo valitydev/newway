@@ -108,12 +108,10 @@ public class RecurrentPaymentToolServiceTest {
                                                         .setPaymentResource(new DisposablePaymentResource()
                                                                 .setPaymentTool(PaymentTool.bank_card(new BankCard()
                                                                         .setToken("kkekekek_token")
-                                                                        .setPaymentSystemDeprecated(
-                                                                                LegacyBankCardPaymentSystem.amex)
+                                                                        .setPaymentSystem(new PaymentSystemRef("amex"))
                                                                         .setBin("bin")
                                                                         .setLastDigits("masked")
-                                                                        .setTokenProviderDeprecated(
-                                                                                LegacyBankCardTokenProvider.applepay)
+                                                                        .setPaymentToken(new BankCardTokenServiceRef("applepay"))
                                                                         .setIssuerCountry(CountryCode.ABH)
                                                                         .setBankName("bank_name")
                                                                         .setMetadata(Map.of("kek",
