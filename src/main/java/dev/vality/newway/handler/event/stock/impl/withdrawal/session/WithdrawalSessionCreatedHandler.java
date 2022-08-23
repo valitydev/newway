@@ -12,7 +12,6 @@ import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.withdrawal.session.iface.WithdrawalSessionDao;
-import dev.vality.newway.domain.enums.BankCardPaymentSystem;
 import dev.vality.newway.domain.enums.DestinationResourceType;
 import dev.vality.newway.domain.enums.WithdrawalSessionStatus;
 import dev.vality.newway.domain.tables.pojos.WithdrawalSession;
@@ -65,8 +64,7 @@ public class WithdrawalSessionCreatedHandler implements WithdrawalSessionHandler
             withdrawalSession.setDestinationCardBin(bankCard.getBin());
             withdrawalSession.setDestinationCardMaskedPan(bankCard.getMaskedPan());
             if (bankCard.isSetPaymentSystem()) {
-                withdrawalSession.setDestinationCardPaymentSystem(
-                        BankCardPaymentSystem.valueOf(bankCard.getPaymentSystem().getId().toLowerCase(Locale.ROOT)));
+                withdrawalSession.setDestinationCardPaymentSystem(bankCard.getPaymentSystem().getId());
             }
             withdrawalSession.setResourceBankCardBankName(bankCard.getBankName());
             if (bankCard.isSetIssuerCountry()) {
