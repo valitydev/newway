@@ -6,8 +6,6 @@ import dev.vality.geck.filter.Filter;
 import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
-import dev.vality.limiter.config.LimitTurnoverMetric;
-import dev.vality.limiter.config.LimitType;
 import dev.vality.limiter.config.TimestampedChange;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.limiter.LimitConfigDao;
@@ -68,15 +66,14 @@ public class LimitConfigCreatedHandler implements LimitConfigHandler {
                     limitConfigSource.getContextType(), LimitConfigLimitContextType.class));
         }
         if (limitConfigSource.isSetType()) {
-            if (limitConfigSource.getType().getSetField() == LimitType._Fields.TURNOVER) {
-                if (limitConfigSource.getType().getTurnover().isSetMetric()) {
-                    limitConfig.setLimitTypeTurnoverMetric(TBaseUtil.unionFieldToEnum(
-                            limitConfigSource.getType().getTurnover().getMetric(),
-                            LimitConfigLimitTypeTurnoverMetric.class));
-                    if (limitConfigSource.getType().getTurnover().getMetric().getSetField()
-                            == LimitTurnoverMetric._Fields.AMOUNT) {
-                        limitConfig.setLimitTypeTurnoverMetricAmountCurrency(
-                                limitConfigSource.getType().getTurnover().getMetric().getAmount().getCurrency());
+            if (limitConfigSource.getType().isSetTurnover()) {
+                var turnover = limitConfigSource.getType().getTurnover();
+                if (turnover.isSetMetric()) {
+                    var metric = turnover.getMetric();
+                    limitConfig.setLimitTypeTurnoverMetric(
+                            TBaseUtil.unionFieldToEnum(metric, LimitConfigLimitTypeTurnoverMetric.class));
+                    if (metric.isSetAmount()) {
+                        limitConfig.setLimitTypeTurnoverMetricAmountCurrency(metric.getAmount().getCurrency());
                     }
                 }
             }
@@ -99,8 +96,11 @@ public class LimitConfigCreatedHandler implements LimitConfigHandler {
                     limitConfigSource.getOpBehaviour().getInvoicePaymentRefund(),
                     LimitConfigOperationLimitBehaviour.class));
         }
-        if (limitConfigDao.save(limitConfig).isEmpty()) {
-            log.info("limitConfig has been bound duplicated, limitConfigId={}", limitConfigId);
-        }
+
+        limitConfigDao.save(limitConfig).ifPresentOrElse(
+                dbContractId -> log.info("LimitConfig created has been saved, sequenceId={}, limitConfigId={}",
+                        sequenceId, limitConfigId),
+                () -> log.info("LimitConfig created bound duplicated, sequenceId={}, limitConfigId={}",
+                        sequenceId, limitConfigId));
     }
 }
