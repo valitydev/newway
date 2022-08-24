@@ -29,7 +29,7 @@ public class LimitConfigDaoTest {
 
     @Test
     public void limitConfigDaoTest() {
-        jdbcTemplate.execute("truncate table nw.limit_config cascade");
+        jdbcTemplate.execute("truncate table dw.limit_config cascade");
         var pojo = dev.vality.testcontainers.annotations.util.RandomBeans.random(LimitConfig.class);
         pojo.setCurrent(true);
         pojo.setLimitScopeTypes(List.of(LimitConfigLimitScopeType.wallet, LimitConfigLimitScopeType.shop)
