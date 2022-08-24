@@ -24,5 +24,6 @@ public class KafkaConsumerProperties {
     private int sourceConcurrency;
     private int destinationConcurrency;
     private int withdrawalSessionConcurrency;
+    private int limitConfigConcurrency;
 
 }

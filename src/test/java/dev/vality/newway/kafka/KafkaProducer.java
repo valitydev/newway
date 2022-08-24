@@ -23,7 +23,6 @@ public class KafkaProducer {
     public void sendMessage(String topic) {
         SinkEvent sinkEvent = new SinkEvent();
         sinkEvent.setEvent(createMessage());
-
         testThriftKafkaProducer.send(topic, sinkEvent);
     }
 
