@@ -1,25 +1,28 @@
 package dev.vality.newway.dao;
 
 import dev.vality.limiter.config.LimitScopeType;
+import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
-import dev.vality.newway.dao.dominant.impl.CountryDaoImpl;
 import dev.vality.newway.dao.limiter.LimitConfigDao;
 import dev.vality.newway.domain.tables.pojos.LimitConfig;
-import dev.vality.newway.exception.NotFoundException;
 import dev.vality.newway.util.JsonUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static dev.vality.newway.domain.tables.LimitConfig.LIMIT_CONFIG;
 import static dev.vality.newway.utils.LimitConfigGenerator.getLimitConfig;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @PostgresqlSpringBootITest
 public class LimitConfigDaoTest {
+
+    public static final String SELECT_CURRENT = "select * from nw.limit_config where limit_config_id = ? and current = true;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -27,22 +30,26 @@ public class LimitConfigDaoTest {
     @Autowired
     private LimitConfigDao limitConfigDao;
 
-    @Autowired
-    private CountryDaoImpl countryDao;
-
     @Test
     public void limitConfigDaoTest() {
-        jdbcTemplate.execute("truncate table nw.limit_config cascade");
         var pojo = dev.vality.testcontainers.annotations.util.RandomBeans.random(LimitConfig.class);
         pojo.setCurrent(true);
         pojo.setLimitScopeTypesJson(getLimitScopeTypesJson(getLimitConfig(pojo.getLimitConfigId()).getScope().getMulti()));
-        Long id = limitConfigDao.save(pojo).get();
+        var id = limitConfigDao.save(pojo).get();
         pojo.setId(id);
-        var actual = limitConfigDao.get(pojo.getLimitConfigId());
-        Assertions.assertEquals(pojo, actual);
+        var limitConfigId = pojo.getLimitConfigId();
+        var actual = selectCurrent(limitConfigId);
+        assertEquals(pojo, actual);
         limitConfigDao.updateNotCurrent(actual.getId());
         limitConfigDao.save(pojo);
-        assertThrows(NotFoundException.class, () -> limitConfigDao.get(pojo.getLimitConfigId()));
+        assertThrows(EmptyResultDataAccessException.class, () -> selectCurrent(pojo.getLimitConfigId()));
+    }
+
+    private LimitConfig selectCurrent(String limitConfigId) {
+        return jdbcTemplate.queryForObject(
+                SELECT_CURRENT,
+                new RecordRowMapper<>(LIMIT_CONFIG, LimitConfig.class),
+                limitConfigId);
     }
 
     private String getLimitScopeTypesJson(Set<LimitScopeType> limitScopeTypes) {

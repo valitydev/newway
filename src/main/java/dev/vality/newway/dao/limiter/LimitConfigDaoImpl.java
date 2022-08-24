@@ -4,7 +4,6 @@ import dev.vality.dao.impl.AbstractGenericDao;
 import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.domain.tables.pojos.LimitConfig;
 import dev.vality.newway.exception.DaoException;
-import dev.vality.newway.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -38,15 +37,6 @@ public class LimitConfigDaoImpl extends AbstractGenericDao implements LimitConfi
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
-    }
-
-    @Override
-    public LimitConfig get(String limitConfigId) throws DaoException {
-        var query = getDslContext().selectFrom(LIMIT_CONFIG)
-                .where(LIMIT_CONFIG.LIMIT_CONFIG_ID.eq(limitConfigId).and(LIMIT_CONFIG.CURRENT));
-        return Optional.ofNullable(fetchOne(query, limitConfigRowMapper))
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("LimitConfig not found, limitConfigId='%s'", limitConfigId)));
     }
 
     @Override

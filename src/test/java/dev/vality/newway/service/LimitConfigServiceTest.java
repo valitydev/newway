@@ -2,8 +2,8 @@ package dev.vality.newway.service;
 
 import dev.vality.limiter.config.LimitConfig;
 import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
-import dev.vality.newway.dao.limiter.LimitConfigDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static dev.vality.newway.dao.LimitConfigDaoTest.SELECT_CURRENT;
 import static dev.vality.newway.domain.tables.LimitConfig.LIMIT_CONFIG;
 import static dev.vality.newway.utils.LimitConfigGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,9 +29,6 @@ public class LimitConfigServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private LimitConfigDao limitConfigDao;
-
     @Test
     public void shouldHandleAndSave() {
         var limitConfigId = UUID.randomUUID().toString();
@@ -39,7 +37,7 @@ public class LimitConfigServiceTest {
                 getMachineEvent(limitConfigId, limitConfig), getMachineEvent(UUID.randomUUID().toString())));
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, TABLE_NAME))
                 .isEqualTo(2);
-        var saved = limitConfigDao.get(limitConfigId);
+        var saved = selectCurrent(limitConfigId);
         assertThat(saved.getShardSize())
                 .isEqualTo(limitConfig.getShardSize());
     }
@@ -52,9 +50,16 @@ public class LimitConfigServiceTest {
         limitConfigService.handleEvents(List.of(getMachineEvent(limitConfigId, limitConfig)));
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, TABLE_NAME))
                 .isEqualTo(1);
-        var saved = limitConfigDao.get(limitConfigId);
+        var saved = selectCurrent(limitConfigId);
         assertThat(saved.getShardSize())
                 .isEqualTo(limitConfig.getShardSize());
+    }
+
+    private dev.vality.newway.domain.tables.pojos.LimitConfig selectCurrent(String limitConfigId) {
+        return jdbcTemplate.queryForObject(
+                SELECT_CURRENT,
+                new RecordRowMapper<>(LIMIT_CONFIG, dev.vality.newway.domain.tables.pojos.LimitConfig.class),
+                limitConfigId);
     }
 
     private MachineEvent getMachineEvent(String limitConfigId) {
