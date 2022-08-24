@@ -13,7 +13,7 @@ import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.limiter.LimitConfigDao;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.LimitConfig;
-import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +100,8 @@ public class LimitConfigCreatedHandler implements LimitConfigHandler {
                     LimitConfigOperationLimitBehaviour.class));
         }
         if (limitConfigDao.save(limitConfig).isEmpty()) {
-            log.info("limitConfig has been bound duplicated, limitConfigId={}", limitConfigId);
+            log.info("limitConfig has been bound duplicated, sequenceId={}, limitConfigId={}",
+                    sequenceId, limitConfigId);
         }
     }
 }
