@@ -6,12 +6,14 @@ import dev.vality.geck.filter.Filter;
 import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
+import dev.vality.limiter.config.LimitScopeType;
 import dev.vality.limiter.config.TimestampedChange;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.dao.limiter.LimitConfigDao;
 import dev.vality.newway.domain.enums.*;
 import dev.vality.newway.domain.tables.pojos.LimitConfig;
 import dev.vality.newway.factory.MachineEventCopyFactory;
+import dev.vality.newway.util.JsonUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -82,12 +85,10 @@ public class LimitConfigCreatedHandler implements LimitConfigHandler {
             limitConfig.setLimitScope(TBaseUtil.unionFieldToEnum(
                     limitConfigSource.getScope(), LimitConfigLimitScope.class));
             switch (limitConfigSource.getScope().getSetField()) {
-                case SINGLE -> limitConfig.setLimitScopeTypes(TBaseUtil.unionFieldToEnum(
-                        limitConfigSource.getScope().getSingle(), LimitConfigLimitScopeType.class).getLiteral());
-                case MULTI -> limitConfig.setLimitScopeTypes(limitConfigSource.getScope().getMulti().stream()
-                        .map(limitScopeType -> TBaseUtil.unionFieldToEnum(
-                                limitScopeType, LimitConfigLimitScopeType.class).getLiteral())
-                        .collect(Collectors.joining(", ")));
+                case SINGLE -> limitConfig.setLimitScopeTypesJson(
+                        getLimitScopeTypesJson(Set.of(limitConfigSource.getScope().getSingle())));
+                case MULTI -> limitConfig.setLimitScopeTypesJson(
+                        getLimitScopeTypesJson(limitConfigSource.getScope().getMulti()));
             }
         }
         limitConfig.setDescription(limitConfigSource.getDescription());
@@ -102,5 +103,11 @@ public class LimitConfigCreatedHandler implements LimitConfigHandler {
                         sequenceId, limitConfigId),
                 () -> log.info("LimitConfig created bound duplicated, sequenceId={}, limitConfigId={}",
                         sequenceId, limitConfigId));
+    }
+
+    private String getLimitScopeTypesJson(Set<LimitScopeType> limitScopeTypes) {
+        return JsonUtil.objectToJsonString(limitScopeTypes.stream()
+                .map(JsonUtil::thriftBaseToJsonNode)
+                .collect(Collectors.toList()));
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static dev.vality.newway.domain.tables.LimitConfig.LIMIT_CONFIG;
@@ -32,14 +33,27 @@ public class LimitConfigServiceTest {
 
     @Test
     public void shouldHandleAndSave() {
-        String limitConfigId = UUID.randomUUID().toString();
-        LimitConfig limitConfig = getLimitConfig(limitConfigId);
+        var limitConfigId = UUID.randomUUID().toString();
+        var limitConfig = getLimitConfig(limitConfigId);
         limitConfigService.handleEvents(List.of(
                 getMachineEvent(limitConfigId, limitConfig), getMachineEvent(UUID.randomUUID().toString())));
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, TABLE_NAME))
                 .isEqualTo(2);
-        dev.vality.newway.domain.tables.pojos.LimitConfig limitConfig1 = limitConfigDao.get(limitConfigId);
-        assertThat(limitConfig1.getShardSize())
+        var saved = limitConfigDao.get(limitConfigId);
+        assertThat(saved.getShardSize())
+                .isEqualTo(limitConfig.getShardSize());
+    }
+
+    @Test
+    public void shouldHandleAndSaveWithZeroScope() {
+        var limitConfigId = UUID.randomUUID().toString();
+        var limitConfig = getLimitConfig(limitConfigId);
+        limitConfig.getScope().setMulti(Set.of());
+        limitConfigService.handleEvents(List.of(getMachineEvent(limitConfigId, limitConfig)));
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, TABLE_NAME))
+                .isEqualTo(1);
+        var saved = limitConfigDao.get(limitConfigId);
+        assertThat(saved.getShardSize())
                 .isEqualTo(limitConfig.getShardSize());
     }
 

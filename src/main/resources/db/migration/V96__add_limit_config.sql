@@ -25,7 +25,7 @@ create table if not exists nw.limit_config
     limit_type_turnover_metric                 nw.limit_config_limit_type_turnover_metric,
     limit_type_turnover_metric_amount_currency varchar,
     limit_scope                                nw.limit_config_limit_scope,
-    limit_scope_types                          text,
+    limit_scope_types_json                     text,
     description                                varchar,
     operation_limit_behaviour                  nw.limit_config_operation_limit_behaviour,
     wtime                                      TIMESTAMP WITHOUT TIME ZONE        NOT NULL DEFAULT (now() at time zone 'utc'),
