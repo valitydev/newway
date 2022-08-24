@@ -27,7 +27,8 @@ import java.lang.annotation.Target;
                 "kafka.topics.withdrawal-session.enabled=true",
                 "kafka.topics.source.enabled=true",
                 "kafka.topics.destination.enabled=true",
-                "kafka.topics.pm-events-payout.enabled=true"},
+                "kafka.topics.pm-events-payout.enabled=true",
+                "kafka.topics.limit-config.enabled=true"},
         topicsKeys = {
                 "kafka.topics.invoice.id",
                 "kafka.topics.recurrent-payment-tool.id",
@@ -40,7 +41,8 @@ import java.lang.annotation.Target;
                 "kafka.topics.withdrawal-session.id",
                 "kafka.topics.source.id",
                 "kafka.topics.destination.id",
-                "kafka.topics.pm-events-payout.id"})
+                "kafka.topics.pm-events-payout.id",
+                "kafka.topics.limit-config.id"})
 @DefaultSpringBootTest
 @Import(KafkaProducer.class)
 public @interface KafkaPostgresqlSpringBootITest {

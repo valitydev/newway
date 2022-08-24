@@ -1,6 +1,5 @@
 package dev.vality.newway.handler.event.stock;
 
-
 import dev.vality.geck.filter.Filter;
 import org.apache.commons.lang3.NotImplementedException;
 
