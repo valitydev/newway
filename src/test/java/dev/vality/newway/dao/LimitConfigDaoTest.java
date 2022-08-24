@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @PostgresqlSpringBootITest
 public class LimitConfigDaoTest {
 
-    public static final String SELECT_CURRENT = "select * from nw.limit_config where limit_config_id = ? and current = true;";
+    public static final String SELECT_CURRENT = "select * from dw.limit_config where limit_config_id = ? and current = true;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
