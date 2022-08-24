@@ -66,6 +66,7 @@ kafka:
     source-concurrency: 7
     destination-concurrency: 7
     withdrawal-session-concurrency: 7
+    limit-config-concurrency: 7
   topics:
     invoice:
       id: mg-invoice-100-2
@@ -103,6 +104,9 @@ kafka:
       enabled: false
     pm-events-payout:
       id: pm-events-payout
+      enabled: false
+    limit-config:
+      id: mg-events-lim-config
       enabled: false
 
 dmt:
