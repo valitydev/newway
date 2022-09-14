@@ -47,7 +47,6 @@ public class ProxyHandler extends AbstractDominantHandler<ProxyObject, Proxy, In
         proxy.setName(data.getName());
         proxy.setDescription(data.getDescription());
         proxy.setUrl(data.getUrl());
-        proxy.setOptionsJson(JsonUtil.objectToJsonString(data.getOptions()));
         proxy.setCurrent(current);
         return proxy;
     }
