@@ -49,7 +49,6 @@ public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Pro
         provider.setName(data.getName());
         provider.setDescription(data.getDescription());
         provider.setProxyRefId(data.getProxy().getRef().getId());
-        provider.setProxyAdditionalJson(JsonUtil.objectToJsonString(data.getProxy().getAdditional()));
         if (data.isSetAbsAccount()) {
             provider.setAbsAccount(data.getAbsAccount());
         }

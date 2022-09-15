@@ -45,9 +45,6 @@ public class TerminalHandler extends AbstractDominantHandler<TerminalObject, Ter
         dev.vality.damsel.domain.Terminal data = terminalObject.getData();
         terminal.setName(data.getName());
         terminal.setDescription(data.getDescription());
-        if (data.isSetOptions()) {
-            terminal.setOptionsJson(JsonUtil.objectToJsonString(data.getOptions()));
-        }
         if (data.isSetRiskCoverage()) {
             terminal.setRiskCoverage(data.getRiskCoverage().name());
         }
