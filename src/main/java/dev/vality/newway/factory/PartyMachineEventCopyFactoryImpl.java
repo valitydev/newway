@@ -18,7 +18,6 @@ public class PartyMachineEventCopyFactoryImpl implements MachineEventCopyFactory
             party = new Party();
         }
         party.setId(null);
-        party.setRevision(null);
         party.setWtime(null);
         party.setSequenceId(sequenceId.intValue());
         party.setChangeId(id);
