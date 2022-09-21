@@ -54,6 +54,8 @@ public class WithdrawalRouteChangeHandler implements WithdrawalHandler {
         String providerIdLegacy = route.getProviderIdLegacy();
         withdrawalNew.setProviderId(providerId);
         withdrawalNew.setProviderIdLegacy(providerIdLegacy);
+        withdrawalNew.setTerminalId(route.isSetTerminalId()
+                ? String.valueOf(route.getTerminalId()) : null);
 
         withdrawalDao.save(withdrawalNew).ifPresentOrElse(
                 id -> {

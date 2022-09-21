@@ -43,6 +43,9 @@ public class WithdrawalCreatedHandler implements WithdrawalHandler {
         withdrawal.setWalletId(withdrawalDamsel.getWalletId());
         withdrawal.setDestinationId(withdrawalDamsel.getDestinationId());
         withdrawal.setExternalId(withdrawalDamsel.getExternalId());
+        if (withdrawalDamsel.getRoute() != null && withdrawalDamsel.getRoute().isSetTerminalId()) {
+            withdrawal.setTerminalId(String.valueOf(withdrawalDamsel.getRoute().getTerminalId()));
+        }
 
         Cash cash = withdrawalDamsel.getBody();
         withdrawal.setAmount(cash.getAmount());
