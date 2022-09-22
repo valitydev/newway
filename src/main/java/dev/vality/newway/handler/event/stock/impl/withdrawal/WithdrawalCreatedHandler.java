@@ -48,6 +48,9 @@ public class WithdrawalCreatedHandler implements WithdrawalHandler {
         withdrawal.setAmount(cash.getAmount());
         withdrawal.setCurrencyCode(cash.getCurrency().getSymbolicCode());
         withdrawal.setWithdrawalStatus(WithdrawalStatus.pending);
+        if (withdrawalDamsel.getRoute() != null && withdrawalDamsel.getRoute().isSetTerminalId()) {
+            withdrawal.setTerminalId(String.valueOf(withdrawalDamsel.getRoute().getTerminalId()));
+        }
 
         withdrawalDao.save(withdrawal).ifPresentOrElse(
                 dbContractId -> log

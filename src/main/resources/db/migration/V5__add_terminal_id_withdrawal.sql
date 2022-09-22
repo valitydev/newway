@@ -1,0 +1,1 @@
+ALTER TABLE dw.withdrawal ADD COLUMN IF NOT EXISTS terminal_id character varying;
