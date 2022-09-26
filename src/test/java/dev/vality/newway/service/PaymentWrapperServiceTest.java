@@ -1,11 +1,15 @@
 package dev.vality.newway.service;
 
+import dev.vality.newway.TestData;
 import dev.vality.newway.config.PostgresqlSpringBootITest;
 import dev.vality.newway.dao.invoicing.iface.*;
 import dev.vality.newway.dao.invoicing.impl.PaymentDaoImpl;
 import dev.vality.newway.domain.enums.PaymentChangeType;
-import dev.vality.newway.domain.tables.pojos.*;
+import dev.vality.newway.domain.tables.pojos.CashFlow;
+import dev.vality.newway.domain.tables.pojos.CashFlowLink;
+import dev.vality.newway.domain.tables.pojos.PaymentFee;
 import dev.vality.newway.model.CashFlowWrapper;
+import dev.vality.newway.model.InvoicingKey;
 import dev.vality.newway.model.PaymentWrapper;
 import dev.vality.newway.utils.PaymentWrapperTestUtil;
 import dev.vality.testcontainers.annotations.util.RandomBeans;
@@ -13,11 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 
-import static dev.vality.newway.utils.JdbcUtil.countPaymentEntity;
 import static dev.vality.newway.utils.JdbcUtil.countEntities;
+import static dev.vality.newway.utils.JdbcUtil.countPaymentEntity;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @PostgresqlSpringBootITest
@@ -77,7 +83,7 @@ public class PaymentWrapperServiceTest {
     }
 
     private List<PaymentWrapper> preparePaymentWrappers() {
-        List<PaymentWrapper> paymentWrappers = RandomBeans.randomListOf(2,PaymentWrapper.class);
+        List<PaymentWrapper> paymentWrappers = RandomBeans.randomListOf(2, PaymentWrapper.class);
         paymentWrappers.forEach(pw -> {
             pw.setCashFlowWrapper(new CashFlowWrapper(
                     RandomBeans.random(CashFlowLink.class),
@@ -130,5 +136,22 @@ public class PaymentWrapperServiceTest {
         assertEquals(2, countEntities(jdbcTemplate, "payment_route"));
         assertEquals(2, countEntities(jdbcTemplate, "cash_flow_link"));
         assertEquals(6, countEntities(jdbcTemplate, "cash_flow"));
+    }
+
+    @Test
+    void testPaymentFeeWithEmptyWrapper() {
+        PaymentFee paymentFee = new PaymentFee();
+        paymentFee.setPaymentId(TestData.randomString());
+        paymentFee.setInvoiceId(TestData.randomString());
+        paymentFee.setEventCreatedAt(LocalDateTime.now());
+        PaymentWrapper wrapperWithFee = new PaymentWrapper();
+        wrapperWithFee.setPaymentFee(paymentFee);
+        wrapperWithFee.setKey(InvoicingKey.builder()
+                .paymentId(paymentFee.getPaymentId())
+                .invoiceId(paymentFee.getInvoiceId())
+                .build());
+        PaymentWrapper emptyWrapper = new PaymentWrapper();
+
+        assertDoesNotThrow(() -> paymentWrapperService.save(List.of(wrapperWithFee, emptyWrapper)));
     }
 }

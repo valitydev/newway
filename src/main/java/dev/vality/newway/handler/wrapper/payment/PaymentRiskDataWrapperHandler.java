@@ -27,11 +27,13 @@ public class PaymentRiskDataWrapperHandler implements WrapperHandler<PaymentWrap
 
     @Override
     public void saveBatch(List<PaymentWrapper> wrappers) {
-        List<PaymentRiskData> paymentRiskDataList = wrappers.stream()
-                .map(PaymentWrapper::getPaymentRiskData)
-                .filter(Objects::nonNull)
+        List<PaymentWrapper> processableWrappers = wrappers.stream()
+                .filter(paymentWrapper -> Objects.nonNull(paymentWrapper.getPaymentRiskData()))
                 .collect(Collectors.toList());
-            paymentRiskDataDao.saveBatch(paymentRiskDataList);
-            paymentRiskDataDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(wrappers));
+        List<PaymentRiskData> paymentRiskDataList = processableWrappers.stream()
+                .map(PaymentWrapper::getPaymentRiskData)
+                .collect(Collectors.toList());
+        paymentRiskDataDao.saveBatch(paymentRiskDataList);
+        paymentRiskDataDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(processableWrappers));
     }
 }
