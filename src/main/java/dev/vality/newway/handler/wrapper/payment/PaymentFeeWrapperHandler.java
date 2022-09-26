@@ -27,11 +27,13 @@ public class PaymentFeeWrapperHandler implements WrapperHandler<PaymentWrapper> 
 
     @Override
     public void saveBatch(List<PaymentWrapper> wrappers) {
-        List<PaymentFee> paymentFees = wrappers.stream()
+        List<PaymentWrapper> processableWrappers = wrappers.stream()
+                .filter(paymentWrapper -> Objects.nonNull(paymentWrapper.getPaymentFee()))
+                .collect(Collectors.toList());
+        List<PaymentFee> paymentFees = processableWrappers.stream()
                 .map(PaymentWrapper::getPaymentFee)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         paymentFeeDao.saveBatch(paymentFees);
-        paymentFeeDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(wrappers));
+        paymentFeeDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(processableWrappers));
     }
 }

@@ -27,11 +27,13 @@ public class PaymentAdditionalInfoWrapperHandler implements WrapperHandler<Payme
 
     @Override
     public void saveBatch(List<PaymentWrapper> wrappers) {
-        List<PaymentAdditionalInfo> paymentAdditionalInfos = wrappers.stream()
+        List<PaymentWrapper> processableWrappers = wrappers.stream()
+                .filter(paymentWrapper -> Objects.nonNull(paymentWrapper.getPaymentAdditionalInfo()))
+                .collect(Collectors.toList());
+        List<PaymentAdditionalInfo> paymentAdditionalInfos = processableWrappers.stream()
                 .map(PaymentWrapper::getPaymentAdditionalInfo)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         paymentAdditionalInfoDao.saveBatch(paymentAdditionalInfos);
-        paymentAdditionalInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(wrappers));
+        paymentAdditionalInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(processableWrappers));
     }
 }
