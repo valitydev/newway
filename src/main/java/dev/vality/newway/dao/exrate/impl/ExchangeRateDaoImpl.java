@@ -12,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 
 import static dev.vality.newway.domain.tables.Exrate.EXRATE;
 
@@ -25,7 +24,7 @@ public class ExchangeRateDaoImpl extends AbstractGenericDao implements ExchangeR
     }
 
     @Override
-    public Long save(Exrate exchangeRate) throws DaoException {
+    public void save(Exrate exchangeRate) throws DaoException {
         ExrateRecord record = getDslContext().newRecord(EXRATE, exchangeRate);
         Query query = getDslContext().insertInto(EXRATE).set(record)
                 .onConflict(EXRATE.EVENT_ID)
@@ -33,7 +32,5 @@ public class ExchangeRateDaoImpl extends AbstractGenericDao implements ExchangeR
                 .returning(EXRATE.ID);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         execute(query, keyHolder);
-
-        return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue).orElse(null);
     }
 }
