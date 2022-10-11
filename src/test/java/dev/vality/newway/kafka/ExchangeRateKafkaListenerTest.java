@@ -8,23 +8,24 @@ import dev.vality.exrates.events.CurrencyExchangeRate;
 import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.newway.config.KafkaPostgresqlSpringBootITest;
 import dev.vality.newway.dao.exrate.iface.ExchangeRateDao;
+import dev.vality.newway.domain.tables.pojos.Exrate;
 import dev.vality.newway.service.ExchangeRateService;
 import org.apache.thrift.TBase;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 @KafkaPostgresqlSpringBootITest
 public class ExchangeRateKafkaListenerTest {
@@ -45,12 +46,24 @@ public class ExchangeRateKafkaListenerTest {
     public void listenExchangeRateEventTest() {
         // Given
         CurrencyEvent currencyEvent = buildCurrencyEvent();
+        CurrencyExchangeRate exchangeRate = currencyEvent.payload.getExchangeRate();
 
         // When
         testThriftKafkaProducer.send(topic, currencyEvent);
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> {
+            return exchangeRateDao.findBySourceSymbolicCode(exchangeRate.getSourceCurrency().getSymbolicCode()) != null;
+        });
+        Exrate exrate = exchangeRateDao.findBySourceSymbolicCode(exchangeRate.getSourceCurrency().getSymbolicCode());
 
         // Then
         verify(exchangeRateService, timeout(TimeUnit.MINUTES.toMillis(1)).times(1)).handleEvents(anyList());
+        assertEquals(exchangeRate.getSourceCurrency().getSymbolicCode(), exrate.getSourceCurrencySymbolicCode());
+        assertEquals(exchangeRate.getSourceCurrency().getExponent(), exrate.getSourceCurrencyExponent());
+        assertEquals(exchangeRate.getDestinationCurrency().getSymbolicCode(), exrate.getDestinationCurrencySymbolicCode());
+        assertEquals(exchangeRate.getDestinationCurrency().getExponent(), exrate.getDestinationCurrencyExponent());
+        assertEquals(exchangeRate.getExchangeRate().p, exrate.getRationalP());
+        assertEquals(exchangeRate.getExchangeRate().q, exrate.getRationalQ());
+        assertEquals(exchangeRate.getTimestamp(), TypeUtil.temporalToString(exrate.getRateTimestamp()));
     }
 
     private CurrencyEvent buildCurrencyEvent() {

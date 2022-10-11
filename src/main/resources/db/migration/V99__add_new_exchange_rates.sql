@@ -14,4 +14,6 @@ CREATE TABLE nw.exrate
 
 CREATE INDEX rate_timestamp_idx ON nw.exrate (rate_timestamp);
 
-CREATE INDEX source_currency_rate_timestamp_idx ON nw.exrate (source_currency_symbolic_code, rate_timestamp);
+CREATE INDEX source_currency_sc_destination_currency_sc_timestamp_idx ON nw.exrate (source_currency_symbolic_code,
+                                                                                    destination_currency_symbolic_code,
+                                                                                    rate_timestamp);
