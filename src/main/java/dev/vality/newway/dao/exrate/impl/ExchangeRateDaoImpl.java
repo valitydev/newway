@@ -8,7 +8,6 @@ import dev.vality.newway.domain.tables.records.ExrateRecord;
 import org.jooq.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -30,7 +29,6 @@ public class ExchangeRateDaoImpl extends AbstractGenericDao implements ExchangeR
                 .onConflict(EXRATE.EVENT_ID)
                 .doNothing()
                 .returning(EXRATE.ID);
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        execute(query, keyHolder);
+        execute(query);
     }
 }
