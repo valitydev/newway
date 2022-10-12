@@ -35,6 +35,9 @@ public class KafkaConfig {
     @Value("${kafka.topics.party-management.consumer.group-id}")
     private String partyConsumerGroup;
 
+    @Value("${kafka.topics.exrate.consumer.group-id}")
+    private String exrateConsumerGroup;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         return createConsumerConfig();
@@ -143,7 +146,7 @@ public class KafkaConfig {
         Map<String, Object> props = kafkaProperties.buildConsumerProperties();
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CurrencyExchangeRateEventDeserializer.class);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConsumerProperties.getGroupId());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, exrateConsumerGroup);
         ConsumerFactory<String, CurrencyEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
 
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getExrateConcurrency());
