@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -63,7 +64,8 @@ public class ExchangeRateKafkaListenerTest {
         assertEquals(exchangeRate.getDestinationCurrency().getExponent(), exrate.getDestinationCurrencyExponent());
         assertEquals(exchangeRate.getExchangeRate().p, exrate.getRationalP());
         assertEquals(exchangeRate.getExchangeRate().q, exrate.getRationalQ());
-        assertEquals(TypeUtil.stringToLocalDateTime(exchangeRate.getTimestamp()), exrate.getRateTimestamp());
+        assertEquals(TypeUtil.stringToLocalDateTime(exchangeRate.getTimestamp()).truncatedTo(ChronoUnit.SECONDS),
+                exrate.getRateTimestamp().truncatedTo(ChronoUnit.SECONDS));
     }
 
     private CurrencyEvent buildCurrencyEvent() {
