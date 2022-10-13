@@ -63,7 +63,7 @@ public class ExchangeRateKafkaListenerTest {
         assertEquals(exchangeRate.getDestinationCurrency().getExponent(), exrate.getDestinationCurrencyExponent());
         assertEquals(exchangeRate.getExchangeRate().p, exrate.getRationalP());
         assertEquals(exchangeRate.getExchangeRate().q, exrate.getRationalQ());
-        assertEquals(exchangeRate.getTimestamp(), TypeUtil.temporalToString(exrate.getRateTimestamp()));
+        assertEquals(TypeUtil.stringToLocalDateTime(exchangeRate.getTimestamp()), exrate.getRateTimestamp());
     }
 
     private CurrencyEvent buildCurrencyEvent() {
