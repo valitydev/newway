@@ -112,7 +112,7 @@ kafka:
     exrate:
       id: etl-exchange-rate
       enabled: false
-      consumer.group-id: "newway-exrate"
+      consumer.group-id: "daway-exrate"
 
 dmt:
   url: http://dominant:8022/v1/domain/repository

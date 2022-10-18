@@ -29,7 +29,6 @@ import java.lang.annotation.Target;
                 "kafka.topics.destination.enabled=true",
                 "kafka.topics.pm-events-payout.enabled=true",
                 "kafka.topics.limit-config.enabled=true",
-                "kafka.topics.limit-config.enabled=true",
                 "kafka.topics.exrate.enabled=true"},
         topicsKeys = {
                 "kafka.topics.invoice.id",
