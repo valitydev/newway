@@ -34,7 +34,8 @@ public class ExchangeRateDaoImpl extends AbstractGenericDao implements ExchangeR
                 .map(exrate -> getDslContext().newRecord(EX_RATE, exrate))
                 .map(record -> (Query) getDslContext().insertInto(EX_RATE).set(record)
                         .onConflict(EX_RATE.EVENT_ID)
-                        .doNothing()).collect(Collectors.toList());
+                        .doNothing())
+                .collect(Collectors.toList());
         batchExecute(queryList);
     }
 
