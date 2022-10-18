@@ -1,4 +1,4 @@
-CREATE TABLE dw.exrate
+CREATE TABLE dw.ex_rate
 (
     id                                 BIGSERIAL                   NOT NULL,
     event_id                           uuid UNIQUE                 NOT NULL,
@@ -12,8 +12,8 @@ CREATE TABLE dw.exrate
     rate_timestamp                     TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
-CREATE INDEX rate_timestamp_idx ON dw.exrate (rate_timestamp);
+CREATE INDEX rate_timestamp_idx ON dw.ex_rate (rate_timestamp);
 
-CREATE INDEX source_currency_sc_destination_currency_sc_timestamp_idx ON dw.exrate (source_currency_symbolic_code,
+CREATE INDEX source_currency_sc_destination_currency_sc_timestamp_idx ON dw.ex_rate (source_currency_symbolic_code,
                                                                                     destination_currency_symbolic_code,
                                                                                     rate_timestamp);

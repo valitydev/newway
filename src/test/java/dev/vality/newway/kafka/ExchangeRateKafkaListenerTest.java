@@ -8,7 +8,7 @@ import dev.vality.exrates.events.CurrencyExchangeRate;
 import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.newway.config.KafkaPostgresqlSpringBootITest;
 import dev.vality.newway.dao.exrate.iface.ExchangeRateDao;
-import dev.vality.newway.domain.tables.pojos.Exrate;
+import dev.vality.newway.domain.tables.pojos.ExRate;
 import dev.vality.newway.service.ExchangeRateService;
 import org.apache.thrift.TBase;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class ExchangeRateKafkaListenerTest {
         await().atMost(30, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> {
             return exchangeRateDao.findBySourceSymbolicCode(exchangeRate.getSourceCurrency().getSymbolicCode()) != null;
         });
-        Exrate exrate = exchangeRateDao.findBySourceSymbolicCode(exchangeRate.getSourceCurrency().getSymbolicCode());
+        ExRate exrate = exchangeRateDao.findBySourceSymbolicCode(exchangeRate.getSourceCurrency().getSymbolicCode());
 
         // Then
         verify(exchangeRateService, timeout(TimeUnit.MINUTES.toMillis(1)).times(1)).handleEvents(anyList());

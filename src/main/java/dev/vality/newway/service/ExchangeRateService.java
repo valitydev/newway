@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,11 +18,12 @@ public class ExchangeRateService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void handleEvents(List<CurrencyEvent> events) {
-        for (CurrencyEvent event : events) {
-            exchangeRateHandlers.stream()
-                    .filter(exchangeRateHandler -> exchangeRateHandler.isHandle(event))
-                    .forEach(exchangeRateHandler -> exchangeRateHandler.handle(event));
-        }
+        events.stream()
+                .collect(Collectors.groupingBy(
+                        currencyEvent -> exchangeRateHandlers.stream()
+                                .filter(exchangeRateHandler -> exchangeRateHandler.isHandle(currencyEvent))
+                                .findAny().orElseThrow())
+                ).forEach(ExchangeRateHandler::handle);
     }
 
 }
