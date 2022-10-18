@@ -1,8 +1,10 @@
 package dev.vality.newway.config;
 
+import dev.vality.exrates.events.CurrencyEvent;
 import dev.vality.kafka.common.util.ExponentialBackOffDefaultErrorHandlerFactory;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.config.properties.KafkaConsumerProperties;
+import dev.vality.newway.serde.CurrencyExchangeRateEventDeserializer;
 import dev.vality.newway.serde.PayoutEventDeserializer;
 import dev.vality.newway.serde.SinkEventDeserializer;
 import dev.vality.payout.manager.Event;
@@ -32,6 +34,9 @@ public class KafkaConfig {
 
     @Value("${kafka.topics.party-management.consumer.group-id}")
     private String partyConsumerGroup;
+
+    @Value("${kafka.topics.exrate.consumer.group-id}")
+    private String exrateConsumerGroup;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -136,9 +141,20 @@ public class KafkaConfig {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getLimitConfigConcurrency());
     }
 
-    private KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> createConcurrentFactory(
-            ConsumerFactory<String, MachineEvent> consumerFactory, int threadsNumber) {
-        ConcurrentKafkaListenerContainerFactory<String, MachineEvent> factory =
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, CurrencyEvent>> exchangeRateContainerFactory() {
+        Map<String, Object> props = kafkaProperties.buildConsumerProperties();
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CurrencyExchangeRateEventDeserializer.class);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, exrateConsumerGroup);
+        ConsumerFactory<String, CurrencyEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
+
+        return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getExrateConcurrency());
+    }
+
+    private <T> KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, T>> createConcurrentFactory(
+            ConsumerFactory<String, T> consumerFactory, int threadsNumber) {
+        ConcurrentKafkaListenerContainerFactory<String, T> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         initFactory(consumerFactory, threadsNumber, factory);
         return factory;
