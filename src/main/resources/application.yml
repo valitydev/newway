@@ -67,6 +67,7 @@ kafka:
     destination-concurrency: 7
     withdrawal-session-concurrency: 7
     limit-config-concurrency: 7
+    exrate-concurrency: 7
   topics:
     invoice:
       id: mg-invoice-100-2
@@ -108,6 +109,10 @@ kafka:
     limit-config:
       id: mg-events-lim-config
       enabled: false
+    exrate:
+      id: etl-exchange-rate
+      enabled: false
+      consumer.group-id: "daway-exrate"
 
 dmt:
   url: http://dominant:8022/v1/domain/repository
