@@ -175,7 +175,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>limiter-proto</artifactId>
-            <version>1.32-6158184</version>
+            <version>1.33-31de59b</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
