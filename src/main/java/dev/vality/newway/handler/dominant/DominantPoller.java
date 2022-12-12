@@ -2,7 +2,6 @@ package dev.vality.newway.handler.dominant;
 
 import dev.vality.damsel.domain_config.Commit;
 import dev.vality.damsel.domain_config.RepositorySrv;
-import org.apache.thrift.TException;
 import dev.vality.newway.service.DominantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class DominantPoller {
                 pullRange.entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .forEach(e -> handleDominantData(after, versionId, e));
-            } catch (TException e) {
+            } catch (Exception e) {
                 log.warn("Error to polling dominant, after={}", after, e);
             }
         }
