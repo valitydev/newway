@@ -35,7 +35,7 @@ public class DominantPoller {
                 pullRange.entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .forEach(e -> handleDominantData(after, versionId, e));
-            } catch (TException e) {
+            } catch (Exception e) {
                 log.warn("Error to polling dominant, after={}", after, e);
             }
         }
