@@ -6,7 +6,6 @@ import dev.vality.newway.service.DominantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.apache.thrift.TException;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -35,7 +34,7 @@ public class DominantPoller {
                 pullRange.entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .forEach(e -> handleDominantData(after, versionId, e));
-            } catch (TException e) {
+            } catch (Exception e) {
                 log.warn("Error to polling dominant, after={}", after, e);
             }
         }
