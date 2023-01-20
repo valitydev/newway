@@ -142,8 +142,6 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
-            <!-- TODO: bump version in parent -->
-            <version>1.569-09e7a75</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -189,7 +187,6 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
