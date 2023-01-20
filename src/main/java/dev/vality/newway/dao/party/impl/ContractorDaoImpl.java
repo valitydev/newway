@@ -7,13 +7,13 @@ import dev.vality.newway.domain.tables.pojos.Contractor;
 import dev.vality.newway.domain.tables.records.ContractorRecord;
 import dev.vality.newway.exception.DaoException;
 import dev.vality.newway.exception.NotFoundException;
+import jakarta.validation.constraints.NotNull;
 import org.jooq.Query;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 import static dev.vality.newway.domain.Tables.CONTRACTOR;

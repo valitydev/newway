@@ -6,9 +6,9 @@ import dev.vality.newway.dao.dominant.impl.PaymentMethodDaoImpl;
 import dev.vality.newway.domain.enums.PaymentMethodType;
 import dev.vality.newway.handler.dominant.AbstractDominantHandler;
 import dev.vality.newway.util.PaymentMethodUtils;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
