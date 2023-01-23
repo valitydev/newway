@@ -16,7 +16,6 @@ import dev.vality.newway.domain.enums.RecurrentPaymentToolStatus;
 import dev.vality.newway.domain.tables.pojos.RecurrentPaymentTool;
 import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
 import dev.vality.newway.util.JsonUtil;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,7 +32,6 @@ public class RecurrentPaymentToolHasCreatedHandler implements RecurrentPaymentTo
     private final RecurrentPaymentToolDao recurrentPaymentToolDao;
     private final MachineEventCopyFactory<RecurrentPaymentTool, Integer> recurrentPaymentToolCopyFactory;
 
-    @Getter
     private final Filter filter = new PathConditionFilter(
             new PathConditionRule("rec_payment_tool_created", new IsNullCondition().not()));
 
