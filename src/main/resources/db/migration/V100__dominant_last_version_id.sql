@@ -4,7 +4,7 @@ CREATE TABLE nw.dominant_last_version_id
     wtime           TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (now() at time zone 'utc')
 );
 
-update nw.dominant_last_version_id set version_id =
+insert into nw.dominant_last_version_id(version_id) values(
 (select max(version_id) from nw.CALENDAR
 union all
 select max(version_id) from nw.CATEGORY
@@ -36,6 +36,6 @@ select max(version_id) from nw.CATEGORY
  select max(version_id) from nw.PAYMENT_ROUTING_RULE
  union all
  select max(version_id) from nw.CATEGORY
-    )
+    ))
 ;
 
