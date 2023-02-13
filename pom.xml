@@ -26,8 +26,8 @@
         <db.password>postgres</db.password>
         <db.name>newway</db.name>
         <db.schema>nw</db.schema>
-        <local.pg.url>jdbc:postgresql://localhost:5432/newway</local.pg.url>
-        <local.pg.port>5432</local.pg.port>
+        <local.pg.url>jdbc:postgresql://localhost:5433/newway</local.pg.url>
+        <local.pg.port>5433</local.pg.port>
         <checkstyle.config.suppressions.path>./src/main/resources/checkstyle/checkstyle-suppressions.xml
         </checkstyle.config.suppressions.path>
     </properties>
