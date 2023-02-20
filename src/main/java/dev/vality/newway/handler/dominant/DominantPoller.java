@@ -44,6 +44,7 @@ public class DominantPoller {
         try {
             versionId.set(e.getKey());
             dominantService.processCommit(versionId.get(), e);
+            dominantService.updateLastVersionId(versionId.get());
             after.set(versionId.get());
         } catch (RuntimeException ex) {
             throw new RuntimeException(
