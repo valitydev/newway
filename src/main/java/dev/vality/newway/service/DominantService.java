@@ -51,4 +51,9 @@ public class DominantService {
         log.info("Last dominant versionId={}", lastVersionId);
         return lastVersionId;
     }
+
+    public void updateLastVersionId(Long lastVersionId) {
+        dominantDao.updateLastVersionId(lastVersionId);
+        log.info("Last dominant versionId={} is updated", lastVersionId);
+    }
 }
