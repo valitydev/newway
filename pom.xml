@@ -161,7 +161,7 @@
             <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
             <!-- TODO: bump version in parent -->
-            <version>1.596-52dbefd</version>
+            <version>1.597-bfedcb9</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
