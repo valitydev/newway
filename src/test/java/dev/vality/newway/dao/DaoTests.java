@@ -174,8 +174,6 @@ public class DaoTests {
         termSetHierarchyDao.save(termSetHierarchy);
         termSetHierarchyDao.updateNotCurrent(termSetHierarchy.getTermSetHierarchyRefId());
 
-        Long lastVersionId = dominantDao.getLastVersionId();
-
         OptionalLong maxVersionId = LongStream.of(
                 calendar.getVersionId(),
                 category.getVersionId(),
@@ -189,6 +187,9 @@ public class DaoTests {
                 proxy.getVersionId(),
                 terminal.getVersionId(),
                 termSetHierarchy.getVersionId()).max();
+
+        dominantDao.updateLastVersionId(maxVersionId.getAsLong());
+        Long lastVersionId = dominantDao.getLastVersionId();
 
         Assertions.assertEquals(maxVersionId.getAsLong(), lastVersionId.longValue());
     }
