@@ -37,6 +37,8 @@ public class PaymentWrapperServiceTest {
     @Autowired
     private PaymentStatusInfoDao paymentStatusInfoDao;
     @Autowired
+    private PaymentSessionInfoDao paymentSessionInfoDao;
+    @Autowired
     private PaymentPayerInfoDao paymentPayerInfoDao;
     @Autowired
     private PaymentAdditionalInfoDao paymentAdditionalInfoDao;
