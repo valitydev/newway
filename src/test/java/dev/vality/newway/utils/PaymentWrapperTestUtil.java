@@ -57,6 +57,10 @@ public class PaymentWrapperTestUtil {
             wrapper.getPaymentRiskData().setInvoiceId(invoiceId);
             wrapper.getPaymentRiskData().setPaymentId(paymentId);
         }
+        if (wrapper.getPaymentSessionInfo() != null) {
+            wrapper.getPaymentSessionInfo().setInvoiceId(invoiceId);
+            wrapper.getPaymentSessionInfo().setPaymentId(paymentId);
+        }
         if (wrapper.getPaymentFee() != null) {
             wrapper.getPaymentFee().setInvoiceId(invoiceId);
             wrapper.getPaymentFee().setPaymentId(paymentId);
