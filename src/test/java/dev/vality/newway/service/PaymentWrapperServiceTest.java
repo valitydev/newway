@@ -108,6 +108,7 @@ public class PaymentWrapperServiceTest {
         assertEquals(expected.getPaymentRiskData(), paymentRiskDataDao.get(invoiceId, paymentId));
         assertEquals(expected.getPaymentFee(), paymentFeeDao.get(invoiceId, paymentId));
         assertEquals(expected.getPaymentRoute(), paymentRouteDao.get(invoiceId, paymentId));
+        assertEquals(expected.getPaymentSessionInfo(), paymentSessionInfoDao.get(invoiceId, paymentId));
         assertEquals(expected.getCashFlowWrapper().getCashFlowLink(), cashFlowLinkDao.get(invoiceId, paymentId));
         assertEquals(
                 new HashSet<>(expected.getCashFlowWrapper().getCashFlows()),
@@ -125,6 +126,7 @@ public class PaymentWrapperServiceTest {
         assertEquals(1, countPaymentEntity(jdbcTemplate, "payment_fee", invoiceId, paymentId, false));
         assertEquals(1, countPaymentEntity(jdbcTemplate, "payment_route", invoiceId, paymentId, false));
         assertEquals(1, countPaymentEntity(jdbcTemplate, "cash_flow_link", invoiceId, paymentId, false));
+        assertEquals(1, countPaymentEntity(jdbcTemplate, "payment_session_info", invoiceId, paymentId, false));
     }
 
     private void assertTotalDuplication() {
@@ -138,6 +140,7 @@ public class PaymentWrapperServiceTest {
         assertEquals(2, countEntities(jdbcTemplate, "payment_route"));
         assertEquals(2, countEntities(jdbcTemplate, "cash_flow_link"));
         assertEquals(6, countEntities(jdbcTemplate, "cash_flow"));
+        assertEquals(2, countEntities(jdbcTemplate, "payment_session_info"));
     }
 
     @Test

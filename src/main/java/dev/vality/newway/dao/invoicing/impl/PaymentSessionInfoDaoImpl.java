@@ -1,15 +1,19 @@
 package dev.vality.newway.dao.invoicing.impl;
 
 import dev.vality.dao.impl.AbstractGenericDao;
+import dev.vality.mapper.RecordRowMapper;
 import dev.vality.newway.dao.invoicing.iface.PaymentSessionInfoDao;
 import dev.vality.newway.domain.tables.pojos.PaymentSessionInfo;
 import dev.vality.newway.domain.tables.records.PaymentSessionInfoRecord;
 import dev.vality.newway.exception.DaoException;
+import dev.vality.newway.exception.NotFoundException;
 import org.jooq.Query;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static dev.vality.newway.domain.tables.PaymentSessionInfo.PAYMENT_SESSION_INFO;
@@ -17,8 +21,11 @@ import static dev.vality.newway.domain.tables.PaymentSessionInfo.PAYMENT_SESSION
 @Component
 public class PaymentSessionInfoDaoImpl extends AbstractGenericDao implements PaymentSessionInfoDao {
 
+    private final RowMapper<PaymentSessionInfo> rowMapper;
+
     public PaymentSessionInfoDaoImpl(DataSource dataSource) {
         super(dataSource);
+        this.rowMapper = new RecordRowMapper<>(PAYMENT_SESSION_INFO, PaymentSessionInfo.class);
     }
 
     @Override
@@ -29,6 +36,17 @@ public class PaymentSessionInfoDaoImpl extends AbstractGenericDao implements Pay
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
+
+    @Override
+    public PaymentSessionInfo get(String invoiceId, String paymentId) throws DaoException {
+        Query query = getDslContext().selectFrom(PAYMENT_SESSION_INFO)
+                .where(PAYMENT_SESSION_INFO.INVOICE_ID.eq(invoiceId)
+                        .and(PAYMENT_SESSION_INFO.PAYMENT_ID.eq(paymentId)));
+        return Optional.ofNullable(fetchOne(query, rowMapper)).orElseThrow(() ->
+                new NotFoundException(
+                        "PaymentPayerInfo not found, invoiceId=" + invoiceId + " paymentId=" + paymentId));
+    }
+
 
     private Query prepareInsertQuery(PaymentSessionInfoRecord record) {
         return getDslContext().insertInto(PAYMENT_SESSION_INFO)
