@@ -9,6 +9,7 @@ import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.newway.domain.enums.PaymentSessionResult;
 import dev.vality.newway.domain.enums.PaymentSessionStatus;
 import dev.vality.newway.domain.tables.pojos.PaymentSessionInfo;
 import dev.vality.newway.mapper.Mapper;
@@ -49,7 +50,12 @@ public class InvoicePaymentSessionChangeFinishedMapper implements Mapper<Payment
                 invoicePaymentChange.getPayload().getInvoicePaymentSessionChange().getPayload().getSessionFinished()
                         .getResult();
 
-        paymentSessionInfo.setReason(JsonUtil.thriftBaseToJsonString(result.getFailed()));
+        if (result.isSetFailed()) {
+            paymentSessionInfo.setPaymentSessionResult(PaymentSessionResult.failed);
+            paymentSessionInfo.setReason(JsonUtil.thriftBaseToJsonString(result.getFailed()));
+        } else {
+            paymentSessionInfo.setPaymentSessionResult(PaymentSessionResult.succeeded);
+        }
 
         log.info(
                 "Payment session finished has been mapped, sequenceId='{}', changeId='{}', invoiceId='{}', paymentId='{}'",
