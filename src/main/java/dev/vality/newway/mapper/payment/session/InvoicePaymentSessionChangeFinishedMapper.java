@@ -9,8 +9,10 @@ import dev.vality.geck.filter.PathConditionFilter;
 import dev.vality.geck.filter.condition.IsNullCondition;
 import dev.vality.geck.filter.rule.PathConditionRule;
 import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.newway.dao.invoicing.iface.PaymentRouteDao;
 import dev.vality.newway.domain.enums.PaymentSessionResult;
 import dev.vality.newway.domain.enums.PaymentSessionStatus;
+import dev.vality.newway.domain.tables.pojos.PaymentRoute;
 import dev.vality.newway.domain.tables.pojos.PaymentSessionInfo;
 import dev.vality.newway.mapper.Mapper;
 import dev.vality.newway.model.InvoicingKey;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class InvoicePaymentSessionChangeFinishedMapper implements Mapper<PaymentWrapper> {
+
+    private final PaymentRouteDao paymentRouteDao;
 
     private Filter filter = new PathConditionFilter(new PathConditionRule(
             "invoice_payment_change.payload.invoice_payment_session_change.payload.session_finished",
@@ -49,7 +53,10 @@ public class InvoicePaymentSessionChangeFinishedMapper implements Mapper<Payment
         SessionResult result =
                 invoicePaymentChange.getPayload().getInvoicePaymentSessionChange().getPayload().getSessionFinished()
                         .getResult();
-
+        PaymentRoute paymentRoute = paymentRouteDao.get(invoiceId, paymentId);
+        if (paymentRoute != null) {
+            paymentSessionInfo.setPaymentTerminal(paymentRoute.getRouteTerminalId());
+        }
         if (result.isSetFailed()) {
             paymentSessionInfo.setPaymentSessionResult(PaymentSessionResult.failed);
             paymentSessionInfo.setReason(JsonUtil.thriftBaseToJsonString(result.getFailed()));
