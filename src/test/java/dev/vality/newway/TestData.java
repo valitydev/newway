@@ -3,11 +3,22 @@ package dev.vality.newway;
 import dev.vality.damsel.domain.InvoicePaymentChargeback;
 import dev.vality.damsel.domain.*;
 import dev.vality.damsel.payment_processing.*;
+import dev.vality.fistful.withdrawal.AdjustmentChange;
+import dev.vality.fistful.withdrawal.Change;
+import dev.vality.fistful.withdrawal.TimestampedChange;
+import dev.vality.fistful.withdrawal.adjustment.*;
 import dev.vality.geck.common.util.TypeUtil;
+import dev.vality.kafka.common.serialization.ThriftSerializer;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
+import dev.vality.newway.domain.enums.WithdrawalAdjustmentStatus;
+import dev.vality.newway.domain.enums.WithdrawalAdjustmentType;
+import dev.vality.newway.domain.tables.pojos.WithdrawalAdjustment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -269,6 +280,95 @@ public class TestData {
 
     public static Cash createTestCash(long amount) {
         return new Cash(amount, new CurrencyRef("RUB"));
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentCreatedStatusChange() {
+        Adjustment adjustment = new Adjustment();
+        adjustment.setId("id");
+        adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
+        adjustment.setCreatedAt("2023-07-03T10:15:30Z");
+        adjustment.setStatus(Status.pending(new Pending()));
+        var newStatus = new dev.vality.fistful.withdrawal.status.Status();
+        newStatus.setPending(new dev.vality.fistful.withdrawal.status.Pending());
+        adjustment.setChangesPlan(
+                new ChangesPlan()
+                        .setNewStatus(new StatusChangePlan().setNewStatus(newStatus))
+        );
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setCreated(new CreatedChange().setAdjustment(adjustment));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId("id");
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentCreatedDomainRevisionChange() {
+        Adjustment adjustment = new Adjustment();
+        adjustment.setId("id");
+        adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
+        adjustment.setCreatedAt("2023-07-03T10:15:30Z");
+        adjustment.setStatus(Status.pending(new Pending()));
+        var newStatus = new dev.vality.fistful.withdrawal.status.Status();
+        newStatus.setPending(new dev.vality.fistful.withdrawal.status.Pending());
+        adjustment.setChangesPlan(
+                new ChangesPlan()
+                        .setNewDomainRevision(new DataRevisionChangePlan().setNewDomainRevision(1L))
+        );
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setCreated(new CreatedChange().setAdjustment(adjustment));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId("id");
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentStatusChange() {
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setStatusChanged(new StatusChange(Status.succeeded(new Succeeded())));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId("id");
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static MachineEvent createWithdrawalAdjustmentdMachineEvent(String sourceId, TimestampedChange timestampedChange) {
+        return new MachineEvent()
+                .setEventId(2L)
+                .setSourceId(sourceId)
+                .setSourceNs("2")
+                .setCreatedAt("2021-05-31T06:12:27Z")
+                .setData(Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
+    }
+
+    public static WithdrawalAdjustment createWithdrawalAdjustment(String id) {
+        WithdrawalAdjustment withdrawalAdjustment = new WithdrawalAdjustment();
+        withdrawalAdjustment.setType(WithdrawalAdjustmentType.domain_revision);
+        withdrawalAdjustment.setStatus(WithdrawalAdjustmentStatus.pending);
+        withdrawalAdjustment.setSequenceId(1L);
+        withdrawalAdjustment.setAdjustmentId(id);
+        withdrawalAdjustment.setNewDomainRevision(1L);
+        withdrawalAdjustment.setCurrent(true);
+        withdrawalAdjustment.setPartyRevision(2L);
+        withdrawalAdjustment.setExternalId("id");
+        withdrawalAdjustment.setEventOccuredAt(LocalDateTime.now());
+        withdrawalAdjustment.setEventCreatedAt(LocalDateTime.now());
+        withdrawalAdjustment.setWtime(LocalDateTime.now());
+        return withdrawalAdjustment;
     }
 
 }
