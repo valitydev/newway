@@ -28,7 +28,8 @@ import java.lang.annotation.Target;
                 "kafka.topics.source.enabled=true",
                 "kafka.topics.destination.enabled=true",
                 "kafka.topics.pm-events-payout.enabled=true",
-                "kafka.topics.limit-config.enabled=true"},
+                "kafka.topics.limit-config.enabled=true",
+                "kafka.topics.exrate.enabled=true"},
         topicsKeys = {
                 "kafka.topics.invoice.id",
                 "kafka.topics.recurrent-payment-tool.id",
@@ -42,7 +43,10 @@ import java.lang.annotation.Target;
                 "kafka.topics.source.id",
                 "kafka.topics.destination.id",
                 "kafka.topics.pm-events-payout.id",
-                "kafka.topics.limit-config.id"})
+                "kafka.topics.limit-config.id",
+                "kafka.topics.limit-config.id",
+                "kafka.topics.exrate.id"}
+)
 @DefaultSpringBootTest
 @Import(KafkaProducer.class)
 public @interface KafkaPostgresqlSpringBootITest {

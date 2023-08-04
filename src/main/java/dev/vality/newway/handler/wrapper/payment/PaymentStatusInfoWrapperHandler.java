@@ -27,11 +27,13 @@ public class PaymentStatusInfoWrapperHandler implements WrapperHandler<PaymentWr
 
     @Override
     public void saveBatch(List<PaymentWrapper> wrappers) {
-        List<PaymentStatusInfo> paymentStatusInfos = wrappers.stream()
+        List<PaymentWrapper> processableWrappers = wrappers.stream()
+                .filter(paymentWrapper -> Objects.nonNull(paymentWrapper.getPaymentStatusInfo()))
+                .collect(Collectors.toList());
+        List<PaymentStatusInfo> paymentStatusInfos = processableWrappers.stream()
                 .map(PaymentWrapper::getPaymentStatusInfo)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         paymentStatusInfoDao.saveBatch(paymentStatusInfos);
-        paymentStatusInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(wrappers));
+        paymentStatusInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(processableWrappers));
     }
 }

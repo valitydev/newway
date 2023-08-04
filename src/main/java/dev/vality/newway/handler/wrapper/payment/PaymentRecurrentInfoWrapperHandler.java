@@ -27,11 +27,13 @@ public class PaymentRecurrentInfoWrapperHandler implements WrapperHandler<Paymen
 
     @Override
     public void saveBatch(List<PaymentWrapper> wrappers) {
-        List<PaymentRecurrentInfo> paymentRecurrentInfos = wrappers.stream()
+        List<PaymentWrapper> processableWrappers = wrappers.stream()
+                .filter(paymentWrapper -> Objects.nonNull(paymentWrapper.getPaymentRecurrentInfo()))
+                .collect(Collectors.toList());
+        List<PaymentRecurrentInfo> paymentRecurrentInfos = processableWrappers.stream()
                 .map(PaymentWrapper::getPaymentRecurrentInfo)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         paymentRecurrentInfoDao.saveBatch(paymentRecurrentInfos);
-        paymentRecurrentInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(wrappers));
+        paymentRecurrentInfoDao.switchCurrent(PaymentWrapperUtil.getInvoicingKeys(processableWrappers));
     }
 }

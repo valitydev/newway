@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentWrapper {
     private Payment payment;
+    private PaymentSessionInfo paymentSessionInfo;
     private PaymentStatusInfo paymentStatusInfo;
     private PaymentPayerInfo paymentPayerInfo;
     private PaymentAdditionalInfo paymentAdditionalInfo;
