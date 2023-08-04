@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         WithdrawalAdjustmentMachineEventCopyFactoryImpl.class,})
 class WithdrawalAdjustmentStatusChangedHandlerTest {
 
-
     @Autowired
     WithdrawalAdjustmentStatusChangedHandler handler;
 
@@ -52,7 +51,5 @@ class WithdrawalAdjustmentStatusChangedHandlerTest {
         Result<WithdrawalAdjustmentRecord> recordOld = dslContext.fetch(WITHDRAWAL_ADJUSTMENT, WITHDRAWAL_ADJUSTMENT.CURRENT.eq(Boolean.FALSE));
         assertEquals(1, recordOld.size());
         assertEquals(WithdrawalAdjustmentStatus.pending, recordOld.get(0).getStatus());
-
-
     }
 }

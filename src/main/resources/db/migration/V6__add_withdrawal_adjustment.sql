@@ -30,8 +30,3 @@ CREATE TABLE dw.withdrawal_adjustment
 CREATE INDEX withdrawal_adjustment_event_created_at_idx ON dw.withdrawal_adjustment USING btree (event_created_at);
 CREATE INDEX withdrawal_adjustment_event_occured_at_idx ON dw.withdrawal_adjustment USING btree (event_occured_at);
 CREATE INDEX withdrawal_adjustment_id_idx ON dw.withdrawal_adjustment USING btree (adjustment_id);
-
-
-
--- 3: required ChangesPlan         changes_plan
---      8: required base.Timestamp      operation_timestamp
