@@ -41,9 +41,9 @@ class WithdrawalAdjustmentStatusChangedHandlerTest {
         dslContext.insertInto(WITHDRAWAL_ADJUSTMENT)
                 .set(dslContext.newRecord(WITHDRAWAL_ADJUSTMENT, withdrawalAdjustment))
                 .execute();
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentStatusChange();
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentStatusChange(adjustmentId);
 
-        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent(adjustmentId, timestampedChange));
+        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent(timestampedChange));
 
         Result<WithdrawalAdjustmentRecord> recordNew = dslContext.fetch(WITHDRAWAL_ADJUSTMENT, WITHDRAWAL_ADJUSTMENT.CURRENT.eq(Boolean.TRUE));
         assertEquals(1, recordNew.size());

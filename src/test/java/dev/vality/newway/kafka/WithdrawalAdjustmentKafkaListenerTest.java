@@ -33,7 +33,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
     @Test
     void listenWithdrawalAdjustmentCreatedChange() {
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedStatusChange();
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedStatusChange("adjustmentId");
         MachineEvent message = new MachineEvent();
         message.setCreatedAt("2023-07-03T10:15:30Z");
         message.setEventId(1L);
@@ -49,7 +49,8 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
     @Test
     void listenWithdrawalAdjustmentStatusChange() {
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentStatusChange();
+        String adjustmentId = "adjustmentId";
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentStatusChange(adjustmentId);
         MachineEvent message = new MachineEvent();
         message.setCreatedAt("2023-07-03T10:15:30Z");
         message.setEventId(1L);
@@ -57,7 +58,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
         message.setSourceId("sourceId");
         message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
         WithdrawalAdjustment withdrawalAdjustment = new WithdrawalAdjustment();
-        withdrawalAdjustment.setAdjustmentId("id");
+        withdrawalAdjustment.setAdjustmentId(adjustmentId);
         withdrawalAdjustment.setStatus(WithdrawalAdjustmentStatus.pending);
         withdrawalAdjustment.setCurrent(true);
         withdrawalAdjustment.setId(1L);

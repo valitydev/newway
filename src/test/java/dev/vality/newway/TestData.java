@@ -282,9 +282,9 @@ public class TestData {
         return new Cash(amount, new CurrencyRef("RUB"));
     }
 
-    public static TimestampedChange createWithdrawalAdjustmentCreatedStatusChange() {
+    public static TimestampedChange createWithdrawalAdjustmentCreatedStatusChange(String id) {
         Adjustment adjustment = new Adjustment();
-        adjustment.setId("id");
+        adjustment.setId(id);
         adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
         adjustment.setCreatedAt("2023-07-03T10:15:30Z");
         adjustment.setStatus(Status.pending(new Pending()));
@@ -307,9 +307,9 @@ public class TestData {
         return timestampedChange;
     }
 
-    public static TimestampedChange createWithdrawalAdjustmentCreatedDomainRevisionChange() {
+    public static TimestampedChange createWithdrawalAdjustmentCreatedDomainRevisionChange(String id) {
         Adjustment adjustment = new Adjustment();
-        adjustment.setId("id");
+        adjustment.setId(id);
         adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
         adjustment.setCreatedAt("2023-07-03T10:15:30Z");
         adjustment.setStatus(Status.pending(new Pending()));
@@ -332,11 +332,11 @@ public class TestData {
         return timestampedChange;
     }
 
-    public static TimestampedChange createWithdrawalAdjustmentStatusChange() {
+    public static TimestampedChange createWithdrawalAdjustmentStatusChange(String id) {
         var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
         payload.setStatusChanged(new StatusChange(Status.succeeded(new Succeeded())));
         AdjustmentChange adjustmentChange = new AdjustmentChange();
-        adjustmentChange.setId("id");
+        adjustmentChange.setId(id);
         adjustmentChange.setPayload(payload);
         Change change = new Change();
         change.setAdjustment(adjustmentChange);
@@ -346,10 +346,10 @@ public class TestData {
         return timestampedChange;
     }
 
-    public static MachineEvent createWithdrawalAdjustmentdMachineEvent(String sourceId, TimestampedChange timestampedChange) {
+    public static MachineEvent createWithdrawalAdjustmentdMachineEvent(TimestampedChange timestampedChange) {
         return new MachineEvent()
                 .setEventId(2L)
-                .setSourceId(sourceId)
+                .setSourceId("sourceId")
                 .setSourceNs("2")
                 .setCreatedAt("2021-05-31T06:12:27Z")
                 .setData(Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
@@ -361,9 +361,10 @@ public class TestData {
         withdrawalAdjustment.setStatus(WithdrawalAdjustmentStatus.pending);
         withdrawalAdjustment.setSequenceId(1L);
         withdrawalAdjustment.setAdjustmentId(id);
-        withdrawalAdjustment.setNewDomainRevision(1L);
+        withdrawalAdjustment.setDomainRevision(1L);
         withdrawalAdjustment.setCurrent(true);
         withdrawalAdjustment.setPartyRevision(2L);
+        withdrawalAdjustment.setWithdrawalId("withdrawalId");
         withdrawalAdjustment.setExternalId("id");
         withdrawalAdjustment.setEventOccuredAt(LocalDateTime.now());
         withdrawalAdjustment.setEventCreatedAt(LocalDateTime.now());

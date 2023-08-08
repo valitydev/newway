@@ -1,5 +1,6 @@
 package dev.vality.newway.handler.event.stock.impl.withdrawal;
 
+import dev.vality.fistful.withdrawal.AdjustmentChange;
 import dev.vality.fistful.withdrawal.TimestampedChange;
 import dev.vality.fistful.withdrawal.adjustment.Status;
 import dev.vality.geck.common.util.TBaseUtil;
@@ -16,8 +17,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
@@ -32,13 +31,15 @@ public class WithdrawalAdjustmentStatusChangedHandler implements WithdrawalHandl
             new PathConditionFilter(new PathConditionRule("change.adjustment.payload.status_changed.status", new IsNullCondition().not()));
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void handle(TimestampedChange timestampedChange, MachineEvent event) {
-        Status status = timestampedChange.getChange().getAdjustment().getPayload().getStatusChanged().getStatus();
+        AdjustmentChange adjustmentChange = timestampedChange.getChange().getAdjustment();
+        Status status = adjustmentChange.getPayload().getStatusChanged().getStatus();
         long sequenceId = event.getEventId();
-        String withdrawalAdjustmentId = event.getSourceId();
-        log.info("Start withdrawal adjustment status changed handling, sequenceId={}, withdrawalAdjustmentId={}", sequenceId,
-                withdrawalAdjustmentId);
+        String withdrawalId = event.getSourceId();
+        String withdrawalAdjustmentId = adjustmentChange.getId();
+        log.info("Start withdrawal adjustment status changed handling, " +
+                        "sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                sequenceId, withdrawalId, withdrawalAdjustmentId);
         final var withdrawalAdjustmentOld = withdrawalAdjustmentDao.getById(withdrawalAdjustmentId);
         var withdrawalAdjustmentNew = machineEventCopyFactory
                 .create(event, sequenceId, withdrawalAdjustmentId, withdrawalAdjustmentOld, timestampedChange.getOccuredAt());

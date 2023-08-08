@@ -21,10 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -39,34 +35,35 @@ public class WithdrawalAdjustmentCreatedHandler implements WithdrawalHandler {
             new PathConditionFilter(new PathConditionRule("change.adjustment.payload.created.adjustment", new IsNullCondition().not()));
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void handle(TimestampedChange timestampedChange, MachineEvent event) {
         Adjustment adjustmentDamsel = timestampedChange.getChange().getAdjustment().getPayload().getCreated().getAdjustment();
         long sequenceId = event.getEventId();
-        String withdrawalAdjustmentId = event.getSourceId();
-        log.info("Start withdrawal adjustment created handling, sequenceId={}, withdrawalAdjustmentId={}", sequenceId,
-                withdrawalAdjustmentId);
+        String withdrawalId = event.getSourceId();
+        String withdrawalAdjustmentId = adjustmentDamsel.getId();
+        log.info("Start withdrawal adjustment created handling, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                sequenceId, withdrawalId, withdrawalAdjustmentId);
 
         WithdrawalAdjustment withdrawalAdjustment =
                 machineEventCopyFactory.create(event, sequenceId, withdrawalAdjustmentId, timestampedChange.getOccuredAt());
         withdrawalAdjustment.setExternalId(adjustmentDamsel.getExternalId());
         withdrawalAdjustment.setStatus(WithdrawalAdjustmentStatus.pending);
         withdrawalAdjustment.setPartyRevision(adjustmentDamsel.getPartyRevision());
+        withdrawalAdjustment.setWithdrawalId(withdrawalId);
         ChangesPlan changesPlan = adjustmentDamsel.getChangesPlan();
-        if (Objects.nonNull(changesPlan.getNewStatus())) {
+        if (changesPlan.isSetNewStatus()) {
             Status newStatus = changesPlan.getNewStatus().getNewStatus();
             withdrawalAdjustment.setType(WithdrawalAdjustmentType.status_change);
-            withdrawalAdjustment.setNewWithdrawalStatus(TBaseUtil.unionFieldToEnum(newStatus, WithdrawalStatus.class));
-        } else if (Objects.nonNull(changesPlan.getNewDomainRevision())) {
+            withdrawalAdjustment.setWithdrawalStatus(TBaseUtil.unionFieldToEnum(newStatus, WithdrawalStatus.class));
+        } else if (changesPlan.isSetNewDomainRevision()) {
             DataRevisionChangePlan newDomainRevision = changesPlan.getNewDomainRevision();
             withdrawalAdjustment.setType(WithdrawalAdjustmentType.domain_revision);
-            withdrawalAdjustment.setNewDomainRevision(newDomainRevision.getNewDomainRevision());
+            withdrawalAdjustment.setDomainRevision(newDomainRevision.getNewDomainRevision());
         }
         withdrawalAdjustmentDao.save(withdrawalAdjustment).ifPresentOrElse(
                 id -> log.info("withdrawalAdjustment created has been saved, sequenceId={}, withdrawalAdjustmentId={}",
-                        sequenceId, withdrawalAdjustmentId),
+                        sequenceId, withdrawalId),
                 () -> log.info("withdrawalAdjustment created duplicated, sequenceId={}, withdrawalAdjustmentId={}",
-                        sequenceId, withdrawalAdjustmentId));
+                        sequenceId, withdrawalId));
     }
 
 }

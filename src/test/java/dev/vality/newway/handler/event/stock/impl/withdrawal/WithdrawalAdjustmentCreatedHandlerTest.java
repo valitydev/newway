@@ -34,25 +34,25 @@ class WithdrawalAdjustmentCreatedHandlerTest {
 
     @Test
     void handledStatusChange() {
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedStatusChange();
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedStatusChange("adjustmentId");
 
-        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent("id", timestampedChange));
+        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent(timestampedChange));
 
         WithdrawalAdjustmentRecord record = dslContext.fetchAny(WITHDRAWAL_ADJUSTMENT);
         assertNotNull(record);
-        assertNotNull(record.getNewWithdrawalStatus());
-        assertNull(record.getNewDomainRevision());
+        assertNotNull(record.getWithdrawalStatus());
+        assertNull(record.getDomainRevision());
     }
 
     @Test
     void handleDomainRevisionChange() {
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedDomainRevisionChange();
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedDomainRevisionChange("adjustmentId");
 
-        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent("id", timestampedChange));
+        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent(timestampedChange));
 
         WithdrawalAdjustmentRecord record = dslContext.fetchAny(WITHDRAWAL_ADJUSTMENT);
         assertNotNull(record);
-        assertNull(record.getNewWithdrawalStatus());
-        assertNotNull(record.getNewDomainRevision());
+        assertNull(record.getWithdrawalStatus());
+        assertNotNull(record.getDomainRevision());
     }
 }
