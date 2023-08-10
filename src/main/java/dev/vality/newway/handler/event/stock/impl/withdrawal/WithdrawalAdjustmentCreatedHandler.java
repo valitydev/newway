@@ -2,6 +2,7 @@ package dev.vality.newway.handler.event.stock.impl.withdrawal;
 
 import dev.vality.fistful.withdrawal.TimestampedChange;
 import dev.vality.fistful.withdrawal.adjustment.Adjustment;
+import dev.vality.fistful.withdrawal.adjustment.CashFlowChangePlan;
 import dev.vality.fistful.withdrawal.adjustment.ChangesPlan;
 import dev.vality.fistful.withdrawal.adjustment.DataRevisionChangePlan;
 import dev.vality.fistful.withdrawal.status.Status;
@@ -17,6 +18,7 @@ import dev.vality.newway.domain.enums.WithdrawalAdjustmentType;
 import dev.vality.newway.domain.enums.WithdrawalStatus;
 import dev.vality.newway.domain.tables.pojos.WithdrawalAdjustment;
 import dev.vality.newway.factory.machine.event.MachineEventCopyFactory;
+import dev.vality.newway.util.FistfulCashFlowUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,11 +61,25 @@ public class WithdrawalAdjustmentCreatedHandler implements WithdrawalHandler {
             withdrawalAdjustment.setType(WithdrawalAdjustmentType.domain_revision);
             withdrawalAdjustment.setDomainRevision(newDomainRevision.getNewDomainRevision());
         }
+        if (changesPlan.isSetNewCashFlow()) {
+            CashFlowChangePlan cashFlow = changesPlan.getNewCashFlow();
+            long amount = computeAmount(cashFlow);
+            withdrawalAdjustment.setAmount(amount);
+            withdrawalAdjustment
+                    .setProviderFee(FistfulCashFlowUtil.getFistfulProviderFee(cashFlow.getNewCashFlow().getPostings()));
+            withdrawalAdjustment.setFee(FistfulCashFlowUtil.getFistfulFee(cashFlow.getNewCashFlow().getPostings()));
+        }
         withdrawalAdjustmentDao.save(withdrawalAdjustment).ifPresentOrElse(
                 id -> log.info("withdrawalAdjustment created has been saved, sequenceId={}, withdrawalAdjustmentId={}",
                         sequenceId, withdrawalId),
                 () -> log.info("withdrawalAdjustment created duplicated, sequenceId={}, withdrawalAdjustmentId={}",
                         sequenceId, withdrawalId));
+    }
+
+    private long computeAmount(CashFlowChangePlan cashFlow) {
+        Long oldAmount = FistfulCashFlowUtil.computeAmount(cashFlow.getOldCashFlowInverted().getPostings());
+        Long newAmount = FistfulCashFlowUtil.computeAmount(cashFlow.getNewCashFlow().getPostings());
+        return newAmount + oldAmount;
     }
 
 }

@@ -40,7 +40,7 @@ public class WithdrawalAdjustmentStatusChangedHandler implements WithdrawalHandl
         log.info("Start withdrawal adjustment status changed handling, " +
                         "sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
                 sequenceId, withdrawalId, withdrawalAdjustmentId);
-        final var withdrawalAdjustmentOld = withdrawalAdjustmentDao.getById(withdrawalAdjustmentId);
+        final var withdrawalAdjustmentOld = withdrawalAdjustmentDao.getByIds(withdrawalId, withdrawalAdjustmentId);
         var withdrawalAdjustmentNew = machineEventCopyFactory
                 .create(event, sequenceId, withdrawalAdjustmentId, withdrawalAdjustmentOld, timestampedChange.getOccuredAt());
         withdrawalAdjustmentNew.setStatus(TBaseUtil.unionFieldToEnum(status, WithdrawalAdjustmentStatus.class));

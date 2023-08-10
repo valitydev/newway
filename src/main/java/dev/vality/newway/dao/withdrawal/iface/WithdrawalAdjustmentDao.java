@@ -10,7 +10,7 @@ public interface WithdrawalAdjustmentDao extends GenericDao {
 
     Optional<Long> save(WithdrawalAdjustment withdrawalAdjustment) throws DaoException;
 
-    WithdrawalAdjustment getById(String withdrawalAdjustmentId) throws DaoException;
+    WithdrawalAdjustment getByIds(String withdrawalId, String withdrawalAdjustmentId) throws DaoException;
 
     void updateNotCurrent(Long withdrawalAdjustmentId) throws DaoException;
 

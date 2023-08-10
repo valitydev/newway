@@ -45,13 +45,15 @@ public class WithdrawalAdjustmentDaoImpl extends AbstractGenericDao implements W
     }
 
     @Override
-    public WithdrawalAdjustment getById(String withdrawalAdjustmentId) throws DaoException {
+    public WithdrawalAdjustment getByIds(String withdrawalId, String withdrawalAdjustmentId) throws DaoException {
         Query query = getDslContext().selectFrom(WITHDRAWAL_ADJUSTMENT)
                 .where(WITHDRAWAL_ADJUSTMENT.ADJUSTMENT_ID.eq(withdrawalAdjustmentId)
+                        .and(WITHDRAWAL_ADJUSTMENT.WITHDRAWAL_ID.eq(withdrawalId))
                         .and(WITHDRAWAL_ADJUSTMENT.CURRENT));
         return Optional.ofNullable(fetchOne(query, withdrawalAdjustmentRowMapper))
                 .orElseThrow(() -> new NotFoundException(
-                        String.format("WithdrawalAdjustment not found, id='%s'", withdrawalAdjustmentId)));
+                        String.format("WithdrawalAdjustment not found, adjustmentId='%s', withdrawalId='%s'",
+                                withdrawalAdjustmentId, withdrawalId)));
     }
 
     @Override

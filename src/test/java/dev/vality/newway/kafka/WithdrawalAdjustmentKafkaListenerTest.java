@@ -5,8 +5,8 @@ import dev.vality.kafka.common.serialization.ThriftSerializer;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.TestData;
 import dev.vality.newway.config.KafkaPostgresqlSpringBootITest;
+import dev.vality.newway.dao.withdrawal.iface.FistfulCashFlowDao;
 import dev.vality.newway.dao.withdrawal.iface.WithdrawalAdjustmentDao;
-import dev.vality.newway.domain.enums.WithdrawalAdjustmentStatus;
 import dev.vality.newway.domain.tables.pojos.WithdrawalAdjustment;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,9 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
     @MockBean
     private WithdrawalAdjustmentDao withdrawalAdjustmentDao;
+
+    @MockBean
+    private FistfulCashFlowDao fistfulCashFlowDao;
 
     @Test
     void listenWithdrawalAdjustmentCreatedChange() {
@@ -57,22 +61,76 @@ class WithdrawalAdjustmentKafkaListenerTest {
         message.setSourceNs("sourceNs");
         message.setSourceId("sourceId");
         message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
-        WithdrawalAdjustment withdrawalAdjustment = new WithdrawalAdjustment();
-        withdrawalAdjustment.setAdjustmentId(adjustmentId);
-        withdrawalAdjustment.setStatus(WithdrawalAdjustmentStatus.pending);
-        withdrawalAdjustment.setCurrent(true);
-        withdrawalAdjustment.setId(1L);
-        Mockito.when(withdrawalAdjustmentDao.getById(anyString())).thenReturn(withdrawalAdjustment);
+        WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
+        Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
         Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
 
         kafkaProducer.sendMessage(topic, message);
 
         Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
-                .getById(any());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
+                .getByIds(anyString(), anyString());
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .updateNotCurrent(anyLong());
+    }
+
+    @Test
+    void listenWithdrawalAdjustmentTransferCreatedChange() {
+        String adjustmentId = "adjustmentId";
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentTransferCreatedChange(adjustmentId);
+        MachineEvent message = new MachineEvent();
+        message.setCreatedAt("2023-07-03T10:15:30Z");
+        message.setEventId(1L);
+        message.setSourceNs("sourceNs");
+        message.setSourceId("sourceId");
+        message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
+        WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
+        Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
+        Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
+        Mockito.doNothing().when(withdrawalAdjustmentDao).updateNotCurrent(anyLong());
+
+        kafkaProducer.sendMessage(topic, message);
+
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
+                .getByIds(anyString(), anyString());
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
+                .save(any());
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
+                .updateNotCurrent(anyLong());
+        Mockito.verify(fistfulCashFlowDao, Mockito.times(1))
+                .save(anyList());
+    }
+
+    @Test
+    void listenWithdrawalAdjustmentTransferStatusChange() {
+        String adjustmentId = "adjustmentId";
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentTransferStatusChange(adjustmentId);
+        MachineEvent message = new MachineEvent();
+        message.setCreatedAt("2023-07-03T10:15:30Z");
+        message.setEventId(1L);
+        message.setSourceNs("sourceNs");
+        message.setSourceId("sourceId");
+        message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
+        WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
+        withdrawalAdjustment.setId(2L);
+        Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
+        Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
+        Mockito.doNothing().when(withdrawalAdjustmentDao).updateNotCurrent(anyLong());
+        Mockito.when(fistfulCashFlowDao.getByObjId(anyLong(), any())).thenReturn(List.of(TestData.createFistfulCashFlow()));
+
+        kafkaProducer.sendMessage(topic, message);
+
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(2)).times(1))
+                .getByIds(anyString(), anyString());
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
+                .save(any());
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
+                .updateNotCurrent(anyLong());
+        Mockito.verify(fistfulCashFlowDao, Mockito.times(1))
+                .getByObjId(anyLong(), any());
+        Mockito.verify(fistfulCashFlowDao, Mockito.times(1))
+                .save(anyList());
     }
 
 }
