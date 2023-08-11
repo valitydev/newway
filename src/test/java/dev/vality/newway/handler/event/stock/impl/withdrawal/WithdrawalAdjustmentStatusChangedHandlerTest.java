@@ -1,6 +1,7 @@
 package dev.vality.newway.handler.event.stock.impl.withdrawal;
 
 import dev.vality.fistful.withdrawal.TimestampedChange;
+import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.TestData;
 import dev.vality.newway.config.PostgresqlJooqSpringBootITest;
 import dev.vality.newway.dao.withdrawal.impl.WithdrawalAdjustmentDaoImpl;
@@ -42,8 +43,10 @@ class WithdrawalAdjustmentStatusChangedHandlerTest {
                 .set(dslContext.newRecord(WITHDRAWAL_ADJUSTMENT, withdrawalAdjustment))
                 .execute();
         TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentStatusChange(adjustmentId);
+        MachineEvent event = TestData.createWithdrawalAdjustmentdMachineEvent(timestampedChange);
+        event.setSourceId(withdrawalAdjustment.getWithdrawalId());
 
-        handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent(timestampedChange));
+        handler.handle(timestampedChange, event);
 
         Result<WithdrawalAdjustmentRecord> recordNew = dslContext.fetch(WITHDRAWAL_ADJUSTMENT, WITHDRAWAL_ADJUSTMENT.CURRENT.eq(Boolean.TRUE));
         assertEquals(1, recordNew.size());

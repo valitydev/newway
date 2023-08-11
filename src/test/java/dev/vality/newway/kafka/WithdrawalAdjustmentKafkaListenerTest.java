@@ -62,6 +62,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
         message.setSourceId("sourceId");
         message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
         WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
+        withdrawalAdjustment.setId(1L);
         Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
         Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
 
@@ -86,6 +87,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
         message.setSourceId("sourceId");
         message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
         WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
+        withdrawalAdjustment.setId(1L);
         Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
         Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
         Mockito.doNothing().when(withdrawalAdjustmentDao).updateNotCurrent(anyLong());

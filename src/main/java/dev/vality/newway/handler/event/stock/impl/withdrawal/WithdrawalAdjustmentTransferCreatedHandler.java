@@ -51,9 +51,9 @@ public class WithdrawalAdjustmentTransferCreatedHandler implements WithdrawalHan
         String withdrawalAdjustmentId = change.getAdjustment().getId();
         TransferChange transferChange = change.getAdjustment().getPayload().getTransfer();
         log.info("Start withdrawal adjustment transfer created handling, " +
-                        "sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}, transfer={}",
-                sequenceId, withdrawalId, withdrawalAdjustmentId, transferChange);
-
+                        "sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                sequenceId, withdrawalId, withdrawalAdjustmentId);
+        log.debug("Transfer={}", transferChange);
         final var withdrawalAdjustmentOld = withdrawalAdjustmentDao.getByIds(withdrawalId, withdrawalAdjustmentId);
         var withdrawalAdjustmentNew = machineEventCopyFactory
                 .create(event, sequenceId, withdrawalAdjustmentId, withdrawalAdjustmentOld, timestampedChange.getOccuredAt());
