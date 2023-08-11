@@ -8,6 +8,7 @@ import dev.vality.newway.config.KafkaPostgresqlSpringBootITest;
 import dev.vality.newway.dao.withdrawal.iface.FistfulCashFlowDao;
 import dev.vality.newway.dao.withdrawal.iface.WithdrawalAdjustmentDao;
 import dev.vality.newway.domain.tables.pojos.WithdrawalAdjustment;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,15 @@ class WithdrawalAdjustmentKafkaListenerTest {
     @MockBean
     private FistfulCashFlowDao fistfulCashFlowDao;
 
+    @BeforeEach
+    void setUp() {
+        Mockito.reset(withdrawalAdjustmentDao);
+        Mockito.reset(fistfulCashFlowDao);
+    }
+
     @Test
     void listenWithdrawalAdjustmentCreatedChange() {
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedStatusChange("adjustmentId");
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedChange("adjustmentId");
         MachineEvent message = new MachineEvent();
         message.setCreatedAt("2023-07-03T10:15:30Z");
         message.setEventId(1L);

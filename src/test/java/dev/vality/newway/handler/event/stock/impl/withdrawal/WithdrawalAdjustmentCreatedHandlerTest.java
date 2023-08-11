@@ -34,7 +34,7 @@ class WithdrawalAdjustmentCreatedHandlerTest {
 
     @Test
     void handledStatusChange() {
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedStatusChange("adjustmentId");
+        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentCreatedChange("adjustmentId");
 
         handler.handle(timestampedChange, TestData.createWithdrawalAdjustmentdMachineEvent(timestampedChange));
 

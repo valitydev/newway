@@ -287,7 +287,7 @@ public class TestData {
         return new Cash(amount, new CurrencyRef("RUB"));
     }
 
-    public static TimestampedChange createWithdrawalAdjustmentCreatedStatusChange(String id) {
+    public static TimestampedChange createWithdrawalAdjustmentCreatedChange(String id) {
         Adjustment adjustment = new Adjustment();
         adjustment.setId(id);
         adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
