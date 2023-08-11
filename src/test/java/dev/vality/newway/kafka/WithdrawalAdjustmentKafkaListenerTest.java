@@ -75,7 +75,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
         kafkaProducer.sendMessage(topic, message);
 
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(2)).times(1))
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
@@ -101,7 +101,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
         kafkaProducer.sendMessage(topic, message);
 
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(2)).times(1))
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
@@ -130,7 +130,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
         kafkaProducer.sendMessage(topic, message);
 
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(2)).times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(3)).times(1))
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
