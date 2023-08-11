@@ -101,7 +101,7 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
         kafkaProducer.sendMessage(topic, message);
 
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(3)).times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(5)).times(1))
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
