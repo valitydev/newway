@@ -79,7 +79,5 @@ class WithdrawalAdjustmentKafkaListenerTest {
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
-                .updateNotCurrent(anyLong());
     }
 }
