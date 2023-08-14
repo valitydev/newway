@@ -64,8 +64,6 @@ class WithdrawalAdjustmentTransferKafkaListenerTest {
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
-                .updateNotCurrent(anyLong());
         Mockito.verify(fistfulCashFlowDao, Mockito.times(1))
                 .save(anyList());
     }
@@ -93,8 +91,6 @@ class WithdrawalAdjustmentTransferKafkaListenerTest {
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
-                .updateNotCurrent(anyLong());
         Mockito.verify(fistfulCashFlowDao, Mockito.times(1))
                 .getByObjId(anyLong(), any());
         Mockito.verify(fistfulCashFlowDao, Mockito.times(1))

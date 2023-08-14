@@ -63,7 +63,9 @@ public class WithdrawalAdjustmentTransferCreatedHandler implements WithdrawalHan
 
         withdrawalAdjustmentDao.save(withdrawalAdjustmentNew).ifPresentOrElse(
                 id -> {
-                    withdrawalAdjustmentDao.updateNotCurrent(withdrawalAdjustmentOld.getId());
+                    Long oldId = withdrawalAdjustmentOld.getId();
+                    log.info("Update not current for withdrawal adjustment with id={}", oldId);
+                    withdrawalAdjustmentDao.updateNotCurrent(oldId);
                     List<FistfulCashFlow> fistfulCashFlows = FistfulCashFlowUtil
                             .convertFistfulCashFlows(postings, id, FistfulCashFlowChangeType.withdrawal_adjustment);
                     fistfulCashFlowDao.save(fistfulCashFlows);

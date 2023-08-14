@@ -47,6 +47,7 @@ public class WithdrawalAdjustmentStatusChangedHandler implements WithdrawalHandl
         withdrawalAdjustmentDao.save(withdrawalAdjustmentNew).ifPresentOrElse(
                 id -> {
                     Long oldId = withdrawalAdjustmentOld.getId();
+                    log.info("Update not current for withdrawal adjustment with id={}", oldId);
                     withdrawalAdjustmentDao.updateNotCurrent(oldId);
                     log.info("WithdrawalAdjustment status have been changed, sequenceId={}, withdrawalId={}",
                             sequenceId, withdrawalAdjustmentId);
