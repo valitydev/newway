@@ -81,7 +81,7 @@ class WithdrawalAdjustmentTransferKafkaListenerTest {
         message.setSourceId("sourceId");
         message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
         WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
-        withdrawalAdjustment.setId(2L);
+        withdrawalAdjustment.setId(1L);
         Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
         Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
         Mockito.doNothing().when(withdrawalAdjustmentDao).updateNotCurrent(anyLong());
@@ -93,7 +93,7 @@ class WithdrawalAdjustmentTransferKafkaListenerTest {
                 .getByIds(anyString(), anyString());
         Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
                 .save(any());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
                 .updateNotCurrent(anyLong());
         Mockito.verify(fistfulCashFlowDao, Mockito.times(1))
                 .getByObjId(anyLong(), any());
