@@ -3,11 +3,27 @@ package dev.vality.newway;
 import dev.vality.damsel.domain.InvoicePaymentChargeback;
 import dev.vality.damsel.domain.*;
 import dev.vality.damsel.payment_processing.*;
+import dev.vality.fistful.cashflow.FinalCashFlow;
+import dev.vality.fistful.transfer.Committed;
+import dev.vality.fistful.transfer.Transfer;
+import dev.vality.fistful.withdrawal.AdjustmentChange;
+import dev.vality.fistful.withdrawal.Change;
+import dev.vality.fistful.withdrawal.TimestampedChange;
+import dev.vality.fistful.withdrawal.adjustment.*;
 import dev.vality.geck.common.util.TypeUtil;
+import dev.vality.kafka.common.serialization.ThriftSerializer;
+import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.machinegun.msgpack.Value;
+import dev.vality.newway.domain.enums.FistfulCashFlowChangeType;
+import dev.vality.newway.domain.enums.WithdrawalAdjustmentStatus;
+import dev.vality.newway.domain.enums.WithdrawalAdjustmentType;
+import dev.vality.newway.domain.tables.pojos.FistfulCashFlow;
+import dev.vality.newway.domain.tables.pojos.WithdrawalAdjustment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -269,6 +285,206 @@ public class TestData {
 
     public static Cash createTestCash(long amount) {
         return new Cash(amount, new CurrencyRef("RUB"));
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentCreatedChange(String id) {
+        Adjustment adjustment = new Adjustment();
+        adjustment.setId(id);
+        adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
+        adjustment.setCreatedAt("2023-07-03T10:15:30Z");
+        adjustment.setStatus(Status.pending(new Pending()));
+        var newStatus = new dev.vality.fistful.withdrawal.status.Status();
+        newStatus.setPending(new dev.vality.fistful.withdrawal.status.Pending());
+        adjustment.setChangesPlan(
+                new ChangesPlan()
+                        .setNewStatus(new StatusChangePlan().setNewStatus(newStatus))
+        );
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setCreated(new CreatedChange().setAdjustment(adjustment));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId("id");
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentCreatedDomainRevisionChange(String id) {
+        Adjustment adjustment = new Adjustment();
+        adjustment.setId(id);
+        adjustment.setOperationTimestamp("2023-07-03T10:15:30Z");
+        adjustment.setCreatedAt("2023-07-03T10:15:30Z");
+        adjustment.setStatus(Status.pending(new Pending()));
+        var newStatus = new dev.vality.fistful.withdrawal.status.Status();
+        newStatus.setPending(new dev.vality.fistful.withdrawal.status.Pending());
+        adjustment.setChangesPlan(
+                new ChangesPlan()
+                        .setNewDomainRevision(new DataRevisionChangePlan().setNewDomainRevision(1L))
+        );
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setCreated(new CreatedChange().setAdjustment(adjustment));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId("id");
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentStatusChange(String id) {
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setStatusChanged(new StatusChange(Status.succeeded(new Succeeded())));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId(id);
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentTransferCreatedChange(String id) {
+        Transfer transfer = new Transfer();
+        transfer.setId("id");
+        List<dev.vality.fistful.cashflow.FinalCashFlowPosting> postings = getFinalCashFlowPostings();
+        transfer.setCashflow(new FinalCashFlow().setPostings(postings));
+        dev.vality.fistful.transfer.CreatedChange createdChange = new dev.vality.fistful.transfer.CreatedChange();
+        createdChange.setTransfer(transfer);
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setTransfer(new TransferChange(dev.vality.fistful.transfer.Change.created(createdChange)));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId(id);
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    private static List<dev.vality.fistful.cashflow.FinalCashFlowPosting> getFinalCashFlowPostings() {
+        dev.vality.fistful.cashflow.FinalCashFlowPosting fistfulPosting = new dev.vality.fistful.cashflow.FinalCashFlowPosting();
+        fistfulPosting.setDestination(
+                new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                        .setAccountId("1")
+                        .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.system(
+                                dev.vality.fistful.cashflow.SystemCashFlowAccount.settlement)));
+        fistfulPosting.setSource(new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                .setAccountId("2")
+                .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.wallet(
+                        dev.vality.fistful.cashflow.WalletCashFlowAccount.receiver_destination)));
+        fistfulPosting.setVolume(new dev.vality.fistful.base.Cash()
+                .setAmount(100L)
+                .setCurrency(new dev.vality.fistful.base.CurrencyRef("RUB")));
+        dev.vality.fistful.cashflow.FinalCashFlowPosting providerPosting = new dev.vality.fistful.cashflow.FinalCashFlowPosting();
+        providerPosting.setDestination(
+                new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                        .setAccountId("3")
+                        .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.provider(
+                                dev.vality.fistful.cashflow.ProviderCashFlowAccount.settlement)));
+        providerPosting.setSource(new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                .setAccountId("4")
+                .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.system(
+                        dev.vality.fistful.cashflow.SystemCashFlowAccount.settlement)));
+        providerPosting.setVolume(new dev.vality.fistful.base.Cash()
+                .setAmount(100L)
+                .setCurrency(new dev.vality.fistful.base.CurrencyRef("RUB")));
+        dev.vality.fistful.cashflow.FinalCashFlowPosting merchantSourcePosting = new dev.vality.fistful.cashflow.FinalCashFlowPosting();
+        merchantSourcePosting.setDestination(
+                new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                        .setAccountId("5")
+                        .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.provider(
+                                dev.vality.fistful.cashflow.ProviderCashFlowAccount.settlement)));
+        merchantSourcePosting.setSource(new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                .setAccountId("6")
+                .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.merchant(
+                        dev.vality.fistful.cashflow.MerchantCashFlowAccount.settlement)));
+        merchantSourcePosting.setVolume(new dev.vality.fistful.base.Cash()
+                .setAmount(200L)
+                .setCurrency(new dev.vality.fistful.base.CurrencyRef("RUB")));
+        dev.vality.fistful.cashflow.FinalCashFlowPosting merchantDestinationPosting = new dev.vality.fistful.cashflow.FinalCashFlowPosting();
+        merchantDestinationPosting.setDestination(
+                new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                        .setAccountId("7")
+                        .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.merchant(
+                                dev.vality.fistful.cashflow.MerchantCashFlowAccount.settlement)));
+        merchantDestinationPosting.setSource(new dev.vality.fistful.cashflow.FinalCashFlowAccount()
+                .setAccountId("8")
+                .setAccountType(dev.vality.fistful.cashflow.CashFlowAccount.merchant(
+                        dev.vality.fistful.cashflow.MerchantCashFlowAccount.settlement)));
+        merchantDestinationPosting.setVolume(new dev.vality.fistful.base.Cash()
+                .setAmount(500)
+                .setCurrency(new dev.vality.fistful.base.CurrencyRef("RUB")));
+        return List.of(
+                fistfulPosting,
+                providerPosting,
+                merchantSourcePosting,
+                merchantDestinationPosting);
+    }
+
+    public static TimestampedChange createWithdrawalAdjustmentTransferStatusChange(String id) {
+        dev.vality.fistful.transfer.StatusChange statusChange = new dev.vality.fistful.transfer.StatusChange();
+        statusChange.setStatus(dev.vality.fistful.transfer.Status.committed(new Committed()));
+        var payload = new dev.vality.fistful.withdrawal.adjustment.Change();
+        payload.setTransfer(new TransferChange(dev.vality.fistful.transfer.Change.status_changed(statusChange)));
+        AdjustmentChange adjustmentChange = new AdjustmentChange();
+        adjustmentChange.setId(id);
+        adjustmentChange.setPayload(payload);
+        Change change = new Change();
+        change.setAdjustment(adjustmentChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
+    }
+
+    public static MachineEvent createWithdrawalAdjustmentdMachineEvent(TimestampedChange timestampedChange) {
+        return new MachineEvent()
+                .setEventId(2L)
+                .setSourceId("sourceId")
+                .setSourceNs("2")
+                .setCreatedAt("2021-05-31T06:12:27Z")
+                .setData(Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
+    }
+
+    public static WithdrawalAdjustment createWithdrawalAdjustment(String id) {
+        WithdrawalAdjustment withdrawalAdjustment = new WithdrawalAdjustment();
+        withdrawalAdjustment.setType(WithdrawalAdjustmentType.domain_revision);
+        withdrawalAdjustment.setStatus(WithdrawalAdjustmentStatus.pending);
+        withdrawalAdjustment.setSequenceId(1L);
+        withdrawalAdjustment.setAdjustmentId(id);
+        withdrawalAdjustment.setDomainRevision(1L);
+        withdrawalAdjustment.setCurrent(true);
+        withdrawalAdjustment.setPartyRevision(2L);
+        withdrawalAdjustment.setWithdrawalId("withdrawalId");
+        withdrawalAdjustment.setExternalId("id");
+        withdrawalAdjustment.setEventOccuredAt(LocalDateTime.now());
+        withdrawalAdjustment.setEventCreatedAt(LocalDateTime.now());
+        withdrawalAdjustment.setWtime(LocalDateTime.now());
+        return withdrawalAdjustment;
+    }
+
+    public static FistfulCashFlow createFistfulCashFlow() {
+        FistfulCashFlow cashFlow = new FistfulCashFlow();
+        cashFlow.setAmount(100L);
+        cashFlow.setCurrencyCode("RUB");
+        cashFlow.setObjType(FistfulCashFlowChangeType.withdrawal_adjustment);
+        cashFlow.setDestinationAccountId("d_id");
+        cashFlow.setDestinationAccountType(dev.vality.newway.domain.enums.CashFlowAccount.merchant);
+        cashFlow.setDestinationAccountTypeValue("type");
+        cashFlow.setSourceAccountTypeValue("type");
+        cashFlow.setSourceAccountType(dev.vality.newway.domain.enums.CashFlowAccount.wallet);
+        cashFlow.setSourceAccountId("s_id");
+        return cashFlow;
     }
 
 }

@@ -38,4 +38,10 @@ public class KafkaProducer {
         message.setData(data);
         return message;
     }
+
+    public void sendMessage(String topic, MachineEvent message) {
+        SinkEvent sinkEvent = new SinkEvent();
+        sinkEvent.setEvent(message);
+        testThriftKafkaProducer.send(topic, sinkEvent);
+    }
 }
