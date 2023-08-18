@@ -70,10 +70,10 @@ public class WithdrawalAdjustmentCreatedHandler implements WithdrawalHandler {
             withdrawalAdjustment.setFee(FistfulCashFlowUtil.getFistfulFee(cashFlow.getNewCashFlow().getPostings()));
         }
         withdrawalAdjustmentDao.save(withdrawalAdjustment).ifPresentOrElse(
-                id -> log.info("withdrawalAdjustment created has been saved, sequenceId={}, withdrawalAdjustmentId={}",
-                        sequenceId, withdrawalId),
-                () -> log.info("withdrawalAdjustment created duplicated, sequenceId={}, withdrawalAdjustmentId={}",
-                        sequenceId, withdrawalId));
+                id -> log.info("withdrawalAdjustment created has been saved, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                        sequenceId, withdrawalId, withdrawalAdjustmentId),
+                () -> log.info("withdrawalAdjustment created duplicated, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                        sequenceId, withdrawalId, withdrawalAdjustmentId));
     }
 
     private long computeAmount(CashFlowChangePlan cashFlow) {

@@ -52,7 +52,7 @@ public class WithdrawalAdjustmentDaoImpl extends AbstractGenericDao implements W
                         .and(WITHDRAWAL_ADJUSTMENT.CURRENT));
         return Optional.ofNullable(fetchOne(query, withdrawalAdjustmentRowMapper))
                 .orElseThrow(() -> new NotFoundException(
-                        String.format("WithdrawalAdjustment not found, adjustmentId='%s', withdrawalId='%s'",
+                        String.format("WithdrawalAdjustment not found, withdrawalAdjustmentId='%s', withdrawalId='%s'",
                                 withdrawalAdjustmentId, withdrawalId)));
     }
 

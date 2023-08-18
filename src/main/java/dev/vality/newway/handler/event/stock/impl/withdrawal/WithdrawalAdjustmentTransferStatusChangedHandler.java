@@ -47,8 +47,8 @@ public class WithdrawalAdjustmentTransferStatusChangedHandler implements Withdra
         long sequenceId = event.getEventId();
         String withdrawalId = event.getSourceId();
         String withdrawalAdjustmentId = change.getAdjustment().getId();
-        log.info("Start withdrawal adjustment transfer status changed handling, sequenceId={}, withdrawalId={} transfer={}",
-                sequenceId, withdrawalId, transferChange);
+        log.info("Start withdrawal adjustment transfer status changed handling, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}, transfer={}",
+                sequenceId, withdrawalId, withdrawalAdjustmentId, transferChange);
 
         final WithdrawalAdjustment withdrawalAdjustmentOld = withdrawalAdjustmentDao.getByIds(withdrawalId, withdrawalAdjustmentId);
         WithdrawalAdjustment withdrawalAdjustmentNew = machineEventCopyFactory
@@ -67,11 +67,11 @@ public class WithdrawalAdjustmentTransferStatusChangedHandler implements Withdra
                         pcf.setObjId(id);
                     });
                     fistfulCashFlowDao.save(cashFlows);
-                    log.info("Withdrawal adjustment transfer status have been changed, sequenceId={}, withdrawalId={}", sequenceId,
-                            withdrawalId);
+                    log.info("Withdrawal adjustment transfer status have been changed, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                            sequenceId, withdrawalId, withdrawalAdjustmentId);
                 },
-                () -> log.info("Withdrawal adjustment transfer have been changed, sequenceId={}, withdrawalId={}", sequenceId,
-                        withdrawalId));
+                () -> log.info("Withdrawal adjustment transfer have been changed, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                        sequenceId, withdrawalId, withdrawalAdjustmentId));
     }
 
 }

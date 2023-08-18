@@ -49,11 +49,11 @@ public class WithdrawalAdjustmentStatusChangedHandler implements WithdrawalHandl
                     Long oldId = withdrawalAdjustmentOld.getId();
                     log.info("Update not current for withdrawal adjustment with id={}", oldId);
                     withdrawalAdjustmentDao.updateNotCurrent(oldId);
-                    log.info("WithdrawalAdjustment status have been changed, sequenceId={}, withdrawalId={}",
-                            sequenceId, withdrawalAdjustmentId);
+                    log.info("WithdrawalAdjustment status have been changed, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                            sequenceId, withdrawalId, withdrawalAdjustmentId);
                 },
-                () -> log.info("WithdrawalAdjustment status have been changed, sequenceId={}, withdrawalId={}",
-                        sequenceId, withdrawalAdjustmentId));
+                () -> log.info("WithdrawalAdjustment status have been changed, sequenceId={}, withdrawalId={}, withdrawalAdjustmentId={}",
+                        sequenceId, withdrawalId, withdrawalAdjustmentId));
     }
 
 }
