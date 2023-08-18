@@ -52,7 +52,7 @@ public class WithdrawalAdjustmentTransferStatusChangedHandler implements Withdra
 
         final WithdrawalAdjustment withdrawalAdjustmentOld = withdrawalAdjustmentDao.getByIds(withdrawalId, withdrawalAdjustmentId);
         WithdrawalAdjustment withdrawalAdjustmentNew = machineEventCopyFactory
-                .create(event, sequenceId, withdrawalId, withdrawalAdjustmentOld, timestampedChange.getOccuredAt());
+                .create(event, sequenceId, withdrawalAdjustmentId, withdrawalAdjustmentOld, timestampedChange.getOccuredAt());
         withdrawalAdjustmentNew.setWithdrawalTransferStatus(TBaseUtil.unionFieldToEnum(status, WithdrawalTransferStatus.class));
 
         withdrawalAdjustmentDao.save(withdrawalAdjustmentNew).ifPresentOrElse(
