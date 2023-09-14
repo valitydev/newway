@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class WithdrawalAdjustmentCreatedHandler implements WithdrawalAdjustmentHandler {
+public class WithdrawalAdjustmentCreatedHandler implements WithdrawalHandler, WithdrawalAdjustmentHandler {
 
     private final WithdrawalAdjustmentDao withdrawalAdjustmentDao;
     private final MachineEventCopyFactory<WithdrawalAdjustment, String> machineEventCopyFactory;

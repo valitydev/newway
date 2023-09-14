@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class WithdrawalAdjustmentTransferStatusChangedHandler implements WithdrawalAdjustmentHandler {
+public class WithdrawalAdjustmentTransferStatusChangedHandler implements WithdrawalHandler, WithdrawalAdjustmentHandler {
 
     private final WithdrawalAdjustmentDao withdrawalAdjustmentDao;
     private final FistfulCashFlowDao fistfulCashFlowDao;
