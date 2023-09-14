@@ -2,9 +2,11 @@ package dev.vality.newway.service;
 
 import dev.vality.fistful.withdrawal.TimestampedChange;
 import dev.vality.machinegun.eventsink.MachineEvent;
+import dev.vality.newway.handler.event.stock.impl.withdrawal.WithdrawalAdjustmentHandler;
 import dev.vality.newway.handler.event.stock.impl.withdrawal.WithdrawalHandler;
 import dev.vality.sink.common.parser.impl.MachineEventParser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WithdrawalService {
 
+    @Value("${kafka.topics.withdrawal-adjustment.enabled}")
+    private boolean withdrawalAdjustmentListenerEnabled;
+
     private final MachineEventParser<TimestampedChange> parser;
     private final List<WithdrawalHandler> withdrawalHandlers;
-    private final WithdrawalHandlerFilterService withdrawalHandlerFilterService;
+    private final List<WithdrawalAdjustmentHandler> withdrawalAdjustmentHandlers;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void handleEvents(List<MachineEvent> machineEvents) {
@@ -27,8 +32,17 @@ public class WithdrawalService {
     private void handleIfAccept(MachineEvent machineEvent) {
         TimestampedChange eventPayload = parser.parse(machineEvent);
         if (eventPayload.isSetChange()) {
-            List<WithdrawalHandler> filteredHandlerList = withdrawalHandlerFilterService.filterAdjustment(withdrawalHandlers);
-            filteredHandlerList.stream()
+            withdrawalHandlers.stream()
+                    .filter(handler -> handler.accept(eventPayload))
+                    .forEach(handler -> handler.handle(eventPayload, machineEvent));
+            processWithdrawalAdjustment(machineEvent, eventPayload);
+
+        }
+    }
+
+    private void processWithdrawalAdjustment(MachineEvent machineEvent, TimestampedChange eventPayload) {
+        if (!withdrawalAdjustmentListenerEnabled) {
+            withdrawalAdjustmentHandlers.stream()
                     .filter(handler -> handler.accept(eventPayload))
                     .forEach(handler -> handler.handle(eventPayload, machineEvent));
         }
