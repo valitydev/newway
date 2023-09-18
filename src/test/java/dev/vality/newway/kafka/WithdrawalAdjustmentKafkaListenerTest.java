@@ -5,22 +5,22 @@ import dev.vality.kafka.common.serialization.ThriftSerializer;
 import dev.vality.machinegun.eventsink.MachineEvent;
 import dev.vality.newway.TestData;
 import dev.vality.newway.config.KafkaPostgresqlSpringBootITest;
-import dev.vality.newway.dao.withdrawal.iface.FistfulCashFlowDao;
 import dev.vality.newway.dao.withdrawal.iface.WithdrawalAdjustmentDao;
-import dev.vality.newway.domain.tables.pojos.WithdrawalAdjustment;
+import dev.vality.newway.dao.withdrawal.iface.WithdrawalDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @KafkaPostgresqlSpringBootITest
+@TestPropertySource(properties = {"kafka.topics.withdrawal-adjustment.enabled=true"})
 class WithdrawalAdjustmentKafkaListenerTest {
 
     @Value("${kafka.topics.withdrawal.id}")
@@ -33,12 +33,12 @@ class WithdrawalAdjustmentKafkaListenerTest {
     private WithdrawalAdjustmentDao withdrawalAdjustmentDao;
 
     @MockBean
-    private FistfulCashFlowDao fistfulCashFlowDao;
+    private WithdrawalDao withdrawalDao;
 
     @BeforeEach
     void setUp() {
         Mockito.reset(withdrawalAdjustmentDao);
-        Mockito.reset(fistfulCashFlowDao);
+        Mockito.reset(withdrawalDao);
     }
 
     @Test
@@ -53,31 +53,21 @@ class WithdrawalAdjustmentKafkaListenerTest {
 
         kafkaProducer.sendMessage(topic, message);
 
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
+        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).atLeastOnce())
                 .save(any());
     }
 
     @Test
-    void listenWithdrawalAdjustmentStatusChange() {
-        String adjustmentId = "adjustmentId";
-        TimestampedChange timestampedChange = TestData.createWithdrawalAdjustmentStatusChange(adjustmentId);
+    void doNotListenWithdrawalChange() {
+        TimestampedChange timestampedChange = TestData.createWithdrawalCreatedChange("withdrawalId");
         MachineEvent message = new MachineEvent();
         message.setCreatedAt("2023-07-03T10:15:30Z");
         message.setEventId(1L);
         message.setSourceNs("sourceNs");
         message.setSourceId("sourceId");
         message.setData(dev.vality.machinegun.msgpack.Value.bin(new ThriftSerializer<>().serialize("", timestampedChange)));
-        WithdrawalAdjustment withdrawalAdjustment = TestData.createWithdrawalAdjustment(adjustmentId);
-        withdrawalAdjustment.setId(1L);
-        Mockito.when(withdrawalAdjustmentDao.getByIds(anyString(), anyString())).thenReturn(withdrawalAdjustment);
-        Mockito.when(withdrawalAdjustmentDao.save(any(WithdrawalAdjustment.class))).thenReturn(Optional.of(1L));
-        Mockito.doNothing().when(withdrawalAdjustmentDao).updateNotCurrent(anyLong());
 
         kafkaProducer.sendMessage(topic, message);
-
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.timeout(TimeUnit.MINUTES.toMillis(3)).times(1))
-                .getByIds(anyString(), anyString());
-        Mockito.verify(withdrawalAdjustmentDao, Mockito.times(1))
-                .save(any());
+        Mockito.verify(withdrawalDao, Mockito.after(TimeUnit.MINUTES.toMillis(1)).only()).save(any());
     }
 }

@@ -9,6 +9,7 @@ import dev.vality.fistful.transfer.Transfer;
 import dev.vality.fistful.withdrawal.AdjustmentChange;
 import dev.vality.fistful.withdrawal.Change;
 import dev.vality.fistful.withdrawal.TimestampedChange;
+import dev.vality.fistful.withdrawal.Withdrawal;
 import dev.vality.fistful.withdrawal.adjustment.*;
 import dev.vality.geck.common.util.TypeUtil;
 import dev.vality.kafka.common.serialization.ThriftSerializer;
@@ -485,6 +486,25 @@ public class TestData {
         cashFlow.setSourceAccountType(dev.vality.newway.domain.enums.CashFlowAccount.wallet);
         cashFlow.setSourceAccountId("s_id");
         return cashFlow;
+    }
+
+    public static TimestampedChange createWithdrawalCreatedChange(String id) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setId(id);
+        withdrawal.setDestinationId(randomString());
+        withdrawal.setWalletId(randomString());
+        withdrawal.setBody(new dev.vality.fistful.base.Cash()
+                .setAmount(100L)
+                .setCurrency(new dev.vality.fistful.base.CurrencyRef()
+                        .setSymbolicCode("RUB")));
+        dev.vality.fistful.withdrawal.CreatedChange createdChange = new dev.vality.fistful.withdrawal.CreatedChange();
+        createdChange.setWithdrawal(withdrawal);
+        Change change = new Change();
+        change.setCreated(createdChange);
+        TimestampedChange timestampedChange = new TimestampedChange();
+        timestampedChange.setOccuredAt("2023-07-03T10:15:30Z");
+        timestampedChange.setChange(change);
+        return timestampedChange;
     }
 
 }

@@ -38,6 +38,9 @@ public class KafkaConfig {
     @Value("${kafka.topics.exrate.consumer.group-id}")
     private String exrateConsumerGroup;
 
+    @Value("${kafka.topics.withdrawal-adjustment.consumer.group-id}")
+    private String withdrawalAdjustmentConsumerGroup;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         return createConsumerConfig();
@@ -96,6 +99,16 @@ public class KafkaConfig {
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> withdrawalContainerFactory(
             ConsumerFactory<String, MachineEvent> consumerFactory) {
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getWithdrawalConcurrency());
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, MachineEvent>> withdrawalAdjustmentContainerFactory() {
+        Map<String, Object> props = kafkaProperties.buildConsumerProperties();
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SinkEventDeserializer.class);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, withdrawalAdjustmentConsumerGroup);
+        ConsumerFactory<String, MachineEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
+        return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getWithdrawalAdjustmentConcurrency());
     }
 
     @Bean
