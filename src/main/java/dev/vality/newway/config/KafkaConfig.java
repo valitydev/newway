@@ -7,6 +7,7 @@ import dev.vality.newway.config.properties.KafkaConsumerProperties;
 import dev.vality.newway.serde.CurrencyExchangeRateEventDeserializer;
 import dev.vality.newway.serde.PayoutEventDeserializer;
 import dev.vality.newway.serde.SinkEventDeserializer;
+import dev.vality.newway.service.FileService;
 import dev.vality.payout.manager.Event;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -23,6 +24,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class KafkaConfig {
 
     private final KafkaProperties kafkaProperties;
     private final KafkaConsumerProperties kafkaConsumerProperties;
+    private final FileService fileService;
 
     @Value("${kafka.topics.party-management.consumer.group-id}")
     private String partyConsumerGroup;
@@ -40,6 +43,9 @@ public class KafkaConfig {
 
     @Value("${kafka.topics.withdrawal-adjustment.consumer.group-id}")
     private String withdrawalAdjustmentConsumerGroup;
+
+    @Value("${kafka.rack.path}")
+    private String rackPath;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -51,6 +57,10 @@ public class KafkaConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SinkEventDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConsumerProperties.getGroupId());
+        String clientRack = fileService.getClientRack(rackPath);
+        if (Objects.nonNull(clientRack)) {
+            props.put(ConsumerConfig.CLIENT_RACK_CONFIG, clientRack);
+        }
         return props;
     }
 
@@ -107,6 +117,10 @@ public class KafkaConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SinkEventDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, withdrawalAdjustmentConsumerGroup);
+        String clientRack = fileService.getClientRack(rackPath);
+        if (Objects.nonNull(clientRack)) {
+            props.put(ConsumerConfig.CLIENT_RACK_CONFIG, clientRack);
+        }
         ConsumerFactory<String, MachineEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
         return createConcurrentFactory(consumerFactory, kafkaConsumerProperties.getWithdrawalAdjustmentConcurrency());
     }
