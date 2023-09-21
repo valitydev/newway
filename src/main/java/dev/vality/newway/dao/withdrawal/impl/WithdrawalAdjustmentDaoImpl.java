@@ -35,7 +35,7 @@ public class WithdrawalAdjustmentDaoImpl extends AbstractGenericDao implements W
         Query query = getDslContext()
                 .insertInto(WITHDRAWAL_ADJUSTMENT)
                 .set(adjustmentRecord)
-                .onConflict(WITHDRAWAL_ADJUSTMENT.ADJUSTMENT_ID, WITHDRAWAL_ADJUSTMENT.SEQUENCE_ID)
+                .onConflict(WITHDRAWAL_ADJUSTMENT.ADJUSTMENT_ID, WITHDRAWAL_ADJUSTMENT.WITHDRAWAL_ID, WITHDRAWAL_ADJUSTMENT.SEQUENCE_ID)
                 .doNothing()
                 .returning(WITHDRAWAL_ADJUSTMENT.ID);
 
