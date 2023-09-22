@@ -52,8 +52,6 @@ management:
         include: health,info,prometheus
 
 kafka:
-  rack:
-    path: 'src/test/resources/rack.txt'
   consumer:
     group-id: "DawayListener"
     invoicing-concurrency: 7

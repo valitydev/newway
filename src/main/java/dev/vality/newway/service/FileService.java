@@ -29,7 +29,7 @@ public class FileService {
             String content = Files.readString(path);
             return content.split(DELIMITER)[1];
         } catch (IOException e) {
-            log.error("Can't parse property from path: {}", stringFilePath, e);
+            log.debug("Can't parse property from path: {}", stringFilePath, e);
             return null;
         }
     }
