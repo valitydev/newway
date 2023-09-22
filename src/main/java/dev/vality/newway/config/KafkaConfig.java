@@ -44,7 +44,7 @@ public class KafkaConfig {
     @Value("${kafka.topics.withdrawal-adjustment.consumer.group-id}")
     private String withdrawalAdjustmentConsumerGroup;
 
-    @Value("${kafka.rack.path}")
+    @Value("${kafka.rack.path:/tmp/.kafka_rack_env}")
     private String rackPath;
 
     @Bean
